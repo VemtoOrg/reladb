@@ -4,7 +4,13 @@
   "description": "A relational database layer on top of LocalStorage",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "dev": "npm run development",
+    "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "watch": "npm run development -- --watch",
+    "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "prod": "npm run production",
+    "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
   },
   "repository": {
     "type": "git",
@@ -23,5 +29,9 @@
   "bugs": {
     "url": "https://github.com/TiagoSilvaPereira/reladb/issues"
   },
-  "homepage": "https://github.com/TiagoSilvaPereira/reladb#readme"
+  "homepage": "https://github.com/TiagoSilvaPereira/reladb#readme",
+  "devDependencies": {
+    "cross-env": "^7.0.2",
+    "laravel-mix": "^5.0.5"
+  }
 }
