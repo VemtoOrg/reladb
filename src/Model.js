@@ -13,18 +13,35 @@ export default class Model {
     }
 
     static create(data = {}) {
-        let tableData = Model.tableData()
+        let tableData = this.tableData()
 
-        data[Model.primaryKey()] = ++tableData.lastPrimaryKey
+        data[this.primaryKey()] = ++tableData.lastPrimaryKey
 
         tableData.items.push(data)
         tableData.count++
         tableData.index[data.id] = tableData.items.indexOf(data)
 
-        Model.saveTableData(tableData)
+        this.saveTableData(tableData)
 
-        // Needs to return a new instance
         return new this(data)
+    }
+
+    static find(id = null) {
+        if(!id) throw new Error('Please specify an identifier to find a row')
+
+        let tableData = this.tableData(),
+            positionByIndex = tableData.index[id],
+            rowData = null
+
+        console.log(tableData.index[id])
+
+        if(positionByIndex === null || typeof positionByIndex === 'undefined') throw new Error(`Identifier ${id} doesn\'t found on ${this.table()} table index`)
+
+        if(rowData = tableData.items[positionByIndex]) {
+            return new this(rowData)
+        }
+
+        throw new Error(`Item with identifier ${id} not found on table ${this.table()}`)
     }
 
     static primaryKey() {
@@ -36,19 +53,19 @@ export default class Model {
     }
 
     static tableKey() {
-        return `reladb_database_${Model.table()}`
+        return `reladb_database_${this.table()}`
     }
 
     static tableData() {
-        let tableKey = Model.tableKey()
+        let tableKey = this.tableKey()
 
-        if(!window.localStorage[tableKey]) return Model.tableStructure()
+        if(!window.localStorage[tableKey]) return this.tableStructure()
 
         return JSON.parse(window.localStorage[tableKey])
     }
 
     static saveTableData(data) {
-        let tableKey = Model.tableKey()
+        let tableKey = this.tableKey()
 
         window.localStorage[tableKey] = JSON.stringify(data)
     }
