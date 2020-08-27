@@ -32,6 +32,10 @@
   "homepage": "https://github.com/TiagoSilvaPereira/reladb#readme",
   "devDependencies": {
     "cross-env": "^7.0.2",
-    "laravel-mix": "^5.0.5"
+    "laravel-mix": "^5.0.5",
+    "vue-template-compiler": "^2.6.12"
+  },
+  "dependencies": {
+    "pluralize": "^8.0.0"
   }
 }
