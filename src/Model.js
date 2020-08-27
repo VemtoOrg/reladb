@@ -2,8 +2,14 @@ import pluralize from 'pluralize'
 
 export default class Model {
 
-    constructor() {
-        console.log(this.table())
+    constructor(data = {}) {
+
+        this.initializeFromData(data)
+    
+    }
+
+    initializeFromData(data = {}) {
+        Object.keys(data).forEach(key => this[key] = data[key])
     }
 
     static create(data = {}) {
@@ -17,7 +23,8 @@ export default class Model {
 
         Model.saveTableData(tableData)
 
-        return data
+        // Needs to return a new instance
+        return new this(data)
     }
 
     static primaryKey() {
