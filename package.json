@@ -4,7 +4,7 @@
   "description": "A relational database layer on top of LocalStorage",
   "main": "index.js",
   "scripts": {
-    "test": "test",
+    "test": "jest",
     "dev": "npm run development",
     "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
     "watch": "npm run development -- --watch",
@@ -31,8 +31,11 @@
   },
   "homepage": "https://github.com/TiagoSilvaPereira/reladb#readme",
   "devDependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.10.4",
     "cross-env": "^7.0.2",
+    "jest": "^26.4.2",
     "laravel-mix": "^5.0.5",
+    "mock-local-storage": "^1.1.15",
     "vue-template-compiler": "^2.6.12"
   },
   "dependencies": {
