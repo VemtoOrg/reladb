@@ -45,9 +45,9 @@ test('it allows to update data', () => {
 
     expect(user.name).toBe('Tiago')
 
-    // user.update({
-    //     name: 'Jonas'
-    // })
+    user.update({
+        name: 'Jonas'
+    })
 
     // user = User.find(1)
     
