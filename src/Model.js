@@ -34,6 +34,26 @@ export default class Model {
         return new this(data)
     }
 
+    static get() {
+        try {
+            let data = [],
+                tableData = this.tableData()
+
+            Object.keys(tableData.index).forEach(id => {
+                let position = tableData.index[id],
+                    item = null
+
+                if(item = new this(tableData.items[position])) {
+                    data.push(item)
+                }
+            })
+    
+            return data
+        } catch (error) {
+            return []
+        }
+    }
+
     static find(id = null) {
         if(!id) throw new Error('Please specify an identifier to find a row')
 

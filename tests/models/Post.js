@@ -4,7 +4,7 @@ import Model from "../../src/Model";
 export default class Post extends Model {
     
     owner() {
-        return this.belongsTo(User, 'owner_id', 'id')
+        return this.belongsTo(User, 'ownerId', 'id')
     }
 
 }

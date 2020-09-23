@@ -68,9 +68,19 @@ test('it allows to delete data', () => {
 
     user.delete()
 
-    console.log(user)
-
     user = User.find(1)
 
     expect(user).toBe(null)
+})
+
+test('it allows to get data', () => {
+    localStorage.clear()
+
+    User.create({name: 'Tiago'})
+    User.create({name: 'Jessica'})
+
+    let users = User.get()
+
+    expect(users[0].name).toBe('Tiago')
+    expect(users[1].name).toBe('Jessica')
 })
