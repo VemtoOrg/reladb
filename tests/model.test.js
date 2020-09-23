@@ -5,6 +5,7 @@ test('it allows to create data', () => {
 
     let user = User.create({name: 'Tiago', table: 'oiapoque'})
 
+    expect(user.id).toBe(1)
     expect(user.name).toBe('Tiago')
 })
 
@@ -31,25 +32,45 @@ test('it allows to find data', () => {
     expect(user.table).toBe('oiapoque')
 })
 
+test('it can return empty data when trying to find nonexistent data', () => {
+    localStorage.clear()
+
+    expect(User.find(1)).toBe(null)  
+})
+
 test('it fails when trying to find nonexistent data', () => {
     localStorage.clear()
 
-    expect(() => User.find(1))
-        .toThrow('Identifier 1 doesn\'t found on users table index')  
+    expect(() => User.findOrFail(1))
+        .toThrow('Item with identifier 1 not found on table users')  
 })
 
 test('it allows to update data', () => {
     localStorage.clear()
 
-    let user = User.create({name: 'Tiago', table: 'oiapoque'})
+    let user = User.create({name: 'Tiago'})
 
     expect(user.name).toBe('Tiago')
 
-    user.update({
-        name: 'Jonas'
-    })
+    user.update({name: 'Jonas'})
 
-    // user = User.find(1)
-    
-    // expect(user.name).toBe('Jonas')
+    user = User.find(1)
+
+    expect(user.name).toBe('Jonas')
+})
+
+test('it allows to delete data', () => {
+    localStorage.clear()
+
+    let user = User.create({name: 'Tiago'})
+
+    expect(user.name).toBe('Tiago')
+
+    user.delete()
+
+    console.log(user)
+
+    user = User.find(1)
+
+    expect(user).toBe(null)
 })

@@ -37,16 +37,30 @@ export default class Model {
     static find(id = null) {
         if(!id) throw new Error('Please specify an identifier to find a row')
 
-        let tableData = this.tableData(),
-            indexPosition = tableData.index[id]
+        try {
+            let tableData = this.tableData(),
+                indexPosition = tableData.index[id]
+                
+            this.checkIndexPosition(indexPosition, id)
             
-        this.checkIndexPosition(indexPosition, id)
-        
-        let rowData = tableData.items[indexPosition]
+            let rowData = tableData.items[indexPosition]
+    
+            this.checkRowData(rowData, id)
+    
+            return new this(rowData)
+        } catch (error) {
+            return null
+        }
+    }
 
-        this.checkRowData(rowData, id)
+    static findOrFail(id = null) {
+        let data = null
 
-        return new this(rowData)
+        if(data = this.find(id)) {
+            return data
+        }
+
+        throw new Error(`Item with identifier ${id} not found on table ${this.table()}`)
     }
 
     update(data = {}) {
@@ -54,20 +68,42 @@ export default class Model {
 
         this.fillFromData(data)
 
-        let tableData = Model.tableData(),
+        let tableData = this.constructor.tableData(),
             indexPosition = tableData.index[this.id]
-            
-        Model.checkIndexPosition(indexPosition, this.id)
+        
+        this.constructor.checkIndexPosition(indexPosition, this.id)
             
         let rowData = tableData.items[indexPosition]
 
-        Model.checkRowData(rowData, this.id)
+        this.constructor.checkRowData(rowData, this.id)
 
         tableData.items[indexPosition] = this
 
-        Model.saveTableData(tableData)
+        this.constructor.saveTableData(tableData)
 
         return this
+    }
+
+    delete() {
+        if(!this.id) throw new Error('It is not possible to update an object that is not currently saved on database')
+
+        let tableData = this.constructor.tableData(),
+            indexPosition = tableData.index[this.id]
+        
+        this.constructor.checkIndexPosition(indexPosition, this.id)
+            
+        let rowData = tableData.items[indexPosition]
+
+        this.constructor.checkRowData(rowData, this.id)
+
+        tableData.items.splice(indexPosition, 1)
+        delete tableData.items[this.id]
+
+        this.constructor.saveTableData(tableData)
+
+        this.clearData()
+
+        return true
     }
 
     static checkIndexPosition(indexPosition, id) {
@@ -120,8 +156,15 @@ export default class Model {
             count: 0,
             lastPrimaryKey: 0,
             index: {},
+            additionalIndexes: {},
             items: []
         }
+    }
+
+    clearData() {
+        Object.keys(this).forEach(key => {
+            delete this[key]
+        })
     }
 
 }
