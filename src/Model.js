@@ -4,12 +4,20 @@ export default class Model {
 
     constructor(data = {}) {
 
-        this.initializeFromData(data)
+        this.fillFromData(data)
     
     }
 
-    initializeFromData(data = {}) {
-        Object.keys(data).forEach(key => this[key] = data[key])
+    fillFromData(data = {}, disablePrimaryKeyFill = false) {
+        let keys = Object.keys(data)
+        
+        if(disablePrimaryKeyFill) {
+            keys = keys.filter(key => key != this.primaryKey())
+        }
+            
+        keys.forEach(key => this[key] = data[key])
+
+        return this
     }
 
     static create(data = {}) {
@@ -30,16 +38,55 @@ export default class Model {
         if(!id) throw new Error('Please specify an identifier to find a row')
 
         let tableData = this.tableData(),
-            positionByIndex = tableData.index[id],
-            rowData = null
+            indexPosition = tableData.index[id]
+            
+        this.checkIndexPosition(indexPosition, id)
+        
+        let rowData = tableData.items[indexPosition]
 
-        if(positionByIndex === null || typeof positionByIndex === 'undefined') throw new Error(`Identifier ${id} doesn\'t found on ${this.table()} table index`)
+        this.checkRowData(rowData, id)
 
-        if(rowData = tableData.items[positionByIndex]) {
-            return new this(rowData)
+        return new this(rowData)
+    }
+
+    update(data = {}) {
+        if(!this.id) throw new Error('It is not possible to update an object that is not currently saved on database')
+
+        this.fillFromData(data)
+
+        let tableData = Model.tableData(),
+            indexPosition = tableData.index[this.id]
+            
+        Model.checkIndexPosition(indexPosition, this.id)
+            
+        let rowData = tableData.items[indexPosition]
+
+        Model.checkRowData(rowData, this.id)
+
+        tableData.items[indexPosition] = this
+
+        Model.saveTableData(tableData)
+
+        return this
+    }
+
+    static checkIndexPosition(indexPosition, id) {
+        let improperIndex = indexPosition === null 
+            || typeof indexPosition === 'undefined'
+
+        if(improperIndex) {
+            throw new Error(`Identifier ${id} doesn\'t found on ${this.table()} table index`)
+        }  
+        
+        return true
+    }
+
+    static checkRowData(rowData, id) {
+        if(!rowData) {
+            throw new Error(`Item with identifier ${id} not found on table ${this.table()}`)
         }
 
-        throw new Error(`Item with identifier ${id} not found on table ${this.table()}`)
+        return true
     }
 
     static primaryKey() {
