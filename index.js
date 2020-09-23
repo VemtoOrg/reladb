@@ -1,6 +1,7 @@
-const { default: User } = require("./src/User");
+const { default: User } = require("../tests/models/User");
 
 let user = User.create({name: 'Tiago', 'table': 'oiapoque'})
+
 console.log(user)
 
 console.log(User.find(1))
