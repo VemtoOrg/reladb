@@ -59,6 +59,16 @@ test('it allows to update data', () => {
     expect(user.name).toBe('Jonas')
 })
 
+test('it does not allow to update the identifier', () => {
+    localStorage.clear()
+
+    let user = User.create({name: 'Tiago'})
+
+    user.update({id: 2})
+
+    expect(user.id).toBe(1)
+})
+
 test('it allows to delete data', () => {
     localStorage.clear()
 

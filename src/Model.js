@@ -12,7 +12,7 @@ export default class Model {
         let keys = Object.keys(data)
         
         if(disablePrimaryKeyFill) {
-            keys = keys.filter(key => key != this.primaryKey())
+            keys = keys.filter(key => key != this.constructor.primaryKey())
         }
             
         keys.forEach(key => this[key] = data[key])
@@ -86,7 +86,7 @@ export default class Model {
     update(data = {}) {
         if(!this.id) throw new Error('It is not possible to update an object that is not currently saved on database')
 
-        this.fillFromData(data)
+        this.fillFromData(data, true)
 
         let tableData = this.constructor.tableData(),
             indexPosition = tableData.index[this.id]
