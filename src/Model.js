@@ -4,8 +4,6 @@ export default class Model {
 
     constructor(data = {}) {
 
-        // console.log(this.relationships())
-
         this.fillFromData(data)
     
     }
@@ -23,16 +21,16 @@ export default class Model {
     }
 
     static create(data = {}) {
-        let tableData = this.tableData()
+        let tableData = this.getTableData(),
+            id = ++tableData.lastPrimaryKey
 
-        data[this.primaryKey()] = ++tableData.lastPrimaryKey
+        data[this.primaryKey()] = id
+        
+        this.saveItem(id, data)
 
-        tableData.items.push(data)
         tableData.count++
-
-        let position = tableData.items.indexOf(data)
-        tableData.index[data.id] = this.indexStructure(position)
-
+        tableData.index[data.id] = this.indexStructure()
+        
         this.saveTableData(tableData)
 
         return new this(data)
@@ -41,19 +39,21 @@ export default class Model {
     static get() {
         try {
             let data = [],
-                tableData = this.tableData()
+                tableData = this.getTableData()
 
+            // Dá para filtrar aqui passando apenas os índices necessários,
+            // ou seja, se estiver vindo através de um relacionamento, eu troco
+            // o índice da tabela apenas pelo índice necessário e faço o get após isso. Qualquer operação, seja um limit, um order, etc, deverá simplesmente retornar os índices, que serão jogados posteriormente aqui no get (isso pode ser implementado em uma classe separada de query)
             Object.keys(tableData.index).forEach(id => {
-                let position = tableData.index[id].position,
-                    item = null
-
-                if(item = new this(tableData.items[position])) {
+                let item = null
+                if(item = this.getItem(id)) {
                     data.push(item)
                 }
             })
     
             return data
         } catch (error) {
+            console.error(error)
             return []
         }
     }
@@ -62,14 +62,11 @@ export default class Model {
         if(!id) throw new Error('Please specify an identifier to find a row')
 
         try {
-            let tableData = this.tableData(),
-                indexPosition = tableData.index[id].position
-            
-            let rowData = tableData.items[indexPosition]
+            let getItem = this.getItem(id)
     
-            this.checkRowData(rowData, id)
+            this.checkItemData(getItem, id)
     
-            return new this(rowData)
+            return new this(getItem)
         } catch (error) {
             return null
         }
@@ -90,33 +87,26 @@ export default class Model {
 
         this.fillFromData(data, true)
 
-        let tableData = this.constructor.tableData(),
-            indexPosition = tableData.index[this.id].position
-            
-        let rowData = tableData.items[indexPosition]
+        let getItem = this.constructor.getItem(this.id)
 
-        this.constructor.checkRowData(rowData, this.id)
-
-        tableData.items[indexPosition] = this
-
-        this.constructor.saveTableData(tableData)
+        this.constructor.checkItemData(getItem, this.id)
+        this.constructor.saveItem(this.id, this)
 
         return this
     }
 
     delete() {
-        if(!this.id) throw new Error('It is not possible to update an object that is not currently saved on database')
+        if(!this.id) throw new Error('It is not possible to delete an object that is not currently saved on database')
 
-        let tableData = this.constructor.tableData(),
-            indexPosition = tableData.index[this.id].position
-            
-        let rowData = tableData.items[indexPosition]
+        let tableData = this.constructor.getTableData(),
+            getItem = this.constructor.getItem(this.id)
 
-        this.constructor.checkRowData(rowData, this.id)
+        this.constructor.checkItemData(getItem, this.id)
 
-        tableData.items.splice(indexPosition, 1)
-        delete tableData.items[this.id]
+        this.constructor.removeItem(this.id)
 
+        tableData.count--
+        delete tableData.index[this.id]
         this.constructor.saveTableData(tableData)
 
         this.clearData()
@@ -124,8 +114,8 @@ export default class Model {
         return true
     }
 
-    static checkRowData(rowData, id) {
-        if(!rowData) {
+    static checkItemData(getItem, id) {
+        if(!getItem) {
             throw new Error(`Item with identifier ${id} not found on table ${this.table()}`)
         }
 
@@ -144,7 +134,31 @@ export default class Model {
         return `reladb_database_${this.table()}`
     }
 
-    static tableData() {
+    static tableItemKey(id) {
+        return `reladb_database_${this.table()}_item_${id}`
+    }
+
+    static getItem(id) {
+        let itemKey = this.tableItemKey(id)
+
+        if(!window.localStorage[itemKey]) return null
+
+        return JSON.parse(window.localStorage[itemKey])
+    }
+
+    static saveItem(id, data) {
+        let itemKey = this.tableItemKey(id)
+
+        window.localStorage[itemKey] = JSON.stringify(data)
+    }
+
+    static removeItem(id, data) {
+        let itemKey = this.tableItemKey(id)
+
+        window.localStorage.removeItem(itemKey)
+    }
+
+    static getTableData() {
         let tableKey = this.tableKey()
 
         if(!window.localStorage[tableKey]) return this.tableStructure()
@@ -169,14 +183,12 @@ export default class Model {
         }
     }
 
-    static indexStructure(position = null) {
+    static indexStructure() {
         return {
-            other: {},
             hasMany: null,
             hasOne: null,
             belongsTo: null,
             belongsToMany: null,
-            position: position,
         }
     }
 
@@ -184,6 +196,10 @@ export default class Model {
         Object.keys(this).forEach(key => {
             delete this[key]
         })
+    }
+
+    relationships() {
+        return {}
     }
 
     hasMany(model, foreignKey, localKey) {

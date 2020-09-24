@@ -15,10 +15,10 @@ test('it adds created data to the table index', () => {
     let user = User.create({name: 'Tiago'}),
         secondUser = User.create({name: 'Jessica'})
 
-    let tableData = User.tableData()
+    let tableData = User.getTableData()
 
-    expect(tableData.index[user.id].position).toBe(0)
-    expect(tableData.index[secondUser.id].position).toBe(1)
+    expect(typeof tableData.index[user.id] != 'undefined').toBe(true)
+    expect(typeof tableData.index[secondUser.id] != 'undefined').toBe(true)
 })
 
 test('it allows to find data', () => {
@@ -90,7 +90,7 @@ test('it allows to get data', () => {
     User.create({name: 'Jessica'})
 
     let users = User.get()
-
+    console.log(users)
     expect(users[0].name).toBe('Tiago')
     expect(users[1].name).toBe('Jessica')
 })
