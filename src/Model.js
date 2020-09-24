@@ -4,6 +4,8 @@ export default class Model {
 
     constructor(data = {}) {
 
+        console.log(this.relationships())
+
         this.fillFromData(data)
     
     }
@@ -25,9 +27,11 @@ export default class Model {
 
         data[this.primaryKey()] = ++tableData.lastPrimaryKey
 
+        let position = tableData.items.indexOf(data)
+
         tableData.items.push(data)
         tableData.count++
-        tableData.index[data.id] = tableData.items.indexOf(data)
+        tableData.index[data.id] = this.indexStructure(position)
 
         this.saveTableData(tableData)
 
@@ -40,7 +44,7 @@ export default class Model {
                 tableData = this.tableData()
 
             Object.keys(tableData.index).forEach(id => {
-                let position = tableData.index[id],
+                let position = tableData.index[id].position,
                     item = null
 
                 if(item = new this(tableData.items[position])) {
@@ -59,9 +63,7 @@ export default class Model {
 
         try {
             let tableData = this.tableData(),
-                indexPosition = tableData.index[id]
-                
-            this.checkIndexPosition(indexPosition, id)
+                indexPosition = tableData.index[id].position
             
             let rowData = tableData.items[indexPosition]
     
@@ -89,9 +91,7 @@ export default class Model {
         this.fillFromData(data, true)
 
         let tableData = this.constructor.tableData(),
-            indexPosition = tableData.index[this.id]
-        
-        this.constructor.checkIndexPosition(indexPosition, this.id)
+            indexPosition = tableData.index[this.id].position
             
         let rowData = tableData.items[indexPosition]
 
@@ -108,9 +108,7 @@ export default class Model {
         if(!this.id) throw new Error('It is not possible to update an object that is not currently saved on database')
 
         let tableData = this.constructor.tableData(),
-            indexPosition = tableData.index[this.id]
-        
-        this.constructor.checkIndexPosition(indexPosition, this.id)
+            indexPosition = tableData.index[this.id].position
             
         let rowData = tableData.items[indexPosition]
 
@@ -123,17 +121,6 @@ export default class Model {
 
         this.clearData()
 
-        return true
-    }
-
-    static checkIndexPosition(indexPosition, id) {
-        let improperIndex = indexPosition === null 
-            || typeof indexPosition === 'undefined'
-
-        if(improperIndex) {
-            throw new Error(`Identifier ${id} doesn\'t found on ${this.table()} table index`)
-        }  
-        
         return true
     }
 
@@ -177,7 +164,19 @@ export default class Model {
             lastPrimaryKey: 0,
             index: {},
             additionalIndexes: {},
-            items: []
+            items: [],
+            relations: []
+        }
+    }
+
+    static indexStructure(position = null) {
+        return {
+            other: {},
+            hasMany: null,
+            hasOne: null,
+            belongsTo: null,
+            belongsToMany: null,
+            position: position,
         }
     }
 
@@ -185,6 +184,18 @@ export default class Model {
         Object.keys(this).forEach(key => {
             delete this[key]
         })
+    }
+
+    hasMany(model, foreignKey, localKey) {
+
+        return model.where(foreignKey)
+
+    }
+
+    belongsTo(model, foreignKey, localKey) {
+
+        return model.where(foreignKey)
+
     }
 
 }
