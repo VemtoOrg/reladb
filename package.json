@@ -39,6 +39,7 @@
     "vue-template-compiler": "^2.6.12"
   },
   "dependencies": {
+    "moment": "^2.29.0",
     "pluralize": "^8.0.0"
   }
 }

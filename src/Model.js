@@ -70,6 +70,10 @@ export default class Model {
         return pluralize(this.name).toLowerCase()
     }
 
+    static timestamps() {
+        return true;
+    }
+
     clearData() {
         Object.keys(this).forEach(key => {
             delete this[key]

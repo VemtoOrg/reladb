@@ -1,3 +1,5 @@
+import moment from "moment"
+
 export default class Query {
 
     constructor(model) {
@@ -106,6 +108,13 @@ export default class Query {
 
     saveItem(id, data) {
         let itemKey = this.tableItemKey(id)
+
+        if(this.model.timestamps()) {
+            if(!data.createdAt)
+                data.createdAt = moment().format('YYYY-MM-DD HH:mm:ss')
+            
+            data.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss')
+        }
 
         window.localStorage[itemKey] = JSON.stringify(data)
     }
