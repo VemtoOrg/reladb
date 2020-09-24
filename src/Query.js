@@ -97,7 +97,7 @@ export default class Query {
     }
 
     getItem(id) {
-        let itemKey = this.model.tableItemKey(id)
+        let itemKey = this.tableItemKey(id)
 
         if(!window.localStorage[itemKey]) return null
 
@@ -105,13 +105,13 @@ export default class Query {
     }
 
     saveItem(id, data) {
-        let itemKey = this.model.tableItemKey(id)
+        let itemKey = this.tableItemKey(id)
 
         window.localStorage[itemKey] = JSON.stringify(data)
     }
 
     removeItem(id) {
-        let itemKey = this.model.tableItemKey(id)
+        let itemKey = this.tableItemKey(id)
 
         window.localStorage.removeItem(itemKey)
     }

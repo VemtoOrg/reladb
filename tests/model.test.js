@@ -15,7 +15,7 @@ test('it adds created data to the table index', () => {
     let user = User.create({name: 'Tiago'}),
         secondUser = User.create({name: 'Jessica'})
 
-    let tableData = User.getTableData()
+    let tableData = User.getQuery().getTableData()
 
     expect(typeof tableData.index[user.id] != 'undefined').toBe(true)
     expect(typeof tableData.index[secondUser.id] != 'undefined').toBe(true)
@@ -83,7 +83,7 @@ test('it allows to delete data', () => {
 
     expect(user).toBe(null)
 
-    let tableData = User.getTableData()
+    let tableData = User.getQuery().getTableData()
 
     expect(typeof tableData.index[userId] === 'undefined').toBe(true)
 })
