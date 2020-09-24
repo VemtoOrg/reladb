@@ -4,7 +4,7 @@ export default class Model {
 
     constructor(data = {}) {
 
-        console.log(this.relationships())
+        // console.log(this.relationships())
 
         this.fillFromData(data)
     
@@ -27,10 +27,10 @@ export default class Model {
 
         data[this.primaryKey()] = ++tableData.lastPrimaryKey
 
-        let position = tableData.items.indexOf(data)
-
         tableData.items.push(data)
         tableData.count++
+
+        let position = tableData.items.indexOf(data)
         tableData.index[data.id] = this.indexStructure(position)
 
         this.saveTableData(tableData)

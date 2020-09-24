@@ -17,8 +17,8 @@ test('it adds created data to the table index', () => {
 
     let tableData = User.tableData()
 
-    expect(tableData.index[user.id]).toBe(0)
-    expect(tableData.index[secondUser.id]).toBe(1)
+    expect(tableData.index[user.id].position).toBe(0)
+    expect(tableData.index[secondUser.id].position).toBe(1)
 })
 
 test('it allows to find data', () => {
