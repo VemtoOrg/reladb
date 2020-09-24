@@ -1,4 +1,7 @@
+const moment = require('moment')
 const { default: User } = require("./models/User");
+
+jest.useFakeTimers()
 
 test('it allows to create data', () => {
     localStorage.clear()
@@ -98,4 +101,27 @@ test('it allows to get data', () => {
 
     expect(users[0].name).toBe('Tiago')
     expect(users[1].name).toBe('Jessica')
+})
+
+test('it adds the timestamps on create', () => {
+    localStorage.clear()
+
+    let user = User.create({name: 'Tiago', table: 'oiapoque'})
+
+    expect(user.createdAt).toBe(moment().format('YYYY-MM-DD HH:mm:ss'))
+    expect(user.updatedAt).toBe(moment().format('YYYY-MM-DD HH:mm:ss'))
+})
+
+test('it updates timestamps on update', () => {
+    localStorage.clear()
+
+    let user = User.create({name: 'Tiago'})
+
+    setTimeout(() => {
+        user.update({name: 'Jonas'})
+    
+        user = User.find(1)
+    
+        expect(user.updatedAt).toBe(moment().format('YYYY-MM-DD HH:mm:ss'))
+    }, 5000);
 })
