@@ -72,7 +72,8 @@ test('it does not allow to update the identifier', () => {
 test('it allows to delete data', () => {
     localStorage.clear()
 
-    let user = User.create({name: 'Tiago'})
+    let user = User.create({name: 'Tiago'}),
+        userId = user.id
 
     expect(user.name).toBe('Tiago')
 
@@ -81,6 +82,10 @@ test('it allows to delete data', () => {
     user = User.find(1)
 
     expect(user).toBe(null)
+
+    let tableData = User.getTableData()
+
+    expect(typeof tableData.index[userId] === 'undefined').toBe(true)
 })
 
 test('it allows to get data', () => {
@@ -90,7 +95,7 @@ test('it allows to get data', () => {
     User.create({name: 'Jessica'})
 
     let users = User.get()
-    console.log(users)
+
     expect(users[0].name).toBe('Tiago')
     expect(users[1].name).toBe('Jessica')
 })
