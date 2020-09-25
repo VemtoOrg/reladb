@@ -1,5 +1,6 @@
 import Query from './Query'
 import pluralize from 'pluralize'
+import HasMany from './Relationships/HasMany'
 import BelongsTo from './Relationships/BelongsTo'
 
 export default class Model {
@@ -103,9 +104,9 @@ export default class Model {
     }
 
     hasMany(model, foreignKey, localKey) {
-
-        return model.where(foreignKey)
-
+        return new HasMany(model)
+            .setForeignKey(foreignKey)
+            .setLocalKey(localKey)
     }
 
     belongsTo(model, foreignKey, ownerKey) {
@@ -115,11 +116,24 @@ export default class Model {
     }
 
     hasRelationshipNamed(name) {
-        return !! this.relationships()[name]
+        /** As we are calling a method here, it has some special properties, like constructor.
+         * So we need to return false if the name matches one of these properties
+         */
+        let reserved = [
+            'constructor', 'apply', 'bind', 'call', 'toString', 'hasOwnProperty', 'isPrototypeOf',
+            'propertyIsEnumerable', 'toLocaleString', 'valueOf', '__defineGetter__', '__defineSetter__',
+            '__lookupGetter__', '__lookupSetter__'
+        ]
+
+        if(reserved.includes(name)) return false
+        
+        if(!this.relationships()[name]) return false
+
+        return typeof this.relationships()[name] === 'function'
     }
 
     executeRelationship(name) {
-        console.log(this.relationships()[name]())
+        console.log(name, this.name, this.relationships())
         return this.relationships()[name]().execute()
     }
 
