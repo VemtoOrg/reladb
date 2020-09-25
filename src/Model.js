@@ -126,15 +126,14 @@ export default class Model {
         ]
 
         if(reserved.includes(name)) return false
-        
+
         if(!this.relationships()[name]) return false
 
         return typeof this.relationships()[name] === 'function'
     }
 
     executeRelationship(name) {
-        console.log(name, this.name, this.relationships())
-        return this.relationships()[name]().execute()
+        return this.relationships()[name]().execute(this)
     }
 
 }

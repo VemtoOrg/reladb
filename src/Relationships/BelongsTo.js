@@ -8,7 +8,7 @@ export default class BelongsTo {
     
     setForeignKey(foreignKey) {
         if(!foreignKey) {
-            foreignKey = `${this.model.name}Id`
+            foreignKey = `${this.model.name.toLowerCase()}Id`
         }
 
         this.foreignKey = foreignKey
@@ -26,17 +26,13 @@ export default class BelongsTo {
         return this
     }
 
-    build() {
-        console.log(this.foreignKey, this.ownerKey)
-        return this
-    }
-
     getQuery() {
         return new Query(this.model)
     }
 
     execute(item) {
-        return {'test': 'asasdasd'}
+        if(!item[this.foreignKey]) return null
+        return this.getQuery().findOrFail(item[this.foreignKey])
     }
 
 }

@@ -5,7 +5,7 @@ export default class Post extends Model {
     
     relationships() {
         return {
-            owner: () => this.belongsTo(User)
+            owner: () => this.belongsTo(User, 'ownerId')
         }
     }
 
