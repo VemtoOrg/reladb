@@ -3,8 +3,10 @@ import Model from "../../src/Model";
 
 export default class Post extends Model {
     
-    owner() {
-        return this.belongsTo(User, 'ownerId', 'id')
+    relationships() {
+        return {
+            owner: () => this.belongsTo(User)
+        }
     }
 
 }

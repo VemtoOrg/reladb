@@ -5,9 +5,7 @@ export default class User extends Model {
     
     relationships() {
         return {
-            posts() {
-                return this.hasMany(Post, 'ownerId', 'id')
-            }
+            posts: () => this.hasMany(Post, 'ownerId', 'id')
         }
     }
 

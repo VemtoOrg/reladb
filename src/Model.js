@@ -1,12 +1,30 @@
 import Query from './Query'
 import pluralize from 'pluralize'
+import BelongsTo from './Relationships/BelongsTo'
 
 export default class Model {
 
     constructor(data = {}) {
 
         this.fillFromData(data)
-    
+
+        return new Proxy(this, {
+            set: this.__set,
+            get: this.__get
+        })
+
+    }
+
+    __set(obj, name, value) {
+        return obj[name] = value
+    }
+
+    __get(obj, name) {
+        if(obj.hasRelationshipNamed(name)) {
+            return obj.executeRelationship(name)
+        }
+
+        return obj[name]
     }
 
     fillFromData(data = {}, disablePrimaryKeyFill = false) {
@@ -90,10 +108,19 @@ export default class Model {
 
     }
 
-    belongsTo(model, foreignKey, localKey) {
+    belongsTo(model, foreignKey, ownerKey) {
+        return new BelongsTo(model)
+            .setForeignKey(foreignKey)
+            .setOwnerKey(ownerKey)
+    }
 
-        return model.where(foreignKey)
+    hasRelationshipNamed(name) {
+        return !! this.relationships()[name]
+    }
 
+    executeRelationship(name) {
+        console.log(this.relationships()[name]())
+        return this.relationships()[name]().execute()
     }
 
 }
