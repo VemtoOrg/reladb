@@ -156,13 +156,23 @@ export default class Query {
 
     updateIndexesFromItem(item) {
         item.belongsToRelationships().forEach(
-            belongsToRelationship => {
-                let parent = belongsToRelationship.getParentFromItem(item),
-                    parentQuery = belongsToRelationship.getQuery()
-
-                parentQuery.addItemToParentHasManyIndex(belongsToRelationship, parent, item)
-            }
+            belongsToRelationship => this.addItemToParentHasManyIndex(belongsToRelationship, item)
         )
+    }
+
+    addItemToParentHasManyIndex(relationship, item) {
+        let parent = relationship.getParentFromItem(item),
+            parentQuery = parent.constructor.getQuery(),
+            parentIndex = parentQuery.getItemIndex(parent),
+            indexKey = `${item.getTable()}.${relationship.foreignKey}`,
+            hasManyIndex = parentIndex.hasMany[indexKey] || []
+
+        hasManyIndex.push(item.id)
+        hasManyIndex = [...new Set(hasManyIndex)]
+
+        parentIndex.hasMany[indexKey] = hasManyIndex
+
+        parentQuery.updateItemIndex(parent, parentIndex)
     }
 
     getItemIndex(item) {
@@ -171,21 +181,6 @@ export default class Query {
         let tableData = this.getTableData()
         
         return tableData.index[item.id] || null
-    }
-
-    addItemToParentHasManyIndex(relationship, parent, item) {
-        let parentIndex = this.getItemIndex(parent),
-            indexKey = `${item.getTable()}.${relationship.foreignKey}`,
-            hasManyIndexByRelation = parentIndex.hasMany[indexKey]
-
-        if(!hasManyIndexByRelation) hasManyIndexByRelation = []
-
-        hasManyIndexByRelation.push(item.id)
-        hasManyIndexByRelation = [...new Set(hasManyIndexByRelation)]
-
-        parentIndex.hasMany[indexKey] = hasManyIndexByRelation
-
-        this.updateItemIndex(parent, parentIndex)
     }
 
     updateItemIndex(item, newIndexData) {
