@@ -9,7 +9,8 @@ export default class Query {
 
     create(data = {}) {
         let tableData = this.getTableData(),
-            id = ++tableData.lastPrimaryKey
+            id = ++tableData.lastPrimaryKey,
+            item = null
 
         data[this.model.primaryKey()] = id
         
@@ -20,7 +21,11 @@ export default class Query {
         
         this.saveTableData(tableData)
 
-        return new this.model(data)
+        item = new this.model(data)
+        
+        this.updateIndexesFromItem(item)
+
+        return item
     }
 
     get() {
@@ -145,6 +150,52 @@ export default class Query {
         let tableKey = this.tableKey()
 
         window.localStorage[tableKey] = JSON.stringify(data)
+
+        return true
+    }
+
+    updateIndexesFromItem(item) {
+        item.belongsToRelationships().forEach(
+            belongsToRelationship => {
+                let parent = belongsToRelationship.getParentFromItem(item),
+                    parentQuery = belongsToRelationship.getQuery()
+
+                parentQuery.addItemToParentHasManyIndex(belongsToRelationship, parent, item)
+            }
+        )
+    }
+
+    getItemIndex(item) {
+        if(!item.id) return null
+
+        let tableData = this.getTableData()
+        
+        return tableData.index[item.id] || null
+    }
+
+    addItemToParentHasManyIndex(relationship, parent, item) {
+        let parentIndex = this.getItemIndex(parent),
+            indexKey = `${item.getTable()}.${relationship.foreignKey}`,
+            hasManyIndexByRelation = parentIndex.hasMany[indexKey]
+
+        if(!hasManyIndexByRelation) hasManyIndexByRelation = []
+
+        hasManyIndexByRelation.push(item.id)
+        hasManyIndexByRelation = [...new Set(hasManyIndexByRelation)]
+
+        parentIndex.hasMany[indexKey] = hasManyIndexByRelation
+
+        this.updateItemIndex(parent, parentIndex)
+    }
+
+    updateItemIndex(item, newIndexData) {
+        if(!item.id) return null
+
+        let tableData = this.getTableData()
+        
+        tableData.index[item.id] = newIndexData
+
+        return this.saveTableData(tableData)
     }
 
     tableKey() {
@@ -168,10 +219,10 @@ export default class Query {
 
     indexStructure() {
         return {
-            hasMany: null,
-            hasOne: null,
-            belongsTo: null,
-            belongsToMany: null,
+            hasMany: {},
+            hasOne: {},
+            belongsTo: {},
+            belongsToMany: {},
         }
     }
 

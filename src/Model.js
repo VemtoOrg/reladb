@@ -85,6 +85,10 @@ export default class Model {
         return 'id'
     }
 
+    getTable() {
+        return this.constructor.table()
+    }
+
     static table() {
         return pluralize(this.name).toLowerCase()
     }
@@ -127,13 +131,38 @@ export default class Model {
 
         if(reserved.includes(name)) return false
 
-        if(!this.relationships()[name]) return false
+        if(!this.getRelationshipFunction(name)) return false
 
-        return typeof this.relationships()[name] === 'function'
+        return typeof this.getRelationshipFunction(name) === 'function'
     }
 
     executeRelationship(name) {
-        return this.relationships()[name]().execute(this)
+        return this.getRelationship(name).execute(this)
+    }
+
+    hasBelongsToRelationships() {
+        return this.belongsToRelationships().length > 0   
+    }
+
+    belongsToRelationships() {
+        let relationships = []
+
+        Object.keys(this.relationships()).forEach(relationshipName => {
+            let relationship = this.getRelationship(relationshipName)
+            if(relationship instanceof BelongsTo) {
+                relationships.push(relationship)
+            }
+        })
+
+        return relationships
+    }
+
+    getRelationship(name) {
+        return this.getRelationshipFunction(name)()
+    }
+
+    getRelationshipFunction(name) {
+        return this.relationships()[name]
     }
 
 }

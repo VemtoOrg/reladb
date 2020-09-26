@@ -30,9 +30,13 @@ export default class BelongsTo {
         return new Query(this.model)
     }
 
-    execute(item) {
+    getParentFromItem(item) {
         if(!item[this.foreignKey]) return null
         return this.getQuery().findOrFail(item[this.foreignKey])
+    }
+
+    execute(item) {
+       return this.getParentFromItem(item) 
     }
 
 }
