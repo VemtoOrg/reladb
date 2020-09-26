@@ -89,6 +89,7 @@ export default class Query {
 
         this.checkItemData(item, id)
 
+        this.removeIndexesByItem(item)
         this.removeItem(id)
 
         tableData.count--

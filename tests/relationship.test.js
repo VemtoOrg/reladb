@@ -47,3 +47,21 @@ test('it changes has many index when changing parent', () => {
     expect(tableData.index[user.id].hasMany['posts.ownerId'].includes(post.id)).toBe(false)
     expect(tableData.index[secondUser.id].hasMany['posts.ownerId'].includes(post.id)).toBe(true)
 })
+
+test('it removes has many index on parent after removing child data', () => {
+    localStorage.clear()
+
+    let user = User.create({name: 'Tiago'}),
+        post = Post.create({title: 'Test', ownerId: user.id}),
+        postId = post.id
+
+    let tableData = User.getQuery().getTableData()
+
+    expect(tableData.index[user.id].hasMany['posts.ownerId'].includes(postId)).toBe(true)
+
+    post.delete()
+
+    tableData = User.getQuery().getTableData()
+
+    expect(tableData.index[user.id].hasMany['posts.ownerId'].includes(postId)).toBe(false)
+})
