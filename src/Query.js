@@ -163,6 +163,7 @@ export default class Query {
     addItemToParentHasManyIndex(relationship, item) {
         let parent = relationship.getParentFromItem(item),
             parentQuery = parent.constructor.getQuery(),
+            
             parentIndex = parentQuery.getItemIndex(parent),
             indexKey = `${item.getTable()}.${relationship.foreignKey}`,
             hasManyIndex = parentIndex.hasMany[indexKey] || []
