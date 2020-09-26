@@ -40,6 +40,11 @@ export default class Model {
         return this
     }
 
+    fresh() {
+        return new Query(this.constructor)
+            .findOrFail(this.id)
+    }
+
     static create(data = {}) {
         return new Query(this).create(data)
     }

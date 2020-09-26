@@ -4,6 +4,7 @@ export default class Query {
 
     constructor(model) {
         this.model = model
+        this.oldItem = null
         this.filteredIndex = null
     }
 
@@ -23,7 +24,7 @@ export default class Query {
 
         item = new this.model(data)
         
-        this.updateIndexesFromItem(item)
+        this.addIndexesByItem(item)
 
         return item
     }
@@ -68,8 +69,16 @@ export default class Query {
     }
 
     update(id, data = {}) {
+        this.oldItem = this.findOrFail(id)
+        this.removeIndexesByItem(this.oldItem)
+
         this.checkItemData(data, id)
         this.saveItem(id, data)
+
+        let item = this.findOrFail(id)
+        this.addIndexesByItem(item)
+
+        this.clearOldItem()
 
         return true
     }
@@ -101,6 +110,10 @@ export default class Query {
 
     clearFilteredIndex() {
         this.filteredIndex = null
+    }
+
+    clearOldItem() {
+        this.oldItem = null
     }
 
     getItem(id) {
@@ -154,13 +167,35 @@ export default class Query {
         return true
     }
 
-    updateIndexesFromItem(item) {
+    addIndexesByItem(item) {
         item.belongsToRelationships().forEach(
             belongsToRelationship => this.addItemToParentHasManyIndex(belongsToRelationship, item)
         )
     }
 
+    removeIndexesByItem(item) {
+        item.belongsToRelationships().forEach(
+            belongsToRelationship => this.removeItemFromParentHasManyIndex(belongsToRelationship, item)
+        )
+    }
+
     addItemToParentHasManyIndex(relationship, item) {
+        this.manipulateHasManyIndex(hasManyIndex => {
+            hasManyIndex.push(item.id)
+            hasManyIndex = [...new Set(hasManyIndex)]
+            return hasManyIndex
+        }, relationship, item)
+    }
+
+    removeItemFromParentHasManyIndex(relationship, item) {
+        this.manipulateHasManyIndex(hasManyIndex => {
+            hasManyIndex.splice(hasManyIndex.indexOf(item.id), 1)
+            hasManyIndex = [...new Set(hasManyIndex)]
+            return hasManyIndex
+        }, relationship, item)
+    }
+
+    manipulateHasManyIndex(manipulationCallback, relationship, item) {
         let parent = relationship.getParentFromItem(item),
             parentQuery = parent.constructor.getQuery(),
             
@@ -168,10 +203,7 @@ export default class Query {
             indexKey = `${item.getTable()}.${relationship.foreignKey}`,
             hasManyIndex = parentIndex.hasMany[indexKey] || []
 
-        hasManyIndex.push(item.id)
-        hasManyIndex = [...new Set(hasManyIndex)]
-
-        parentIndex.hasMany[indexKey] = hasManyIndex
+        parentIndex.hasMany[indexKey] = manipulationCallback(hasManyIndex)
 
         parentQuery.updateItemIndex(parent, parentIndex)
     }
