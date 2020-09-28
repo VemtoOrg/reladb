@@ -90,3 +90,11 @@ test('it allows to get children from has many relation', () => {
 
     expect(secondUser.posts[0].id).toBe(thirdPost.id)
 })
+
+test('it allows to adds data with nullable foreign key', () => {
+    localStorage.clear()
+
+    let post = Post.create({title: 'Test', ownerId: null})
+    
+    expect(Post.count()).toBe(1)
+})

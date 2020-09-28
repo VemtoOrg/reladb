@@ -190,6 +190,8 @@ export default class Query {
     }
 
     addItemToParentHasManyIndex(relationship, item) {
+        if(!item[relationship.foreignKey]) return
+
         this.manipulateHasManyIndex(hasManyIndex => {
             hasManyIndex.push(item.id)
             hasManyIndex = [...new Set(hasManyIndex)]
@@ -198,6 +200,8 @@ export default class Query {
     }
 
     removeItemFromParentHasManyIndex(relationship, item) {
+        if(!item[relationship.foreignKey]) return
+        
         this.manipulateHasManyIndex(hasManyIndex => {
             hasManyIndex.splice(hasManyIndex.indexOf(item.id), 1)
             hasManyIndex = [...new Set(hasManyIndex)]
