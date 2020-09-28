@@ -125,3 +125,16 @@ test('it allows to cascade delete children data', () => {
 
     expect(Comment.count()).toBe(0)
 })
+
+test('it allows get data through multiple relationships', () => {
+    localStorage.clear()
+
+    let user = User.create({name: 'Tiago'}),
+        post = Post.create({title: 'First Post', ownerId: user.id})
+        
+    Comment.create({body: 'First Comment', postId: post.id})
+    Comment.create({body: 'Second Comment', postId: post.id})
+
+    expect(user.posts[0].comments[0].body).toBe('First Comment')
+    expect(user.posts[0].comments[1].body).toBe('Second Comment')
+})
