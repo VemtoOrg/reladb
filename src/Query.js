@@ -4,7 +4,6 @@ export default class Query {
 
     constructor(model) {
         this.model = model
-        this.oldItem = null
         this.filteredIndex = null
     }
 
@@ -69,8 +68,8 @@ export default class Query {
     }
 
     update(id, data = {}) {
-        this.oldItem = this.findOrFail(id)
-        this.removeIndexesByItem(this.oldItem)
+        let oldItem = this.findOrFail(id)
+        this.removeIndexesByItem(oldItem)
 
         this.checkItemData(data, id)
         this.saveItem(id, data)
@@ -78,7 +77,7 @@ export default class Query {
         let item = this.findOrFail(id)
         this.addIndexesByItem(item)
 
-        this.clearOldItem()
+        oldItem = null
 
         return true
     }
@@ -99,6 +98,12 @@ export default class Query {
         return true
     }
 
+    setFilteredIndex(filteredIndex) {
+        this.filteredIndex = filteredIndex
+
+        return this
+    }
+
     getFilteredIndex() {
         let tableData = this.getTableData()
 
@@ -111,10 +116,8 @@ export default class Query {
 
     clearFilteredIndex() {
         this.filteredIndex = null
-    }
 
-    clearOldItem() {
-        this.oldItem = null
+        return this
     }
 
     getItem(id) {
@@ -209,6 +212,13 @@ export default class Query {
         parentIndex.hasMany[indexKey] = manipulationCallback(hasManyIndex)
 
         parentQuery.updateItemIndex(parent, parentIndex)
+    }
+
+    getItemHasManyIndex(item, relationship) {
+        let itemIndex = item.constructor.getQuery().getItemIndex(item),
+            indexKey = `${item.getTable()}.${relationship.foreignKey}`
+
+        return itemIndex.hasMany[indexKey] || []
     }
 
     getItemIndex(item) {

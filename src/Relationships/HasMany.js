@@ -27,7 +27,6 @@ export default class HasMany {
     }
 
     build() {
-        console.log(this.foreignKey, this.localKey)
         return this
     }
 
@@ -36,7 +35,12 @@ export default class HasMany {
     }
 
     execute(item) {
-        return {'test': 'asasdasd'}
+        let query = this.getQuery(),
+            itemIndex = item.constructor.getQuery().getItemIndex(item),
+            indexKey = `${this.model.table()}.${this.foreignKey}`,
+            hasManyIndex = itemIndex.hasMany[indexKey] || []
+
+        return query.setFilteredIndex(hasManyIndex).get()
     }
 
 }
