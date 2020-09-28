@@ -121,9 +121,6 @@ test('it allows to cascade delete children data', () => {
 
     expect(Comment.count()).toBe(2)
 
-    // console.log(Post.getQuery().getTableData())
-    console.log(post.comments)
-
     post.delete()
 
     expect(Comment.count()).toBe(0)

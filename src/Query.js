@@ -193,7 +193,6 @@ export default class Query {
         item.hasManyRelationships().forEach(hasManyRelationship => {
             if(hasManyRelationship.usesCascadeDelete) {
                 let children = hasManyRelationship.execute(item)
-                console.log(children)
                 children.forEach(child => child.delete())
             }
         })
