@@ -125,3 +125,13 @@ test('it updates timestamps on update', () => {
         expect(user.updatedAt).toBe(moment().format('YYYY-MM-DD HH:mm:ss'))
     }, 5000);
 })
+
+test('it allows to count data', () => {
+    localStorage.clear()
+
+    User.create({name: 'Tiago'})
+    User.create({name: 'Jessica'})
+    User.create({name: 'Joao'})
+
+    expect(User.count()).toBe(3)
+})

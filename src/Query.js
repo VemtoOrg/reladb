@@ -7,6 +7,10 @@ export default class Query {
         this.filteredIndex = null
     }
 
+    count() {
+        return this.getTableData().count
+    }
+
     create(data = {}) {
         let tableData = this.getTableData(),
             id = ++tableData.lastPrimaryKey,

@@ -45,6 +45,10 @@ export default class Model {
             .findOrFail(this.id)
     }
 
+    static count() {
+        return new Query(this).count()
+    }
+
     static create(data = {}) {
         return new Query(this).create(data)
     }
