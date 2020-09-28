@@ -1,5 +1,6 @@
 const { default: Post } = require("./models/Post");
 const { default: User } = require("./models/User");
+const { default: Comment } = require("./models/Comment");
 
 test('it allows to get parent from belongs to relation', () => {
     localStorage.clear()
@@ -94,7 +95,36 @@ test('it allows to get children from has many relation', () => {
 test('it allows to adds data with nullable foreign key', () => {
     localStorage.clear()
 
-    let post = Post.create({title: 'Test', ownerId: null})
+    Post.create({title: 'Test', ownerId: null})
     
     expect(Post.count()).toBe(1)
+})
+
+test('it does not allow to delete a parent if it has children data by default', () => {
+    localStorage.clear()
+
+    let user = User.create({name: 'Tiago'})
+
+    Post.create({title: 'Test', ownerId: user.id})
+
+    expect(() => user.delete())
+        .toThrow('Cannot delete a parent item: a foreign key constraint fails')
+})
+
+test('it allows to cascade delete children data', () => {
+    localStorage.clear()
+
+    let post = Post.create({title: 'Test'})
+        
+    Comment.create({body: 'First comment', postId: post.id})
+    Comment.create({body: 'Second comment', postId: post.id})
+
+    expect(Comment.count()).toBe(2)
+
+    // console.log(Post.getQuery().getTableData())
+    console.log(post.comments)
+
+    post.delete()
+
+    expect(Comment.count()).toBe(0)
 })

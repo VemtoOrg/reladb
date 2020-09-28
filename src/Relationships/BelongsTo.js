@@ -1,11 +1,7 @@
-import Query from "../Query"
+import Relationship from "./Relationship"
 
-export default class BelongsTo {
+export default class BelongsTo extends Relationship {
 
-    constructor(model) {
-        this.model = model
-    }
-    
     setForeignKey(foreignKey) {
         if(!foreignKey) {
             foreignKey = `${this.model.name.toLowerCase()}Id`
@@ -24,10 +20,6 @@ export default class BelongsTo {
         this.ownerKey = ownerKey
 
         return this
-    }
-
-    getQuery() {
-        return new Query(this.model)
     }
 
     getParentFromItem(item) {

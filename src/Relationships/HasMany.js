@@ -1,14 +1,10 @@
-import Query from "../Query"
+import Relationship from "./Relationship"
 
-export default class HasMany {
+export default class HasMany extends Relationship {
 
-    constructor(model) {
-        this.model = model
-    }
-    
     setForeignKey(foreignKey) {
         if(!foreignKey) {
-            foreignKey = `${this.model.name}Id`
+            foreignKey = `${this.localModel.name.toLowerCase()}Id`
         }
 
         this.foreignKey = foreignKey
@@ -26,21 +22,18 @@ export default class HasMany {
         return this
     }
 
-    build() {
+    cascadeDelete() {
+        this.usesCascadeDelete = true
+
         return this
     }
 
-    getQuery() {
-        return new Query(this.model)
-    }
-
     execute(item) {
-        let query = this.getQuery(),
-            itemIndex = item.constructor.getQuery().getItemIndex(item),
+        let itemIndex = item.constructor.getQuery().getItemIndex(item),
             indexKey = `${this.model.table()}.${this.foreignKey}`,
             hasManyIndex = itemIndex.hasMany[indexKey] || []
 
-        return query.setFilteredIndex(hasManyIndex).get()
+        return this.getQuery().setFilteredIndex(hasManyIndex).get()
     }
 
 }

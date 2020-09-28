@@ -91,6 +91,9 @@ export default class Query {
             item = this.getItem(id)
 
         this.checkItemData(item, id)
+
+        this.checkForeignKeyConstraints(item)
+        this.deleteChildrenByCascadeDelete(item)
         
         this.removeIndexesByItem(item)
         this.removeItem(id)
@@ -177,6 +180,25 @@ export default class Query {
         return true
     }
 
+    checkForeignKeyConstraints(item) {
+        let hasManyItemsCount = item.hasManyRelationships().reduce((acc, hasManyRelationship) => {
+            if(hasManyRelationship.usesCascadeDelete) return acc
+            return acc + hasManyRelationship.execute(item).length   
+        }, 0)
+
+        if(hasManyItemsCount) throw new Error('Cannot delete a parent item: a foreign key constraint fails')
+    }
+
+    deleteChildrenByCascadeDelete(item) {
+        item.hasManyRelationships().forEach(hasManyRelationship => {
+            if(hasManyRelationship.usesCascadeDelete) {
+                let children = hasManyRelationship.execute(item)
+                console.log(children)
+                children.forEach(child => child.delete())
+            }
+        })
+    }
+
     addIndexesByItem(item) {
         item.belongsToRelationships().forEach(
             belongsToRelationship => this.addItemToParentHasManyIndex(belongsToRelationship, item)
@@ -201,7 +223,7 @@ export default class Query {
 
     removeItemFromParentHasManyIndex(relationship, item) {
         if(!item[relationship.foreignKey]) return
-        
+
         this.manipulateHasManyIndex(hasManyIndex => {
             hasManyIndex.splice(hasManyIndex.indexOf(item.id), 1)
             hasManyIndex = [...new Set(hasManyIndex)]

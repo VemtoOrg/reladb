@@ -117,13 +117,13 @@ export default class Model {
     }
 
     hasMany(model, foreignKey, localKey) {
-        return new HasMany(model)
+        return new HasMany(model, this.constructor)
             .setForeignKey(foreignKey)
             .setLocalKey(localKey)
     }
 
     belongsTo(model, foreignKey, ownerKey) {
-        return new BelongsTo(model)
+        return new BelongsTo(model, this.constructor)
             .setForeignKey(foreignKey)
             .setOwnerKey(ownerKey)
     }
@@ -154,11 +154,19 @@ export default class Model {
     }
 
     belongsToRelationships() {
+        return this.getRelationshipsByInstanceType(BelongsTo)
+    }
+
+    hasManyRelationships() {
+        return this.getRelationshipsByInstanceType(HasMany)
+    }
+
+    getRelationshipsByInstanceType(instanceOfClass) {
         let relationships = []
 
         Object.keys(this.relationships()).forEach(relationshipName => {
             let relationship = this.getRelationship(relationshipName)
-            if(relationship instanceof BelongsTo) {
+            if(relationship instanceof instanceOfClass) {
                 relationships.push(relationship)
             }
         })
