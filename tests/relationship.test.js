@@ -1,6 +1,7 @@
 const { default: Post } = require("./models/Post");
 const { default: User } = require("./models/User");
 const { default: Comment } = require("./models/Comment");
+const { default: Category } = require("./models/Category");
 
 test('it allows to get parent from belongs to relation', () => {
     localStorage.clear()
@@ -126,7 +127,7 @@ test('it allows to cascade delete children data', () => {
     expect(Comment.count()).toBe(0)
 })
 
-test('it allows get data through multiple relationships', () => {
+test('it allows to get data through multiple relationships', () => {
     localStorage.clear()
 
     let user = User.create({name: 'Tiago'}),
@@ -137,4 +138,19 @@ test('it allows get data through multiple relationships', () => {
 
     expect(user.posts[0].comments[0].body).toBe('First Comment')
     expect(user.posts[0].comments[1].body).toBe('Second Comment')
+})
+
+test('it allows get data through recursive relationships', () => {
+    localStorage.clear()
+
+    let parentCategory = Category.create({title: 'Parent Category'}),
+    
+        firstChild = Category.create({title: 'Child Category 01', parentId: parentCategory.id}),
+        secondChild = Category.create({title: 'Child Category 02', parentId: parentCategory.id})
+
+    expect(firstChild.parent.id).toBe(parentCategory.id)
+    expect(secondChild.parent.id).toBe(parentCategory.id)
+
+    expect(parentCategory.children[0].id).toBe(firstChild.id)
+    expect(parentCategory.children[1].id).toBe(secondChild.id)
 })
