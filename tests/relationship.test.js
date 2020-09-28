@@ -80,7 +80,7 @@ test('it allows to get children from has many relation', () => {
 
         post = Post.create({title: 'Test', ownerId: user.id}),
         secondPost = Post.create({title: 'Test 2', ownerId: user.id}),
-        thirdPost = Post.create({title: 'Test 2', ownerId: secondUser.id})
+        thirdPost = Post.create({title: 'Test 3', ownerId: secondUser.id})
 
     expect(user.posts.length).toBe(2)
     expect(secondUser.posts.length).toBe(1)
