@@ -140,7 +140,7 @@ test('it allows to get data through multiple relationships', () => {
     expect(user.posts[0].comments[1].body).toBe('Second Comment')
 })
 
-test('it allows get data through recursive relationships', () => {
+test('it allows to get data through recursive relationships', () => {
     localStorage.clear()
 
     let parentCategory = Category.create({title: 'Parent Category'}),
