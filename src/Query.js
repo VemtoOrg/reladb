@@ -52,7 +52,7 @@ export default class Query {
     
             this.checkItemData(item, id)
     
-            return new this.model(item)
+            return item
         } catch (error) {
             return null
         }
@@ -88,7 +88,7 @@ export default class Query {
             item = this.getItem(id)
 
         this.checkItemData(item, id)
-
+        
         this.removeIndexesByItem(item)
         this.removeItem(id)
 
@@ -122,7 +122,9 @@ export default class Query {
 
         if(!window.localStorage[itemKey]) return null
 
-        return JSON.parse(window.localStorage[itemKey])
+        let itemData = JSON.parse(window.localStorage[itemKey])
+
+        return new this.model(itemData)
     }
 
     saveItem(id, data) {
