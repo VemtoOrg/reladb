@@ -11,7 +11,7 @@ let mix = require('laravel-mix');
  |
  */
 
-mix.js('index.js', 'dist/').setPublicPath('dist');
+mix.js('index.js', 'testsHtml/').setPublicPath('testsHtml');
 
 // Full API
 // mix.js(src, output);

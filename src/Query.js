@@ -128,11 +128,10 @@ export default class Query {
     }
 
     getItem(id) {
-        let itemKey = this.tableItemKey(id)
+        let itemKey = this.tableItemKey(id),
+            itemData = this.dbDriver().get(itemKey)
 
-        if(!this.dbDriver().get(itemKey)) return null
-
-        let itemData = this.dbDriver().get(itemKey)
+        if(!itemData) return null
 
         return new this.model(itemData)
     }
@@ -165,11 +164,12 @@ export default class Query {
     }
 
     getTableData() {
-        let tableKey = this.tableKey()
+        let tableKey = this.tableKey(),
+            tableData = this.dbDriver().get(tableKey)
 
-        if(!this.dbDriver().get(tableKey)) return this.tableStructure()
+        if(!tableData) return this.tableStructure()
 
-        return this.dbDriver().get(tableKey)
+        return tableData
     }
 
     saveTableData(data) {

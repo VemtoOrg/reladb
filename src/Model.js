@@ -160,7 +160,7 @@ export default class Model {
     hasManyRelationships() {
         return this.getRelationshipsByInstanceType(HasMany)
     }
-
+    
     getRelationshipsByInstanceType(instanceOfClass) {
         let relationships = []
 

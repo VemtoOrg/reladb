@@ -1,7 +1,7 @@
 import Relationship from "./Relationship"
 
 export default class HasMany extends Relationship {
-
+    
     setForeignKey(foreignKey) {
         if(!foreignKey) {
             foreignKey = `${this.localModel.name.toLowerCase()}Id`
