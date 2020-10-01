@@ -130,9 +130,9 @@ export default class Query {
     getItem(id) {
         let itemKey = this.tableItemKey(id)
 
-        if(!window.RelaDBDriver.setTable(this.model.table()).get(itemKey)) return null
+        if(!this.dbDriver().get(itemKey)) return null
 
-        let itemData = window.RelaDBDriver.setTable(this.model.table()).get(itemKey)
+        let itemData = this.dbDriver().get(itemKey)
 
         return new this.model(itemData)
     }
@@ -147,13 +147,13 @@ export default class Query {
             data.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss')
         }
 
-        window.RelaDBDriver.setTable(this.model.table()).set(itemKey, data)
+        this.dbDriver().set(itemKey, data)
     }
 
     removeItem(id) {
         let itemKey = this.tableItemKey(id)
 
-        window.RelaDBDriver.setTable(this.model.table()).remove(itemKey)
+        this.dbDriver().remove(itemKey)
     }
 
     checkItemData(item, id) {
@@ -167,15 +167,15 @@ export default class Query {
     getTableData() {
         let tableKey = this.tableKey()
 
-        if(!window.RelaDBDriver.setTable(this.model.table()).get(tableKey)) return this.tableStructure()
+        if(!this.dbDriver().get(tableKey)) return this.tableStructure()
 
-        return window.RelaDBDriver.setTable(this.model.table()).get(tableKey)
+        return this.dbDriver().get(tableKey)
     }
 
     saveTableData(data) {
         let tableKey = this.tableKey()
 
-        window.RelaDBDriver.setTable(this.model.table()).set(tableKey, data)
+        this.dbDriver().set(tableKey, data)
 
         return true
     }
@@ -294,6 +294,10 @@ export default class Query {
             belongsTo: {},
             belongsToMany: {},
         }
+    }
+
+    dbDriver() {
+        return window.RelaDBDriver.setTable(this.model.table())
     }
 
 }
