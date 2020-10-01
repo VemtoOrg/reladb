@@ -108,8 +108,11 @@ var moment = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js"
 var _require = __webpack_require__(/*! ./src/Drivers/LocalStorage */ "./src/Drivers/LocalStorage.js"),
     LocalStorage = _require["default"];
 
-var _require2 = __webpack_require__(/*! ./tests/models/User */ "./tests/models/User.js"),
-    User = _require2["default"];
+var _require2 = __webpack_require__(/*! ./tests/models/Post */ "./tests/models/Post.js"),
+    Post = _require2["default"];
+
+var _require3 = __webpack_require__(/*! ./tests/models/User */ "./tests/models/User.js"),
+    User = _require3["default"];
 
 window.RelaDBDriver = LocalStorage;
 window.RelaDBDriver.clear();
@@ -120,15 +123,19 @@ function insert() {
 
 function _insert() {
   _insert = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-    var index;
+    var index, user;
     return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            for (index = 0; index < 2000; index++) {
-              User.create({
+            for (index = 0; index < 10; index++) {
+              user = User.create({
                 name: 'Tiago',
                 'table': 'oiapoque'
+              });
+              Post.create({
+                name: 'Post',
+                ownerId: user.id
               });
             }
 
