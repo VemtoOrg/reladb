@@ -1,8 +1,13 @@
-const { default: User } = require("../tests/models/User");
+const { default: User } = require("./tests/models/User")
 
-let user = User.create({name: 'Tiago', 'table': 'oiapoque'})
+localStorage.clear()
 
-console.log(user)
+async function insert() {
+    for (let index = 0; index < 10000; index++) {
+        User.create({name: 'Tiago', 'table': 'oiapoque'})
+    }
+}
 
-console.log(User.find(1))
-console.log(User.find(1000))
+// insert().then(() => {
+//     // console.log(User.get())
+// })
