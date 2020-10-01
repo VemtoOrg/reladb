@@ -130,9 +130,9 @@ export default class Query {
     getItem(id) {
         let itemKey = this.tableItemKey(id)
 
-        if(!window.localStorage[itemKey]) return null
+        if(!window.RelaDBDriver.setTable(this.model.table()).get(itemKey)) return null
 
-        let itemData = JSON.parse(window.localStorage[itemKey])
+        let itemData = window.RelaDBDriver.setTable(this.model.table()).get(itemKey)
 
         return new this.model(itemData)
     }
@@ -147,13 +147,13 @@ export default class Query {
             data.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss')
         }
 
-        window.localStorage[itemKey] = JSON.stringify(data)
+        window.RelaDBDriver.setTable(this.model.table()).set(itemKey, data)
     }
 
     removeItem(id) {
         let itemKey = this.tableItemKey(id)
 
-        window.localStorage.removeItem(itemKey)
+        window.RelaDBDriver.setTable(this.model.table()).remove(itemKey)
     }
 
     checkItemData(item, id) {
@@ -167,15 +167,15 @@ export default class Query {
     getTableData() {
         let tableKey = this.tableKey()
 
-        if(!window.localStorage[tableKey]) return this.tableStructure()
+        if(!window.RelaDBDriver.setTable(this.model.table()).get(tableKey)) return this.tableStructure()
 
-        return JSON.parse(window.localStorage[tableKey])
+        return window.RelaDBDriver.setTable(this.model.table()).get(tableKey)
     }
 
     saveTableData(data) {
         let tableKey = this.tableKey()
 
-        window.localStorage[tableKey] = JSON.stringify(data)
+        window.RelaDBDriver.setTable(this.model.table()).set(tableKey, data)
 
         return true
     }
@@ -269,11 +269,11 @@ export default class Query {
     }
 
     tableKey() {
-        return `reladb_database_${this.model.table()}`
+        return this.model.table()
     }
 
     tableItemKey(id) {
-        return `reladb_database_${this.model.table()}_item_${id}`
+        return `item_${id}`
     }
 
     tableStructure() {

@@ -3,8 +3,12 @@ const { default: User } = require("./models/User");
 const { default: Comment } = require("./models/Comment");
 const { default: Category } = require("./models/Category");
 
+const { default: LocalStorage } = require('../src/Drivers/LocalStorage');
+
+window.RelaDBDriver = LocalStorage
+
 test('it allows to get parent from belongs to relation', () => {
-    localStorage.clear()
+    window.RelaDBDriver.clear()
 
     let user = User.create({name: 'Tiago'}),
         post = Post.create({title: 'Test', ownerId: user.id}),
@@ -14,7 +18,7 @@ test('it allows to get parent from belongs to relation', () => {
 })
 
 test('it adds has many index to parent after creating child data', () => {
-    localStorage.clear()
+    window.RelaDBDriver.clear()
 
     let user = User.create({name: 'Tiago'}),
         secondUser = User.create({name: 'Jessica'}),
@@ -32,7 +36,7 @@ test('it adds has many index to parent after creating child data', () => {
 })
 
 test('it changes has many index when changing parent', () => {
-    localStorage.clear()
+    window.RelaDBDriver.clear()
 
     let user = User.create({name: 'Tiago'}),
         secondUser = User.create({name: 'Joseh'}),
@@ -57,7 +61,7 @@ test('it changes has many index when changing parent', () => {
 })
 
 test('it removes has many index on parent after removing child data', () => {
-    localStorage.clear()
+    window.RelaDBDriver.clear()
 
     let user = User.create({name: 'Tiago'}),
         post = Post.create({title: 'Test', ownerId: user.id}),
@@ -75,7 +79,7 @@ test('it removes has many index on parent after removing child data', () => {
 })
 
 test('it allows to get children from has many relation', () => {
-    localStorage.clear()
+    window.RelaDBDriver.clear()
 
     let user = User.create({name: 'Tiago'}),
         secondUser = User.create({name: 'Jonas'}),
@@ -94,7 +98,7 @@ test('it allows to get children from has many relation', () => {
 })
 
 test('it allows to adds data with nullable foreign key', () => {
-    localStorage.clear()
+    window.RelaDBDriver.clear()
 
     Post.create({title: 'Test', ownerId: null})
     
@@ -102,7 +106,7 @@ test('it allows to adds data with nullable foreign key', () => {
 })
 
 test('it does not allow to delete a parent if it has children data by default', () => {
-    localStorage.clear()
+    window.RelaDBDriver.clear()
 
     let user = User.create({name: 'Tiago'})
 
@@ -113,7 +117,7 @@ test('it does not allow to delete a parent if it has children data by default', 
 })
 
 test('it allows to cascade delete children data', () => {
-    localStorage.clear()
+    window.RelaDBDriver.clear()
 
     let post = Post.create({title: 'Test'})
         
@@ -128,7 +132,7 @@ test('it allows to cascade delete children data', () => {
 })
 
 test('it allows to get data through multiple relationships', () => {
-    localStorage.clear()
+    window.RelaDBDriver.clear()
 
     let user = User.create({name: 'Tiago'}),
         post = Post.create({title: 'First Post', ownerId: user.id})
@@ -141,7 +145,7 @@ test('it allows to get data through multiple relationships', () => {
 })
 
 test('it allows to get data through recursive relationships', () => {
-    localStorage.clear()
+    window.RelaDBDriver.clear()
 
     let parentCategory = Category.create({title: 'Parent Category'}),
     

@@ -1,10 +1,13 @@
-const moment = require('moment')
+const moment = require('moment');
 const { default: User } = require("./models/User");
+const { default: LocalStorage } = require('../src/Drivers/LocalStorage');
+
+window.RelaDBDriver = LocalStorage
 
 jest.useFakeTimers()
 
 test('it allows to create data', () => {
-    localStorage.clear()
+    window.RelaDBDriver.clear()
 
     let user = User.create({name: 'Tiago', table: 'oiapoque'})
 
@@ -13,7 +16,7 @@ test('it allows to create data', () => {
 })
 
 test('it adds created data to the table index', () => {
-    localStorage.clear()
+    window.RelaDBDriver.clear()
 
     let user = User.create({name: 'Tiago'}),
         secondUser = User.create({name: 'Jessica'})
@@ -25,7 +28,7 @@ test('it adds created data to the table index', () => {
 })
 
 test('it allows to find data', () => {
-    localStorage.clear()
+    window.RelaDBDriver.clear()
 
     User.create({name: 'Tiago', table: 'oiapoque'})
 
@@ -36,20 +39,20 @@ test('it allows to find data', () => {
 })
 
 test('it can return empty data when trying to find nonexistent data', () => {
-    localStorage.clear()
+    window.RelaDBDriver.clear()
 
     expect(User.find(1)).toBe(null)  
 })
 
 test('it fails when trying to find nonexistent data', () => {
-    localStorage.clear()
+    window.RelaDBDriver.clear()
 
     expect(() => User.findOrFail(1))
         .toThrow('Item with identifier 1 not found on table users')  
 })
 
 test('it allows to update data', () => {
-    localStorage.clear()
+    window.RelaDBDriver.clear()
 
     let user = User.create({name: 'Tiago'})
 
@@ -63,7 +66,7 @@ test('it allows to update data', () => {
 })
 
 test('it does not allow to update the identifier', () => {
-    localStorage.clear()
+    window.RelaDBDriver.clear()
 
     let user = User.create({name: 'Tiago'})
 
@@ -73,13 +76,12 @@ test('it does not allow to update the identifier', () => {
 })
 
 test('it allows to delete data', () => {
-    localStorage.clear()
+    window.RelaDBDriver.clear()
 
     let user = User.create({name: 'Tiago'}),
         userId = user.id
 
     expect(user.name).toBe('Tiago')
-
     user.delete()
 
     user = User.find(1)
@@ -92,7 +94,7 @@ test('it allows to delete data', () => {
 })
 
 test('it allows to get data', () => {
-    localStorage.clear()
+    window.RelaDBDriver.clear()
 
     User.create({name: 'Tiago'})
     User.create({name: 'Jessica'})
@@ -104,7 +106,7 @@ test('it allows to get data', () => {
 })
 
 test('it adds the timestamps on create', () => {
-    localStorage.clear()
+    window.RelaDBDriver.clear()
 
     let user = User.create({name: 'Tiago', table: 'oiapoque'})
 
@@ -113,7 +115,7 @@ test('it adds the timestamps on create', () => {
 })
 
 test('it updates timestamps on update', () => {
-    localStorage.clear()
+    window.RelaDBDriver.clear()
 
     let user = User.create({name: 'Tiago'})
 
@@ -127,7 +129,7 @@ test('it updates timestamps on update', () => {
 })
 
 test('it allows to count data', () => {
-    localStorage.clear()
+    window.RelaDBDriver.clear()
 
     User.create({name: 'Tiago'})
     User.create({name: 'Jessica'})
