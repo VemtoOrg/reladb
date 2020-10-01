@@ -34,6 +34,7 @@
     "@babel/plugin-transform-modules-commonjs": "^7.10.4",
     "cross-env": "^7.0.2",
     "jest": "^26.4.2",
+    "jest-electron": "^0.1.11",
     "laravel-mix": "^5.0.5",
     "mock-local-storage": "^1.1.15",
     "vue-template-compiler": "^2.6.12"
@@ -42,5 +43,19 @@
     "mkdirp": "^1.0.4",
     "moment": "^2.29.0",
     "pluralize": "^8.0.0"
+  },
+  "jest": {
+    "projects": [
+      {
+        "displayName": "default",
+        "testMatch": ["<rootDir>/tests/localstorage/*.test.js"]
+      },
+      {
+        "displayName": "electron",
+        "runner": "jest-electron/runner",
+        "testEnvironment": "jest-electron/environment",
+        "testMatch": ["<rootDir>/tests/electron/*.test.js"]
+      }
+    ]
   }
 }
