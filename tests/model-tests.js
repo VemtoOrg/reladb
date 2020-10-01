@@ -1,8 +1,5 @@
 const moment = require('moment');
 const { default: User } = require("./models/User");
-const { default: LocalStorage } = require('../src/Drivers/LocalStorage');
-
-window.RelaDBDriver = LocalStorage
 
 jest.useFakeTimers()
 
