@@ -7,6 +7,7 @@ class JsonStorage {
     constructor() {
         this.currentKey = 'none'
         this.relativePath = ''
+        this.isTesting = false
     }
 
     setRelativePath(path) {
@@ -75,6 +76,12 @@ class JsonStorage {
         let filePath = this.getFilePathByKey(key)
 
         try {
+
+            if(this.isTesting) {
+                const rimraf = require('rimraf')
+                return rimraf.sync(filePath)
+            }
+
             return JSON.parse(fs.unlinkSync(filePath))            
         } catch (error) {
             throw new Error(this.formatError('Failed to remove'))
@@ -83,7 +90,16 @@ class JsonStorage {
 
     clear() {
         try {
-            fs.rmdirSync(this.getStorageDirectory(false), { recursive: true })
+            let storageDirectory = this.getStorageDirectory(false)
+            
+            if(!fs.existsSync(storageDirectory)) return
+
+            if(this.isTesting) {
+                const rimraf = require('rimraf')
+                return rimraf.sync(storageDirectory)
+            }
+            
+            fs.rmdirSync(storageDirectory, { recursive: true })
         } catch (error) {
             throw new Error(this.formatError('Cannot clear database storage'))
         }
@@ -128,6 +144,10 @@ class JsonStorage {
     formatError(message) {
         if(!this.currentKey) return message
         return `${message} | For key: ${this.currentKey}`
+    }
+
+    testingMode() {
+        this.isTesting = true
     }
 
 }

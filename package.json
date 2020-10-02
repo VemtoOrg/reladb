@@ -4,7 +4,7 @@
   "description": "A relational database layer on top of LocalStorage",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --runInBand",
     "dev": "npm run development",
     "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
     "watch": "npm run development -- --watch",
@@ -37,6 +37,7 @@
     "jest-electron": "^0.1.11",
     "laravel-mix": "^5.0.5",
     "mock-local-storage": "^1.1.15",
+    "rimraf": "^3.0.2",
     "vue-template-compiler": "^2.6.12"
   },
   "dependencies": {
@@ -48,13 +49,17 @@
     "projects": [
       {
         "displayName": "default",
-        "testMatch": ["<rootDir>/tests/localstorage/*.test.js"]
+        "testMatch": [
+          "<rootDir>/tests/localstorage/*.test.js"
+        ]
       },
       {
         "displayName": "electron",
         "runner": "jest-electron/runner",
         "testEnvironment": "jest-electron/environment",
-        "testMatch": ["<rootDir>/tests/electron/*.test.js"]
+        "testMatch": [
+          "<rootDir>/tests/electron/*.test.js"
+        ]
       }
     ]
   }

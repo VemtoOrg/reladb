@@ -1,7 +1,11 @@
 const moment = require('moment');
 const { default: User } = require("./models/User");
 
-jest.useFakeTimers()
+try {
+    jest.useFakeTimers()
+} catch (error) {
+    console.log(error.message)
+}
 
 test('it allows to create data', () => {
     window.RelaDBDriver.clear()

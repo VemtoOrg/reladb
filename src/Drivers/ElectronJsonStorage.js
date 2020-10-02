@@ -1,3 +1,4 @@
+import Driver from './Driver'
 import Storage from './Handlers/JsonStorage'
 
 class ElectronJsonStorage extends Driver {
@@ -16,6 +17,10 @@ class ElectronJsonStorage extends Driver {
 
     clear() {
         return Storage.clear()
+    }
+
+    testingMode() {
+        return Storage.testingMode()
     }
 
 }
