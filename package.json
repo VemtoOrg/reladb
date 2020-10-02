@@ -2,7 +2,7 @@
   "name": "reladb",
   "version": "0.0.1",
   "description": "A relational database layer on top of LocalStorage",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "test": "jest --runInBand",
     "dev": "npm run development",
