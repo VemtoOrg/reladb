@@ -67,6 +67,21 @@ test('it allows to update data', () => {
     expect(user.name).toBe('Jonas')
 })
 
+test('it allows to data update itself', () => {
+    window.RelaDBDriver.clear()
+
+    let user = User.create({name: 'Tiago'})
+
+    expect(user.name).toBe('Tiago')
+
+    user.name = 'Jonas'
+    user.save()
+
+    user = User.find(1)
+
+    expect(user.name).toBe('Jonas')
+})
+
 test('it does not allow to update the identifier', () => {
     window.RelaDBDriver.clear()
 
