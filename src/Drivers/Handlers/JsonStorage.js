@@ -82,7 +82,7 @@ class JsonStorage {
                 return rimraf.sync(filePath)
             }
 
-            return JSON.parse(fs.unlinkSync(filePath))            
+            return fs.unlinkSync(filePath)          
         } catch (error) {
             throw new Error(this.formatError('Failed to remove'))
         }
