@@ -1,5 +1,6 @@
-const moment = require('moment');
-const { default: User } = require("./models/User");
+const moment = require('moment')
+const { default: User } = require("./models/User")
+const packageSettings = require('../package.json')
 
 try {
     jest.useFakeTimers()
@@ -137,4 +138,12 @@ test('it allows to count data', () => {
     User.create({name: 'Joao'})
 
     expect(User.count()).toBe(3)
+})
+
+test('it saves version on table data', () => {
+    window.RelaDBDriver.clear()
+
+    let tableData = User.getQuery().getTableData()
+
+    expect(tableData.version).toBe(packageSettings.version)
 })

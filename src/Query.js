@@ -1,4 +1,5 @@
 import moment from "moment"
+import { version } from '../package.json'
 
 export default class Query {
 
@@ -283,7 +284,8 @@ export default class Query {
             index: {},
             additionalIndexes: {},
             items: [],
-            relations: []
+            relations: [],
+            version: version
         }
     }
 
