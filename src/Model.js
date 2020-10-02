@@ -65,6 +65,15 @@ export default class Model {
         return new Query(this).findOrFail(id)
     }
 
+    save() {
+        if(!this.id) {
+            throw new Error('It is not possible to update an object that is not currently saved on database')
+        }
+
+        return new Query(this.constructor)
+            .update(this.id, this)
+    }
+
     update(data = {}) {
         if(!this.id) {
             throw new Error('It is not possible to update an object that is not currently saved on database')
