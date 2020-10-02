@@ -285,7 +285,7 @@ export default class Query {
             additionalIndexes: {},
             items: [],
             relations: [],
-            version: version
+            reladbVersion: version,
         }
     }
 

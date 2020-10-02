@@ -160,5 +160,5 @@ test('it saves version on table data', () => {
 
     let tableData = User.getQuery().getTableData()
 
-    expect(tableData.version).toBe(packageSettings.version)
+    expect(tableData.reladbVersion).toBe(packageSettings.version)
 })
