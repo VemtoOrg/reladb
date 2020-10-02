@@ -1,10 +1,10 @@
-import Model from './src/Model'
-import Query from './src/Query'
-import HasMany from './src/Relationships/HasMany'
-import BelongsTo from './src/Relationships/BelongsTo'
-import LocalStorage from './src/Drivers/LocalStorage'
-import Relationship from './src/Relationships/Relationship'
-import ElectronJsonStorage from './src/Drivers/ElectronJsonStorage'
+const { default: Model } = require('./src/Model')
+const { default: Query } = require('./src/Query')
+const { default: HasMany } = require('./src/Relationships/HasMany')
+const { default: BelongsTo } = require('./src/Relationships/BelongsTo')
+const { default: LocalStorage } = require('./src/Drivers/LocalStorage')
+const { default: Relationship } = require('./src/Relationships/Relationship')
+const { default: ElectronJsonStorage } = require('./src/Drivers/ElectronJsonStorage')
 
 module.exports = {
     Model,
