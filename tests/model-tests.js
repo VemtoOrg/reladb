@@ -17,6 +17,18 @@ test('it allows to create data', () => {
     expect(user.name).toBe('Tiago')
 })
 
+test('it allows to save data from an instance', () => {
+    window.RelaDBDriver.clear()
+
+    let user = new User
+    user.name = 'Tiago'
+    user.save()
+
+    user = User.findOrFail(1)
+
+    expect(user.name).toBe('Tiago')
+})
+
 test('it adds created data to the table index', () => {
     window.RelaDBDriver.clear()
 

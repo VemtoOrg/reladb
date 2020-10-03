@@ -17,6 +17,7 @@ export default class Query {
             id = ++tableData.lastPrimaryKey,
             item = null
 
+        data.__saved = true
         data[this.model.primaryKey()] = id
         
         this.saveItem(id, data)

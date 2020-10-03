@@ -66,8 +66,9 @@ export default class Model {
     }
 
     save() {
-        if(!this.id) {
-            throw new Error('It is not possible to update an object that is not currently saved on database')
+        if(!this.isSaved()) {
+            return new Query(this.constructor)
+                .create(this)
         }
 
         return new Query(this.constructor)
@@ -189,6 +190,10 @@ export default class Model {
 
     getRelationshipFunction(name) {
         return this.relationships()[name]
+    }
+
+    isSaved() {
+        return !! this.__saved
     }
 
 }
