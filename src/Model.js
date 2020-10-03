@@ -17,7 +17,9 @@ export default class Model {
     }
 
     __set(obj, name, value) {
-        return obj[name] = value
+        obj[name] = value
+        
+        return true
     }
 
     __get(obj, name) {
