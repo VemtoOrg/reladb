@@ -17,7 +17,10 @@ export default class Query {
             id = ++tableData.lastPrimaryKey,
             item = null
 
-        data.__saved = true
+        if(data[this.model.primaryKey()]) {
+            delete data[this.model.primaryKey()]
+        }
+
         data[this.model.primaryKey()] = id
         
         this.saveItem(id, data)

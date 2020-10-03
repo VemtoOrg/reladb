@@ -200,7 +200,7 @@ export default class Model {
     }
 
     isSaved() {
-        return !! this.__saved
+        return !! this[this.constructor.primaryKey()]
     }
 
 }
