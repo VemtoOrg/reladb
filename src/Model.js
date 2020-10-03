@@ -52,7 +52,13 @@ export default class Model {
     }
 
     static create(data = {}) {
-        return new Query(this).create(data)
+        if(this.creating) data = this.creating(data)
+        
+        let item = new Query(this).create(data)
+        
+        if(this.created) this.created(item)
+        
+        return item
     }
 
     static get() {
@@ -87,10 +93,16 @@ export default class Model {
             throw new Error('It is not possible to update an object that is not currently saved on database')
         }
 
+        if(this.updating) data = this.updating(data)
+
         this.fillFromData(data, true)
 
-        return new Query(this.constructor)
+        let wasUpdated = new Query(this.constructor)
             .update(this.id, this)
+
+        if(this.updated) this.updated(this)
+
+        return wasUpdated
     }
 
     delete() {

@@ -199,3 +199,21 @@ test('it allows to call a method on model object', () => {
 
     expect(user.testMethod()).toBe('test')
 })
+
+test('it allows to manipulate data before saving using creating method', () => {
+    window.RelaDBDriver.clear()
+
+    let user = User.create({name: 'Tiago', table: 'oiapoque'})
+
+    // email is being predefined using creating() event on Model definition
+    expect(user.email).toBe('my@email.com')
+})
+
+test('it allows to execute code after saving using created method', () => {
+    window.RelaDBDriver.clear()
+
+    let user = User.create({name: 'Tiago', table: 'oiapoque'})
+
+    // phone is being added using created() event on Model definition
+    expect(user.phones[0].phone).toBe('99999-9999')
+})
