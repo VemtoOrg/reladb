@@ -174,3 +174,11 @@ test('it saves version on table data', () => {
 
     expect(tableData.reladbVersion).toBe(packageSettings.version)
 })
+
+test('it allows to call a method on model object', () => {
+    window.RelaDBDriver.clear()
+
+    let user = User.create({name: 'Tiago'})
+
+    expect(user.testMethod()).toBe('test')
+})

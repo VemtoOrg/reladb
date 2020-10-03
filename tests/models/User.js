@@ -9,4 +9,8 @@ export default class User extends Model {
         }
     }
 
+    testMethod() {
+        return 'test'
+    }
+
 }
