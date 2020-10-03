@@ -67,6 +67,11 @@ export default class Model {
         return new Query(this).findOrFail(id)
     }
 
+    fill(data) {
+        Object.keys(data).forEach(key => this[key] = data[key])
+        return this
+    }
+
     save() {
         if(!this.isSaved()) {
             return new Query(this.constructor)

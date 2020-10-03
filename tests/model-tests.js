@@ -17,11 +17,23 @@ test('it allows to create data', () => {
     expect(user.name).toBe('Tiago')
 })
 
-test('it allows to save data from an instance', () => {
+test('it allows to save data from a model instance', () => {
     window.RelaDBDriver.clear()
 
     let user = new User
     user.name = 'Tiago'
+    user.save()
+
+    user = User.findOrFail(1)
+
+    expect(user.name).toBe('Tiago')
+})
+
+test('it allows to fill data on a model instance before saving', () => {
+    window.RelaDBDriver.clear()
+
+    let user = new User
+    user.fill({'name': 'Tiago'})
     user.save()
 
     user = User.findOrFail(1)
