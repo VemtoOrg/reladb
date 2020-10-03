@@ -20,6 +20,15 @@ export default class User extends Model {
         Phone.create({phone: '99999-9999', ownerId: user.id})
     }
 
+    static updating(data) {
+        data.email = 'my_edited@email.com'
+        return data
+    }
+
+    static updated(user) {
+        Phone.create({phone: '77777-7777', ownerId: user.id})
+    }
+
     testMethod() {
         return 'test'
     }

@@ -217,3 +217,25 @@ test('it allows to execute code after saving using created method', () => {
     // phone is being added using created() event on Model definition
     expect(user.phones[0].phone).toBe('99999-9999')
 })
+
+test('it allows to manipulate data before update using updating method', () => {
+    window.RelaDBDriver.clear()
+
+    let user = User.create({name: 'Tiago'})
+    user.name = 'Jonas'
+    user.save()
+
+    // email is being changed using updating() event on Model definition
+    expect(user.fresh().email).toBe('my_edited@email.com')
+})
+
+test('it allows to execute code after update using updated method', () => {
+    window.RelaDBDriver.clear()
+
+    let user = User.create({name: 'Tiago'})
+    user.name = 'Jonas'
+    user.save()
+
+    // phone is being added using updated() event on Model definition
+    expect(user.fresh().phones[1].phone).toBe('77777-7777')
+})

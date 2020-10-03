@@ -80,12 +80,10 @@ export default class Model {
 
     save() {
         if(!this.isSaved()) {
-            return new Query(this.constructor)
-                .create(this)
+            return this.constructor.create(this)
         }
 
-        return new Query(this.constructor)
-            .update(this.id, this)
+        return this.update(this)
     }
 
     update(data = {}) {
@@ -93,14 +91,14 @@ export default class Model {
             throw new Error('It is not possible to update an object that is not currently saved on database')
         }
 
-        if(this.updating) data = this.updating(data)
+        if(this.constructor.updating) data = this.constructor.updating(data)
 
         this.fillFromData(data, true)
 
         let wasUpdated = new Query(this.constructor)
             .update(this.id, this)
 
-        if(this.updated) this.updated(this)
+        if(this.constructor.updated) this.constructor.updated(this)
 
         return wasUpdated
     }
