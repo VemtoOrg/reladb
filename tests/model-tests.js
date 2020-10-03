@@ -27,6 +27,11 @@ test('it allows to save data from a model instance', () => {
     user = User.findOrFail(1)
 
     expect(user.name).toBe('Tiago')
+
+    user.address = '25th Street, 4000'
+    user.save()
+
+    expect(user.fresh().address).toBe('25th Street, 4000')
 })
 
 test('it allows to fill data on a model instance before saving', () => {
