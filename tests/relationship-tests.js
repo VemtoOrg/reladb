@@ -93,6 +93,22 @@ test('it allows to get children from has many relation', () => {
     expect(secondUser.posts[0].id).toBe(thirdPost.id)
 })
 
+test('it allows to get sorted children from has many relation', () => {
+    window.RelaDBDriver.clear()
+
+    let post = Post.create({title: 'Test'})
+        
+    Comment.create({body: 'Comment 1', postId: post.id, order: 3})
+    Comment.create({body: 'Comment 2', postId: post.id, order: 1})
+    Comment.create({body: 'Comment 3', postId: post.id, order: 4})
+    Comment.create({body: 'Comment 4', postId: post.id, order: 2})
+
+    expect(post.comments[0].body).toBe('Comment 2')
+    expect(post.comments[1].body).toBe('Comment 4')
+    expect(post.comments[2].body).toBe('Comment 1')
+    expect(post.comments[3].body).toBe('Comment 3')
+})
+
 test('it allows to adds data with nullable foreign key', () => {
     window.RelaDBDriver.clear()
 

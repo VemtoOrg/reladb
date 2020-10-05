@@ -324,6 +324,8 @@ export default class Query {
 
     compare(field, direction = 'asc') {
         return function(a, b) {
+            if(typeof a[field] === 'undefined' || typeof b[field] === 'undefined') return 0
+
             const itemA = a[field].toString().toUpperCase()
             const itemB = b[field].toString().toUpperCase()
           

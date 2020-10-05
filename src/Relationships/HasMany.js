@@ -28,12 +28,25 @@ export default class HasMany extends Relationship {
         return this
     }
 
+    orderBy(field, direction = 'asc') {
+        this.setFilters([{
+            field: field,
+            type: 'order',
+            direction: direction
+        }])
+        
+        return this
+    }
+
     execute(item) {
         let itemIndex = item.constructor.getQuery().getItemIndex(item),
             indexKey = `${this.model.table()}.${this.foreignKey}`,
             hasManyIndex = itemIndex.hasMany[indexKey] || []
-
-        return this.getQuery().setFilteredIndex(hasManyIndex).get()
+        
+        return this.getQuery()
+            .setFilters(this.filters)
+            .setFilteredIndex(hasManyIndex)
+            .get()
     }
 
 }

@@ -7,7 +7,7 @@ export default class Post extends Model {
     relationships() {
         return {
             owner: () => this.belongsTo(User, 'ownerId'),
-            comments: () => this.hasMany(Comment).cascadeDelete()
+            comments: () => this.hasMany(Comment).orderBy('order').cascadeDelete()
         }
     }
 
