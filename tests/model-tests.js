@@ -151,6 +151,26 @@ test('it allows to get data', () => {
     expect(users[1].name).toBe('Jessica')
 })
 
+test('it allows to get ordered data', () => {
+    window.RelaDBDriver.clear()
+
+    User.create({name: 'Jessica'})
+    User.create({name: 'Tiago'})
+    User.create({name: 'Andressa'})
+
+    let users = User.orderBy('name').get()
+
+    expect(users[0].name).toBe('Andressa')
+    expect(users[1].name).toBe('Jessica')
+    expect(users[2].name).toBe('Tiago')
+
+    users = User.orderBy('name', 'desc').get()
+
+    expect(users[0].name).toBe('Tiago')
+    expect(users[1].name).toBe('Jessica')
+    expect(users[2].name).toBe('Andressa')
+})
+
 test('it adds the timestamps on create', () => {
     window.RelaDBDriver.clear()
 

@@ -6,6 +6,7 @@ export default class Query {
     constructor(model) {
         this.model = model
         this.filteredIndex = null
+        this.filters = []
     }
 
     count() {
@@ -49,7 +50,7 @@ export default class Query {
         
         this.clearFilteredIndex()
 
-        return data
+        return this.applyFilters(data)
     }
 
     find(id = null) {
@@ -108,6 +109,21 @@ export default class Query {
         this.saveTableData(tableData)
 
         return true
+    }
+
+    setFilters(filters) {
+        this.filters = filters
+        return this
+    }
+
+    applyFilters(data) {
+        let orderFilters = this.filters.filter(filter => filter.type == 'order')
+
+        orderFilters.forEach(filter => {
+            data = data.sort(this.compare(filter.field, filter.direction))
+        })
+
+        return data
     }
 
     setFilteredIndex(filteredIndex) {
@@ -304,6 +320,23 @@ export default class Query {
 
     dbDriver() {
         return window.RelaDBDriver.setTable(this.model.table())
+    }
+
+    compare(field, direction = 'asc') {
+        return function(a, b) {
+            const itemA = a[field].toString().toUpperCase()
+            const itemB = b[field].toString().toUpperCase()
+          
+            let comparison = 0
+            
+            if (itemA > itemB) {
+              comparison = 1
+            } else if (itemA < itemB) {
+              comparison = -1
+            }
+    
+            return direction == 'asc' ? comparison : comparison * -1
+        }
     }
 
 }

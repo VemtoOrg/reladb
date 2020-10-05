@@ -5,6 +5,8 @@ import BelongsTo from './Relationships/BelongsTo'
 
 export default class Model {
 
+    static filters = []
+
     constructor(data = {}) {
 
         this.fillFromData(data)
@@ -62,7 +64,9 @@ export default class Model {
     }
 
     static get() {
-        return new Query(this).get()
+        return new Query(this)
+            .setFilters(this.filters)
+            .get()
     }
 
     static find(id = null) {
@@ -213,4 +217,19 @@ export default class Model {
         return !! this[this.constructor.primaryKey()]
     }
 
+    static orderBy(field, direction = 'asc') {
+        this.clearFilters()
+
+        this.filters.push({
+            field: field,
+            type: 'order',
+            direction: direction
+        })
+        
+        return this
+    }
+
+    static clearFilters() {
+        this.filters = []
+    }
 }
