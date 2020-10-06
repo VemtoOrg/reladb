@@ -1,5 +1,6 @@
 import Post from "./Post"
 import Phone from "./Phone"
+import Photo from "./Photo"
 import Document from "./Document"
 import Model from "../../src/Model"
 
@@ -7,6 +8,7 @@ export default class User extends Model {
     
     relationships() {
         return {
+            photos: () => this.hasMany(Photo),
             posts: () => this.hasMany(Post, 'ownerId', 'id'),
             document: () => this.hasOne(Document).cascadeDelete(),
             phones: () => this.hasMany(Phone, 'ownerId', 'id').cascadeDelete(),

@@ -96,7 +96,7 @@ export default class Model {
             throw new Error('It is not possible to update an object that is not currently saved on database')
         }
 
-        if(this.constructor.updating) data = this.constructor.updating(data)
+        if(this.constructor.updating) data = this.constructor.updating(data, this)
 
         this.fillFromData(data, true)
 
@@ -111,7 +111,11 @@ export default class Model {
     delete() {
         if(!this.id) throw new Error('It is not possible to delete an object that is not currently saved on database')
 
+        if(this.constructor.deleting) this.constructor.deleting(this)
+
         new Query(this.constructor).delete(this.id)
+
+        if(this.constructor.deleted) this.constructor.deleted(this.id)
 
         this.clearData()
 

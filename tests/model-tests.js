@@ -1,6 +1,8 @@
 const moment = require('moment')
 const { default: User } = require("./models/User")
 const packageSettings = require('../package.json')
+const { default: Photo } = require("./models/Photo")
+const { default: Person } = require('./models/Person')
 
 try {
     jest.useFakeTimers()
@@ -258,4 +260,26 @@ test('it allows to execute code after update using updated method', () => {
 
     // phone is being added using updated() event on Model definition
     expect(user.fresh().phones[1].phone).toBe('77777-7777')
+})
+
+test('it allows to execute code before deleting data', () => {
+    window.RelaDBDriver.clear()
+
+    let person = Person.create({name: 'Tiago'})
+    
+    Photo.create({url: 'a.jpg', personId: person.id})
+
+    expect(person.photos.length).toBe(1)
+
+    expect(() => person.delete()).toThrow('Person 1 was deleted')
+
+    expect(Photo.count()).toBe(0)
+})
+
+test('it allows to execute code after deleting data', () => {
+    window.RelaDBDriver.clear()
+
+    let person = Person.create({name: 'Tiago'})
+
+    expect(() => person.delete()).toThrow('Person 1 was deleted')
 })
