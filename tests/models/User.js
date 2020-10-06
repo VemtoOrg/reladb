@@ -1,5 +1,6 @@
 import Post from "./Post"
 import Phone from "./Phone"
+import Document from "./Document"
 import Model from "../../src/Model"
 
 export default class User extends Model {
@@ -7,7 +8,8 @@ export default class User extends Model {
     relationships() {
         return {
             posts: () => this.hasMany(Post, 'ownerId', 'id'),
-            phones: () => this.hasMany(Phone, 'ownerId', 'id').cascadeDelete()
+            document: () => this.hasOne(Document).cascadeDelete(),
+            phones: () => this.hasMany(Phone, 'ownerId', 'id').cascadeDelete(),
         }
     }
 

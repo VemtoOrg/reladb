@@ -2,6 +2,7 @@ import Query from './Query'
 import pluralize from 'pluralize'
 import HasMany from './Relationships/HasMany'
 import BelongsTo from './Relationships/BelongsTo'
+import HasOne from './Relationships/HasOne'
 
 export default class Model {
 
@@ -147,6 +148,12 @@ export default class Model {
         return {}
     }
 
+    hasOne(model, foreignKey, localKey) {
+        return new HasOne(model, this.constructor)
+            .setForeignKey(foreignKey)
+            .setLocalKey(localKey)
+    }
+
     hasMany(model, foreignKey, localKey) {
         return new HasMany(model, this.constructor)
             .setForeignKey(foreignKey)
@@ -190,6 +197,17 @@ export default class Model {
 
     hasManyRelationships() {
         return this.getRelationshipsByInstanceType(HasMany)
+    }
+
+    hasOneRelationships() {
+        return this.getRelationshipsByInstanceType(HasOne)
+    }
+
+    hasSomethingRelationships() {
+        let hasManyRelationships = this.hasManyRelationships(),
+            hasOneRelationships = this.hasOneRelationships()
+
+        return hasManyRelationships.concat(hasOneRelationships)
     }
     
     getRelationshipsByInstanceType(instanceOfClass) {

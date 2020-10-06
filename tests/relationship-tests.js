@@ -2,6 +2,7 @@ const { default: Post } = require("./models/Post");
 const { default: User } = require("./models/User");
 const { default: Comment } = require("./models/Comment");
 const { default: Category } = require("./models/Category");
+const { default: Document } = require("./models/Document");
 
 test('it allows to get parent from belongs to relation', () => {
     window.RelaDBDriver.clear()
@@ -169,4 +170,17 @@ test('it allows to get data through recursive relationships', () => {
 
     expect(parentCategory.children[0].id).toBe(firstChild.id)
     expect(parentCategory.children[1].id).toBe(secondChild.id)
+})
+
+test('it does not allow to add multiple relations with at most one rule', () => {
+    window.RelaDBDriver.clear()
+
+    let user = User.create({name: 'Tiago'}),
+        document = Document.create({code: 'XTRE-123', userId: user.id})
+    
+    expect(user.document.id).toBe(document.id)
+
+    expect(() => {
+        Document.create({code: 'XTRE-785', userId: user.id})
+    }).toThrow('Has One relation doesn\'t allow more than one relation at same time')
 })

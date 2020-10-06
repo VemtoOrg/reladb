@@ -38,6 +38,10 @@ export default class HasMany extends Relationship {
         return this
     }
 
+    getAllItems(item) {
+        return this.execute(item)
+    }
+
     execute(item) {
         let itemIndex = item.constructor.getQuery().getItemIndex(item),
             indexKey = `${this.model.table()}.${this.foreignKey}`,

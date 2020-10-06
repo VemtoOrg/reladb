@@ -3,7 +3,7 @@ import Relationship from "./Relationship"
 export default class BelongsTo extends Relationship {
 
     atMostOne() {
-        this.allowsOnlyOneRegister = true
+        this.allowsOnlyOne = true
         return this
     }
 

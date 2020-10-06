@@ -202,18 +202,20 @@ export default class Query {
     }
 
     checkForeignKeyConstraints(item) {
+        // It checks has one relations too, as HasOne extends HasMany
         let hasManyItemsCount = item.hasManyRelationships().reduce((acc, hasManyRelationship) => {
             if(hasManyRelationship.usesCascadeDelete) return acc
-            return acc + hasManyRelationship.execute(item).length   
+            return acc + hasManyRelationship.getAllItems(item).length   
         }, 0)
 
         if(hasManyItemsCount) throw new Error('Cannot delete a parent item: a foreign key constraint fails')
     }
 
     deleteChildrenByCascadeDelete(item) {
+        // It deletes has one relations too, as HasOne extends HasMany
         item.hasManyRelationships().forEach(hasManyRelationship => {
             if(hasManyRelationship.usesCascadeDelete) {
-                let children = hasManyRelationship.execute(item)
+                let children = hasManyRelationship.getAllItems(item)
                 children.forEach(child => child.delete())
             }
         })
@@ -234,7 +236,12 @@ export default class Query {
     addItemToParentHasManyIndex(relationship, item) {
         if(!item[relationship.foreignKey]) return
 
+        
         this.manipulateHasManyIndex(hasManyIndex => {
+            if(relationship.allowsOnlyOne && hasManyIndex.length > 0) {
+                throw new Error('Has One relation doesn\'t allow more than one relation at same time')
+            }
+
             hasManyIndex.push(item.id)
             hasManyIndex = [...new Set(hasManyIndex)]
             return hasManyIndex
