@@ -2,6 +2,11 @@ import Relationship from "./Relationship"
 
 export default class BelongsTo extends Relationship {
 
+    atMostOne() {
+        this.allowsOnlyOneRegister = true
+        return this
+    }
+
     setForeignKey(foreignKey) {
         if(!foreignKey) {
             foreignKey = `${this.model.name.toLowerCase()}Id`
