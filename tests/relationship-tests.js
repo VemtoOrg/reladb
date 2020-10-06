@@ -14,6 +14,14 @@ test('it allows to get parent from belongs to relation', () => {
     expect(owner.id).toBe(user.id)
 })
 
+test('it does not allow to set a field with the same name as a relationship', () => {
+    window.RelaDBDriver.clear()
+
+    expect(() => {
+        User.create({name: 'Tiago', posts: []})
+    }).toThrow('It is not possible to set posts because there is already a relationship with the same name')
+})
+
 test('it adds has many index to parent after creating child data', () => {
     window.RelaDBDriver.clear()
 

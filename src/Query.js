@@ -22,6 +22,8 @@ export default class Query {
             delete data[this.model.primaryKey()]
         }
 
+        this.blockFieldsReplacingRelationships(data)
+
         data[this.model.primaryKey()] = id
         
         this.saveItem(id, data)
@@ -81,6 +83,7 @@ export default class Query {
         let oldItem = this.findOrFail(id)
         this.removeIndexesByItem(oldItem)
 
+        this.blockFieldsReplacingRelationships(data)
         this.checkItemData(data, id)
         this.saveItem(id, data)
 
@@ -109,6 +112,18 @@ export default class Query {
         this.saveTableData(tableData)
 
         return true
+    }
+
+    blockFieldsReplacingRelationships(data) {
+        let relationships = (new this.model).relationships()
+
+        data = Object.assign({}, data)
+
+        Object.keys(relationships).forEach(relationshipName => {
+            if(typeof data[relationshipName] !== 'undefined') {
+                throw new Error(`It is not possible to set ${relationshipName} because there is already a relationship with the same name`)
+            }
+        })
     }
 
     setFilters(filters) {
