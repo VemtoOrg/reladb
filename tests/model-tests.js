@@ -284,7 +284,7 @@ test('it allows to execute code after deleting data', () => {
     expect(() => person.delete()).toThrow('Person 1 was deleted')
 })
 
-test('it allows to hear database general events', () => {
+test('it allows to hear database global events', () => {
     window.RelaDBDriver.clear()
 
     let eventsCount = 0
