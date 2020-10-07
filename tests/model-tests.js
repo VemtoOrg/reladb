@@ -283,3 +283,23 @@ test('it allows to execute code after deleting data', () => {
 
     expect(() => person.delete()).toThrow('Person 1 was deleted')
 })
+
+test('it allows to hear database general events', () => {
+    window.RelaDBDriver.clear()
+
+    let eventsCount = 0
+
+    window.RelaDBEvents.creating = () => eventsCount++
+    window.RelaDBEvents.created = () => eventsCount++
+    window.RelaDBEvents.updating = () => eventsCount++
+    window.RelaDBEvents.updated = () => eventsCount++
+    window.RelaDBEvents.deleting = () => eventsCount++
+    window.RelaDBEvents.deleted = () => eventsCount++
+    
+    let user = User.create({name: 'Tiago'})
+    user.name = 'Jonas'
+    user.save()
+    user.delete()
+
+    expect(eventsCount).toBe(14)
+})

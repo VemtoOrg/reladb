@@ -7,6 +7,8 @@ export default class Query {
         this.model = model
         this.filteredIndex = null
         this.filters = []
+
+        if(!window.RelaDBEvents) window.RelaDBEvents = {}
     }
 
     count() {
@@ -14,6 +16,8 @@ export default class Query {
     }
 
     create(data = {}) {
+        if(window.RelaDBEvents.creating) window.RelaDBEvents.creating()
+
         let tableData = this.getTableData(),
             id = ++tableData.lastPrimaryKey,
             item = null
@@ -36,6 +40,8 @@ export default class Query {
         item = new this.model(data)
         
         this.addIndexesByItem(item)
+
+        if(window.RelaDBEvents.creating) window.RelaDBEvents.created()
 
         return item
     }
@@ -80,6 +86,8 @@ export default class Query {
     }
 
     update(id, data = {}) {
+        if(window.RelaDBEvents.updating) window.RelaDBEvents.updating()
+
         let oldItem = this.findOrFail(id)
         this.removeIndexesByItem(oldItem)
 
@@ -92,10 +100,14 @@ export default class Query {
 
         oldItem = null
 
+        if(window.RelaDBEvents.updated) window.RelaDBEvents.updated()
+
         return true
     }
 
     delete(id) {
+        if(window.RelaDBEvents.deleting) window.RelaDBEvents.deleting()
+
         let item = this.getItem(id)
 
         this.checkItemData(item, id)
@@ -110,6 +122,8 @@ export default class Query {
         tableData.count--
         delete tableData.index[id]
         this.saveTableData(tableData)
+
+        if(window.RelaDBEvents.deleted) window.RelaDBEvents.deleted()
 
         return true
     }
