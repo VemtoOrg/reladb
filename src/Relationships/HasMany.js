@@ -53,4 +53,8 @@ export default class HasMany extends Relationship {
             .get()
     }
 
+    signature() {
+        return `${this.localModel.name}->HasMany(${this.model.name}):${this.foreignKey},${this.localKey}`
+    }
+
 }

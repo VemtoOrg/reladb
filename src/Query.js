@@ -96,8 +96,7 @@ export default class Query {
     }
 
     delete(id) {
-        let tableData = this.getTableData(),
-            item = this.getItem(id)
+        let item = this.getItem(id)
 
         this.checkItemData(item, id)
 
@@ -107,6 +106,7 @@ export default class Query {
         this.removeIndexesByItem(item)
         this.removeItem(id)
 
+        let tableData = this.getTableData()
         tableData.count--
         delete tableData.index[id]
         this.saveTableData(tableData)
@@ -211,6 +211,8 @@ export default class Query {
     saveTableData(data) {
         let tableKey = this.tableKey()
 
+        this.log(`Saving Data on table: ${tableKey}`, data)
+
         this.dbDriver().set(tableKey, data)
 
         return true
@@ -250,7 +252,8 @@ export default class Query {
 
     addItemToParentHasManyIndex(relationship, item) {
         if(!item[relationship.foreignKey]) return
-
+        
+        this.log('Adding to parent has many: ' + relationship.signature())
         
         this.manipulateHasManyIndex(hasManyIndex => {
             if(relationship.allowsOnlyOne && hasManyIndex.length > 0) {
@@ -265,7 +268,9 @@ export default class Query {
 
     removeItemFromParentHasManyIndex(relationship, item) {
         if(!item[relationship.foreignKey]) return
-
+        
+        this.log('Removing from parent has many: ' + relationship.signature())
+        
         this.manipulateHasManyIndex(hasManyIndex => {
             hasManyIndex.splice(hasManyIndex.indexOf(item.id), 1)
             hasManyIndex = [...new Set(hasManyIndex)]
@@ -281,7 +286,11 @@ export default class Query {
             indexKey = `${item.getTable()}.${relationship.foreignKey}`,
             hasManyIndex = parentIndex.hasMany[indexKey] || []
 
+        this.log(`Before manipulating has many index: ${indexKey} parent: ${parent.id} item: ${item.id}`, hasManyIndex)
+
         parentIndex.hasMany[indexKey] = manipulationCallback(hasManyIndex)
+
+        this.log(`After manipulating has many index: ${indexKey} parent: ${parent.id} item: ${item.id}`, hasManyIndex)
 
         parentQuery.updateItemIndex(parent, parentIndex)
     }
@@ -360,6 +369,13 @@ export default class Query {
             }
     
             return direction == 'asc' ? comparison : comparison * -1
+        }
+    }
+
+    log() {
+        if(window.RelaDBMode === 'development') {
+            console.log(...arguments)
+            console.log('')
         }
     }
 

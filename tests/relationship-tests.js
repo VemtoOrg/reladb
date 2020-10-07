@@ -3,6 +3,10 @@ const { default: User } = require("./models/User");
 const { default: Comment } = require("./models/Comment");
 const { default: Category } = require("./models/Category");
 const { default: Document } = require("./models/Document");
+const { default: Entity } = require("./models/Entity");
+const { default: Field } = require("./models/Field");
+const { default: Foreign } = require("./models/Foreign");
+const { default: Project } = require("./models/Project");
 
 test('it allows to get parent from belongs to relation', () => {
     window.RelaDBDriver.clear()
@@ -212,7 +216,51 @@ test('it allows to add another relation after deleting previous with hasOne rule
     expect(user.document.id).toBe(newDocument.id)
 
     let tableData = User.getQuery().getTableData()
-    
+
     expect(tableData.index[user.id].hasMany['documents.userId'].includes(document.id)).toBe(false)
     expect(tableData.index[user.id].hasMany['documents.userId'].includes(newDocument.id)).toBe(true)
+})
+
+test('it removes index correctly after deleting from recursive relationship', () => {
+    window.RelaDBDriver.clear()
+
+    let parentDocument = Document.create({code: 'XTRE-123'}),
+        childDocument = Document.create({code: 'XTRE-785', parentId: parentDocument.id})
+    
+    expect(parentDocument.child.id).toBe(childDocument.id)
+    expect(childDocument.parent.id).toBe(parentDocument.id)
+
+    childDocument.delete()
+
+    let tableData = Document.getQuery().getTableData()
+    
+    expect(tableData.index[parentDocument.id].hasMany['documents.parentId'].includes(childDocument.id)).toBe(false)
+})
+
+test('it removes all indexes correctly after removing complex relations', () => {
+    window.RelaDBDriver.clear()
+
+    let project = Project.create({name: 'My Project'}),
+        userEntity = Entity.create({name: 'User', projectId: project.id}),
+        userIdField = Field.create({name: 'id', entityId: userEntity.id}),
+        userLogFkField = Field.create({name: 'log_id', entityId: userEntity.id}),
+        logEntity = Entity.create({name: 'Log', projectId: project.id}),
+        logIdField = Field.create({name: 'id', entityId: logEntity.id}),
+        foreign = Foreign.create({fieldId: userLogFkField.id, relatedFieldId: logIdField.id, relatedEntityId: logEntity.id})
+
+    expect(foreign.field.id).toBe(userLogFkField.id)
+    expect(foreign.relatedField.id).toBe(logIdField.id)
+    expect(foreign.relatedEntity.id).toBe(logEntity.id)
+    
+    let fieldsTableData = Field.getQuery().getTableData()
+    
+    expect(fieldsTableData.index[userLogFkField.id].hasMany['foreigns.fieldId'].includes(foreign.id)).toBe(true)
+    expect(fieldsTableData.index[logIdField.id].hasMany['foreigns.relatedFieldId'].includes(foreign.id)).toBe(true)
+
+    logEntity.delete()
+
+    fieldsTableData = Field.getQuery().getTableData()
+
+    expect(fieldsTableData.index[userLogFkField.id].hasMany['foreigns.fieldId'].includes(foreign.id)).toBe(false)
+    expect(fieldsTableData.index[logIdField.id].hasMany['foreigns.relatedFieldId'].includes(foreign.id)).toBe(false)
 })

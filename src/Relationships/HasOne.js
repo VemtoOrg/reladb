@@ -10,4 +10,8 @@ export default class HasOne extends HasMany {
         return super.execute(item)[0]
     }
 
+    signature() {
+        return `${this.localModel.name}->HasMany(${this.model.name}):${this.foreignKey},${this.localKey}`
+    }
+
 }
