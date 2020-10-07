@@ -180,7 +180,7 @@ test('it allows to get data through recursive relationships', () => {
     expect(parentCategory.children[1].id).toBe(secondChild.id)
 })
 
-test('it does not allow to add multiple relations with at most one rule', () => {
+test('it does not allow to add multiple relations with hasOne rule', () => {
     window.RelaDBDriver.clear()
 
     let user = User.create({name: 'Tiago'}),
@@ -191,4 +191,28 @@ test('it does not allow to add multiple relations with at most one rule', () => 
     expect(() => {
         Document.create({code: 'XTRE-785', userId: user.id})
     }).toThrow('Has One relation doesn\'t allow more than one relation at same time')
+
+    let tableData = User.getQuery().getTableData()
+
+    expect(tableData.index[user.id].hasMany['documents.userId'].includes(document.id)).toBe(true)
+})
+
+test('it allows to add another relation after deleting previous with hasOne rule', () => {
+    window.RelaDBDriver.clear()
+
+    let user = User.create({name: 'Tiago'}),
+        document = Document.create({code: 'XTRE-123', userId: user.id})
+    
+    expect(user.document.id).toBe(document.id)
+
+    user.document.delete()
+
+    let newDocument = Document.create({code: 'XTRE-785', userId: user.id})
+
+    expect(user.document.id).toBe(newDocument.id)
+
+    let tableData = User.getQuery().getTableData()
+    
+    expect(tableData.index[user.id].hasMany['documents.userId'].includes(document.id)).toBe(false)
+    expect(tableData.index[user.id].hasMany['documents.userId'].includes(newDocument.id)).toBe(true)
 })
