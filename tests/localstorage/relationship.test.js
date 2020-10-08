@@ -1,7 +1,8 @@
 const { default: LocalStorage } = require('../../src/Drivers/LocalStorage');
 
-window.RelaDBDriver = LocalStorage
+window.RelaDB = {}
+window.RelaDB.driver = LocalStorage
 
 require('../relationship-tests')
 
-afterAll(() => window.RelaDBDriver.clear())
+afterAll(() => window.RelaDB.driver.clear())

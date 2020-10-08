@@ -114,8 +114,8 @@ var _require2 = __webpack_require__(/*! ./tests/models/Post */ "./tests/models/P
 var _require3 = __webpack_require__(/*! ./tests/models/User */ "./tests/models/User.js"),
     User = _require3["default"];
 
-window.RelaDBDriver = LocalStorage;
-window.RelaDBDriver.clear();
+window.RelaDB.driver = LocalStorage;
+window.RelaDB.driver.clear();
 
 function insert() {
   return _insert.apply(this, arguments);
@@ -23684,7 +23684,7 @@ var Query = /*#__PURE__*/function () {
   }, {
     key: "dbDriver",
     value: function dbDriver() {
-      return window.RelaDBDriver.setTable(this.model.table());
+      return window.RelaDB.driver.setTable(this.model.table());
     }
   }]);
 

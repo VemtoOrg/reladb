@@ -4,11 +4,13 @@ import { version } from '../package.json'
 export default class Query {
 
     constructor(model) {
+        if(!window.RelaDB) throw new Error('window.RelaDB is undefined. Please define it as window.RelaDB = {} before using the database capabilities')
+
         this.model = model
         this.filteredIndex = null
         this.filters = []
 
-        if(!window.RelaDBEvents) window.RelaDBEvents = {}
+        if(!window.RelaDB.events) window.RelaDB.events = {}
     }
 
     count() {
@@ -16,7 +18,7 @@ export default class Query {
     }
 
     create(data = {}) {
-        if(window.RelaDBEvents.creating) window.RelaDBEvents.creating()
+        if(window.RelaDB.events.creating) window.RelaDB.events.creating()
 
         let tableData = this.getTableData(),
             id = ++tableData.lastPrimaryKey,
@@ -41,7 +43,7 @@ export default class Query {
         
         this.addIndexesByItem(item)
 
-        if(window.RelaDBEvents.creating) window.RelaDBEvents.created()
+        if(window.RelaDB.events.creating) window.RelaDB.events.created()
 
         return item
     }
@@ -86,7 +88,7 @@ export default class Query {
     }
 
     update(id, data = {}) {
-        if(window.RelaDBEvents.updating) window.RelaDBEvents.updating()
+        if(window.RelaDB.events.updating) window.RelaDB.events.updating()
 
         let oldItem = this.findOrFail(id)
         this.removeIndexesByItem(oldItem)
@@ -100,13 +102,13 @@ export default class Query {
 
         oldItem = null
 
-        if(window.RelaDBEvents.updated) window.RelaDBEvents.updated()
+        if(window.RelaDB.events.updated) window.RelaDB.events.updated()
 
         return true
     }
 
     delete(id) {
-        if(window.RelaDBEvents.deleting) window.RelaDBEvents.deleting()
+        if(window.RelaDB.events.deleting) window.RelaDB.events.deleting()
 
         let item = this.getItem(id)
 
@@ -123,7 +125,7 @@ export default class Query {
         delete tableData.index[id]
         this.saveTableData(tableData)
 
-        if(window.RelaDBEvents.deleted) window.RelaDBEvents.deleted()
+        if(window.RelaDB.events.deleted) window.RelaDB.events.deleted()
 
         return true
     }
@@ -367,7 +369,7 @@ export default class Query {
     }
 
     dbDriver() {
-        return window.RelaDBDriver.setTable(this.model.table())
+        return window.RelaDB.driver.setTable(this.model.table())
     }
 
     compare(field, direction = 'asc') {
@@ -390,7 +392,7 @@ export default class Query {
     }
 
     log() {
-        if(window.RelaDBMode === 'development') {
+        if(window.RelaDB.mode === 'development') {
             console.log(...arguments)
             console.log('')
         }

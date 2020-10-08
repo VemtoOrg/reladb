@@ -3,8 +3,9 @@ const { default: LocalStorage } = require("./src/Drivers/LocalStorage")
 const { default: Post } = require('./tests/models/Post')
 const { default: User } = require("./tests/models/User")
 
-window.RelaDBDriver = LocalStorage
-window.RelaDBDriver.clear()
+window.RelaDB = {}
+window.RelaDB.driver = LocalStorage
+window.RelaDB.driver.clear()
 
 async function insert() {
     for (let index = 0; index < 10; index++) {

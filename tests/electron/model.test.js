@@ -1,8 +1,9 @@
 const { default: ElectronJsonStorage } = require('../../src/Drivers/ElectronJsonStorage');
 
-window.RelaDBDriver = ElectronJsonStorage
-window.RelaDBDriver.testingMode()
+window.RelaDB = {}
+window.RelaDB.driver = ElectronJsonStorage
+window.RelaDB.driver.testingMode()
 
 require('../model-tests')
 
-afterAll(() => window.RelaDBDriver.clear())
+afterAll(() => window.RelaDB.driver.clear())
