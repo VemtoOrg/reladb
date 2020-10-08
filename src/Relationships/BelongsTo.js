@@ -29,7 +29,7 @@ export default class BelongsTo extends Relationship {
 
     getParentFromItem(item) {
         if(!item[this.foreignKey]) return null
-        return this.getQuery().findOrFail(item[this.foreignKey])
+        return this.getQuery().find(item[this.foreignKey])
     }
 
     execute(item) {
