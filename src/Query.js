@@ -4,13 +4,11 @@ import { version } from '../package.json'
 export default class Query {
 
     constructor(model) {
-        if(!window.RelaDB) throw new Error('window.RelaDB is undefined. Please define it as window.RelaDB = {} before using the database capabilities')
+        if(!window.RelaDB) throw new Error('window.RelaDB is undefined. Please define it as window.RelaDB = new Database() before using the database capabilities')
 
         this.model = model
         this.filteredIndex = null
         this.filters = []
-
-        if(!window.RelaDB.events) window.RelaDB.events = {}
     }
 
     count() {
@@ -108,6 +106,10 @@ export default class Query {
     }
 
     delete(id) {
+        // if(this.isAlreadyDeleting(id)) return
+
+        // this.addToDeletingBuffer(id)
+
         if(window.RelaDB.events.deleting) window.RelaDB.events.deleting()
 
         let item = this.getItem(id)
@@ -127,7 +129,21 @@ export default class Query {
 
         if(window.RelaDB.events.deleted) window.RelaDB.events.deleted()
 
+        // this.removeFromDeletingBuffer(id)
+
         return true
+    }
+
+    isAlreadyDeleting(id) {
+        return !! window.RelaDB.deletingBuffer[this.tableKey()][id]
+    }
+
+    addToDeletingBuffer(id) {
+        window.RelaDB.deletingBuffer[this.tableKey()][id] = true
+    }
+
+    removeFromDeletingBuffer(id) {
+        delete window.RelaDB.deletingBuffer[this.tableKey()][id]
     }
 
     blockFieldsReplacingRelationships(data) {

@@ -1,9 +1,10 @@
 const moment = require('moment')
+const { default: Database } = require('./src/Database')
 const { default: LocalStorage } = require("./src/Drivers/LocalStorage")
 const { default: Post } = require('./tests/models/Post')
 const { default: User } = require("./tests/models/User")
 
-window.RelaDB = {}
+window.RelaDB = new Database
 window.RelaDB.driver = LocalStorage
 window.RelaDB.driver.clear()
 

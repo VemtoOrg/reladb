@@ -1,6 +1,7 @@
+const { default: Database } = require('../../src/Database');
 const { default: LocalStorage } = require('../../src/Drivers/LocalStorage');
 
-window.RelaDB = {}
+window.RelaDB = new Database
 window.RelaDB.driver = LocalStorage
 
 require('../model-tests')
