@@ -293,8 +293,11 @@ export default class Query {
     }
 
     manipulateHasManyIndex(manipulationCallback, relationship, item) {
-        let parent = relationship.getParentFromItem(item),
-            parentQuery = parent.constructor.getQuery(),
+        let parent = relationship.getParentFromItem(item)
+        
+        if(!parent) return
+
+        let parentQuery = parent.constructor.getQuery(),
             
             parentIndex = parentQuery.getItemIndex(parent),
             indexKey = `${item.getTable()}.${relationship.foreignKey}`,
