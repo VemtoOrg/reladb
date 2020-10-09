@@ -106,9 +106,9 @@ export default class Query {
     }
 
     delete(id) {
-        // if(this.isAlreadyDeleting(id)) return
+        if(this.isAlreadyDeleting(id)) return
 
-        // this.addToDeletingBuffer(id)
+        this.addToDeletingBuffer(id)
 
         if(window.RelaDB.events.deleting) window.RelaDB.events.deleting()
 
@@ -129,21 +129,21 @@ export default class Query {
 
         if(window.RelaDB.events.deleted) window.RelaDB.events.deleted()
 
-        // this.removeFromDeletingBuffer(id)
+        this.removeFromDeletingBuffer(id)
 
         return true
     }
 
     isAlreadyDeleting(id) {
-        return !! window.RelaDB.deletingBuffer[this.tableKey()][id]
+        return window.RelaDB.isAlreadyDeleting(this.tableKey(), id)
     }
-
+    
     addToDeletingBuffer(id) {
-        window.RelaDB.deletingBuffer[this.tableKey()][id] = true
+        return window.RelaDB.addToDeletingBuffer(this.tableKey(), id)
     }
 
     removeFromDeletingBuffer(id) {
-        delete window.RelaDB.deletingBuffer[this.tableKey()][id]
+        return window.RelaDB.removeFromDeletingBuffer(this.tableKey(), id)
     }
 
     blockFieldsReplacingRelationships(data) {

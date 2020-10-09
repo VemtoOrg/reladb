@@ -303,3 +303,40 @@ test('it allows to hear database global events', () => {
 
     expect(eventsCount).toBe(14)
 })
+
+/**
+ * The deleting buffer is used to prevent calling .delete() in the same item, due
+ * to relationships that can relate to the same entity. If something is in the
+ * deleting buffer, calling .delete on it will simple return, avoiding a Max Stack
+ * Call Exceeded Error
+ */
+test('it saves data being deleted on a buffer to avoid recursive deletion', () => {
+    window.RelaDB.driver.clear()
+
+    let user = User.create({name: 'Tiago'}),
+        iterations = []
+
+    // Saving all deleting buffer iterations to check its steps
+    window.RelaDB.registerDeletingBufferListener(
+        (buffer) => iterations.push(buffer)
+    )
+
+    user.delete()
+
+    user = User.find(1)
+
+    // { users: { '1': true } }
+    expect(iterations[0].users[1]).toBe(true)
+    
+    // { users: { '1': true }, phones: { '1': true } }
+    expect(iterations[1].users[1]).toBe(true)
+    expect(iterations[1].phones[1]).toBe(true)
+
+    // { users: { '1': true }, phones: {} }
+    expect(iterations[2].users[1]).toBe(true)
+    expect(!! iterations[2].phones[1]).toBe(false)
+    
+    // { users: {}, phones: {} }
+    expect(!! iterations[3].users[1]).toBe(false)
+    expect(!! iterations[3].phones[1]).toBe(false)
+})
