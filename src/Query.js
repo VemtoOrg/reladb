@@ -113,8 +113,8 @@ export default class Query {
         if(window.RelaDB.events.deleting) window.RelaDB.events.deleting()
 
         let item = this.getItem(id)
-
-        this.checkItemData(item, id)
+        
+        if(!item) return
 
         this.checkForeignKeyConstraints(item)
         this.deleteChildrenByCascadeDelete(item)
