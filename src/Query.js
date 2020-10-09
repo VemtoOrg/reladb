@@ -289,7 +289,7 @@ export default class Query {
         
         this.manipulateHasManyIndex(hasManyIndex => {
             if(relationship.allowsOnlyOne && hasManyIndex.length > 0) {
-                throw new Error('Has One relation doesn\'t allow more than one relation at same time')
+                throw new Error(`Has One relation doesn't allow more than one relation at same time | ${relationship.signature()}`)
             }
 
             hasManyIndex.push(item.id)
