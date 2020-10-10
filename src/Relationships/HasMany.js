@@ -43,8 +43,11 @@ export default class HasMany extends Relationship {
     }
 
     execute(item) {
-        let itemIndex = item.constructor.getQuery().getItemIndex(item),
-            indexKey = `${this.model.table()}.${this.foreignKey}`,
+        let itemIndex = item.constructor.getQuery().getItemIndex(item)
+
+        if(!itemIndex) return []
+
+        let indexKey = `${this.model.table()}.${this.foreignKey}`,
             hasManyIndex = itemIndex.hasMany[indexKey] || []
         
         return this.getQuery()
