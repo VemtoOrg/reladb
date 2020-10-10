@@ -106,7 +106,7 @@ export default class Query {
     }
 
     delete(id) {
-        if(this.isAlreadyDeleting(id)) return
+        if(this.isAlreadyDeleting(id) || this.isAlreadyDeleted(id)) return
 
         this.addToDeletingBuffer(id)
 
@@ -136,6 +136,10 @@ export default class Query {
 
     isAlreadyDeleting(id) {
         return window.RelaDB.isAlreadyDeleting(this.tableKey(), id)
+    }
+
+    isAlreadyDeleted(id) {
+        return !! !this.getItem(id)
     }
     
     addToDeletingBuffer(id) {
