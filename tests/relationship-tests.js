@@ -23,7 +23,7 @@ test('it does not allow to set a field with the same name as a relationship', ()
 
     expect(() => {
         User.create({name: 'Tiago', posts: []})
-    }).toThrow('It is not possible to set posts because there is already a relationship with the same name')
+    }).toThrow('It is not possible to set the field posts because there is already a relationship with the same name')
 })
 
 test('it adds has many index to parent after creating child data', () => {

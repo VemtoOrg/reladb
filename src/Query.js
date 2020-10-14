@@ -157,7 +157,7 @@ export default class Query {
 
         Object.keys(relationships).forEach(relationshipName => {
             if(typeof data[relationshipName] !== 'undefined') {
-                throw new Error(`It is not possible to set ${relationshipName} because there is already a relationship with the same name`)
+                throw new Error(`It is not possible to set the field ${relationshipName} because there is already a relationship with the same name`)
             }
         })
     }
