@@ -1,6 +1,7 @@
-const fs = window.require('fs')
-const path = window.require('path')
-const electron = window.require('electron')
+const fs = require('fs')
+const path = require('path')
+const mkdirp = require('mkdirp')
+const electron = require('electron')
 
 class JsonStorage {
 
@@ -34,8 +35,6 @@ class JsonStorage {
     }
 
     createFolderIfNecessary() {
-        const mkdirp = window.require('mkdirp')
-
         try {
             mkdirp.sync(this.getStorageDirectory())
         } catch (error) {
