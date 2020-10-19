@@ -23005,7 +23005,7 @@ module.exports = function(module) {
 /*! exports provided: name, version, description, main, scripts, repository, keywords, author, license, bugs, homepage, devDependencies, dependencies, jest, directories, default */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"name\":\"@tiago_silva_pereira/reladb\",\"version\":\"0.0.1\",\"description\":\"A relational database layer on top of LocalStorage\",\"main\":\"main.js\",\"scripts\":{\"test\":\"jest --runInBand\",\"dev\":\"npm run development\",\"development\":\"cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js\",\"watch\":\"npm run development -- --watch\",\"hot\":\"cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js\",\"prod\":\"npm run production\",\"production\":\"cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js\"},\"repository\":{\"type\":\"git\",\"url\":\"git+https://github.com/TiagoSilvaPereira/reladb.git\"},\"keywords\":[\"database\",\"relational\",\"localstorage\",\"browser\",\"db\",\"sync\"],\"author\":\"Tiago Silva Pereira Rodrigues\",\"license\":\"MIT\",\"bugs\":{\"url\":\"https://github.com/TiagoSilvaPereira/reladb/issues\"},\"homepage\":\"https://github.com/TiagoSilvaPereira/reladb#readme\",\"devDependencies\":{\"@babel/plugin-proposal-class-properties\":\"^7.12.1\",\"@babel/plugin-transform-modules-commonjs\":\"^7.10.4\",\"cross-env\":\"^7.0.2\",\"jest\":\"^26.4.2\",\"jest-electron\":\"^0.1.11\",\"laravel-mix\":\"^5.0.7\",\"mock-local-storage\":\"^1.1.15\",\"rimraf\":\"^3.0.2\",\"vue-template-compiler\":\"^2.6.12\"},\"dependencies\":{\"mkdirp\":\"^1.0.4\",\"moment\":\"^2.29.0\",\"pluralize\":\"^8.0.0\"},\"jest\":{\"projects\":[{\"displayName\":\"default\",\"testMatch\":[\"<rootDir>/tests/localstorage/*.test.js\"]},{\"displayName\":\"electron\",\"runner\":\"jest-electron/runner\",\"testEnvironment\":\"jest-electron/environment\",\"testMatch\":[\"<rootDir>/tests/electron/*.test.js\"]}]},\"directories\":{\"test\":\"tests\"}}");
+module.exports = JSON.parse("{\"name\":\"@tiago_silva_pereira/reladb\",\"version\":\"0.1.2\",\"description\":\"A relational database layer on top of LocalStorage\",\"main\":\"main.js\",\"scripts\":{\"test\":\"jest --runInBand\",\"dev\":\"npm run development\",\"development\":\"cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js\",\"watch\":\"npm run development -- --watch\",\"hot\":\"cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js\",\"prod\":\"npm run production\",\"production\":\"cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js\"},\"repository\":{\"type\":\"git\",\"url\":\"git+https://github.com/TiagoSilvaPereira/reladb.git\"},\"keywords\":[\"database\",\"relational\",\"localstorage\",\"browser\",\"db\",\"sync\"],\"author\":\"Tiago Silva Pereira Rodrigues\",\"license\":\"MIT\",\"bugs\":{\"url\":\"https://github.com/TiagoSilvaPereira/reladb/issues\"},\"homepage\":\"https://github.com/TiagoSilvaPereira/reladb#readme\",\"devDependencies\":{\"@babel/plugin-proposal-class-properties\":\"^7.12.1\",\"@babel/plugin-transform-modules-commonjs\":\"^7.10.4\",\"cross-env\":\"^7.0.2\",\"jest\":\"^26.4.2\",\"jest-electron\":\"^0.1.11\",\"laravel-mix\":\"^5.0.7\",\"mock-local-storage\":\"^1.1.15\",\"rimraf\":\"^3.0.2\",\"vue-template-compiler\":\"^2.6.12\"},\"dependencies\":{\"mkdirp\":\"^1.0.4\",\"moment\":\"^2.29.0\",\"pluralize\":\"^8.0.0\"},\"jest\":{\"projects\":[{\"displayName\":\"default\",\"testMatch\":[\"<rootDir>/tests/localstorage/*.test.js\"]},{\"displayName\":\"electron\",\"runner\":\"jest-electron/runner\",\"testEnvironment\":\"jest-electron/environment\",\"testMatch\":[\"<rootDir>/tests/electron/*.test.js\"]}]},\"directories\":{\"test\":\"tests\"}}");
 
 /***/ }),
 
@@ -23216,8 +23216,6 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
@@ -23230,6 +23228,7 @@ var Model = /*#__PURE__*/function () {
 
     _classCallCheck(this, Model);
 
+    this.constructor.initFilters();
     this.fillFromData(data);
     return new Proxy(this, {
       set: this.__set,
@@ -23445,7 +23444,7 @@ var Model = /*#__PURE__*/function () {
   }, {
     key: "get",
     value: function get() {
-      return new _Query__WEBPACK_IMPORTED_MODULE_0__["default"](this).setFilters(this.filters).get();
+      return new _Query__WEBPACK_IMPORTED_MODULE_0__["default"](this).setFilters(this.getFilters()).get();
     }
   }, {
     key: "find",
@@ -23484,7 +23483,7 @@ var Model = /*#__PURE__*/function () {
     value: function orderBy(field) {
       var direction = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'asc';
       this.clearFilters();
-      this.filters.push({
+      this.getFilters().push({
         field: field,
         type: 'order',
         direction: direction
@@ -23492,16 +23491,30 @@ var Model = /*#__PURE__*/function () {
       return this;
     }
   }, {
+    key: "initFilters",
+    value: function initFilters() {
+      if (!window.RelaDB.filters) window.RelaDB.filters = {};
+
+      if (!window.RelaDB.filters[this.name]) {
+        window.RelaDB.filters[this.name] = [];
+      }
+    }
+  }, {
     key: "clearFilters",
     value: function clearFilters() {
-      this.filters = [];
+      this.initFilters();
+      window.RelaDB.filters[this.name] = [];
+    }
+  }, {
+    key: "getFilters",
+    value: function getFilters() {
+      this.initFilters();
+      return window.RelaDB.filters[this.name];
     }
   }]);
 
   return Model;
 }();
-
-_defineProperty(Model, "filters", []);
 
 
 

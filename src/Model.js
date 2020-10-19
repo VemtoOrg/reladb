@@ -6,9 +6,9 @@ import HasOne from './Relationships/HasOne'
 
 export default class Model {
 
-    static filters = []
-
     constructor(data = {}) {
+
+        this.constructor.initFilters()
 
         this.fillFromData(data)
 
@@ -66,7 +66,7 @@ export default class Model {
 
     static get() {
         return new Query(this)
-            .setFilters(this.filters)
+            .setFilters(this.getFilters())
             .get()
     }
 
@@ -242,7 +242,7 @@ export default class Model {
     static orderBy(field, direction = 'asc') {
         this.clearFilters()
 
-        this.filters.push({
+        this.getFilters().push({
             field: field,
             type: 'order',
             direction: direction
@@ -251,7 +251,20 @@ export default class Model {
         return this
     }
 
+    static initFilters() {
+        if(!window.RelaDB.filters) window.RelaDB.filters = {}
+        if(!window.RelaDB.filters[this.name]) {
+            window.RelaDB.filters[this.name] = []
+        }
+    }
+
     static clearFilters() {
-        this.filters = []
+        this.initFilters()
+        window.RelaDB.filters[this.name] = []
+    }
+
+    static getFilters() {
+        this.initFilters()
+        return window.RelaDB.filters[this.name]
     }
 }
