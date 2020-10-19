@@ -252,7 +252,6 @@ export default class Model {
     }
 
     static initFilters() {
-        if(!window.RelaDB.filters) window.RelaDB.filters = {}
         if(!window.RelaDB.filters[this.name]) {
             window.RelaDB.filters[this.name] = []
         }

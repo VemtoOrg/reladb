@@ -2,6 +2,7 @@ export default class Database {
 
     constructor() {
         this.events = {}
+        this.filters = []
         this.deletingBuffer = {}
     }
 
