@@ -38,7 +38,7 @@ export default class BelongsTo extends Relationship {
 
     signature() {
         let type = this.allowsOnlyOne ? 'BelongsTo_One' : 'BelongsTo'
-        return `${this.localModel.name}->${type}(${this.model.identifier()}):${this.foreignKey},${this.ownerKey}`
+        return `${this.localModel.identifier()}->${type}(${this.model.identifier()}):${this.foreignKey},${this.ownerKey}`
     }
 
 }

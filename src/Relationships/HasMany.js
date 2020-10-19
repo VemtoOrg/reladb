@@ -4,7 +4,7 @@ export default class HasMany extends Relationship {
     
     setForeignKey(foreignKey) {
         if(!foreignKey) {
-            foreignKey = `${this.localModel.name.toLowerCase()}Id`
+            foreignKey = `${this.localModel.identifier().toLowerCase()}Id`
         }
 
         this.foreignKey = foreignKey
@@ -57,7 +57,7 @@ export default class HasMany extends Relationship {
     }
 
     signature() {
-        return `${this.localModel.name}->HasMany(${this.model.identifier()}):${this.foreignKey},${this.localKey}`
+        return `${this.localModel.identifier()}->HasMany(${this.model.identifier()}):${this.foreignKey},${this.localKey}`
     }
 
 }

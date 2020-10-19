@@ -11,7 +11,7 @@ export default class HasOne extends HasMany {
     }
 
     signature() {
-        return `${this.localModel.name}->HasMany(${this.model.identifier()}):${this.foreignKey},${this.localKey}`
+        return `${this.localModel.identifier()}->HasMany(${this.model.identifier()}):${this.foreignKey},${this.localKey}`
     }
 
 }
