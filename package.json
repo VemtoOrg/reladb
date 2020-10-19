@@ -31,7 +31,6 @@
   },
   "homepage": "https://github.com/TiagoSilvaPereira/reladb#readme",
   "devDependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.12.1",
     "@babel/plugin-transform-modules-commonjs": "^7.10.4",
     "cross-env": "^7.0.2",
     "jest": "^26.4.2",
