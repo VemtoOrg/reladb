@@ -31,11 +31,12 @@
   },
   "homepage": "https://github.com/TiagoSilvaPereira/reladb#readme",
   "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
     "@babel/plugin-transform-modules-commonjs": "^7.10.4",
     "cross-env": "^7.0.2",
     "jest": "^26.4.2",
     "jest-electron": "^0.1.11",
-    "laravel-mix": "^5.0.5",
+    "laravel-mix": "^5.0.7",
     "mock-local-storage": "^1.1.15",
     "rimraf": "^3.0.2",
     "vue-template-compiler": "^2.6.12"

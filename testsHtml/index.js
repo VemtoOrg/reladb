@@ -105,15 +105,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 var moment = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
 
-var _require = __webpack_require__(/*! ./src/Drivers/LocalStorage */ "./src/Drivers/LocalStorage.js"),
-    LocalStorage = _require["default"];
+var _require = __webpack_require__(/*! ./src/Database */ "./src/Database.js"),
+    Database = _require["default"];
 
-var _require2 = __webpack_require__(/*! ./tests/models/Post */ "./tests/models/Post.js"),
-    Post = _require2["default"];
+var _require2 = __webpack_require__(/*! ./src/Drivers/LocalStorage */ "./src/Drivers/LocalStorage.js"),
+    LocalStorage = _require2["default"];
 
-var _require3 = __webpack_require__(/*! ./tests/models/User */ "./tests/models/User.js"),
-    User = _require3["default"];
+var _require3 = __webpack_require__(/*! ./tests/models/Post */ "./tests/models/Post.js"),
+    Post = _require3["default"];
 
+var _require4 = __webpack_require__(/*! ./tests/models/User */ "./tests/models/User.js"),
+    User = _require4["default"];
+
+window.RelaDB = new Database();
 window.RelaDB.driver = LocalStorage;
 window.RelaDB.driver.clear();
 
@@ -22994,6 +22998,83 @@ module.exports = function(module) {
 
 /***/ }),
 
+/***/ "./package.json":
+/*!**********************!*\
+  !*** ./package.json ***!
+  \**********************/
+/*! exports provided: name, version, description, main, scripts, repository, keywords, author, license, bugs, homepage, devDependencies, dependencies, jest, directories, default */
+/***/ (function(module) {
+
+module.exports = JSON.parse("{\"name\":\"@tiago_silva_pereira/reladb\",\"version\":\"0.0.1\",\"description\":\"A relational database layer on top of LocalStorage\",\"main\":\"main.js\",\"scripts\":{\"test\":\"jest --runInBand\",\"dev\":\"npm run development\",\"development\":\"cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js\",\"watch\":\"npm run development -- --watch\",\"hot\":\"cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js\",\"prod\":\"npm run production\",\"production\":\"cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js\"},\"repository\":{\"type\":\"git\",\"url\":\"git+https://github.com/TiagoSilvaPereira/reladb.git\"},\"keywords\":[\"database\",\"relational\",\"localstorage\",\"browser\",\"db\",\"sync\"],\"author\":\"Tiago Silva Pereira Rodrigues\",\"license\":\"MIT\",\"bugs\":{\"url\":\"https://github.com/TiagoSilvaPereira/reladb/issues\"},\"homepage\":\"https://github.com/TiagoSilvaPereira/reladb#readme\",\"devDependencies\":{\"@babel/plugin-proposal-class-properties\":\"^7.12.1\",\"@babel/plugin-transform-modules-commonjs\":\"^7.10.4\",\"cross-env\":\"^7.0.2\",\"jest\":\"^26.4.2\",\"jest-electron\":\"^0.1.11\",\"laravel-mix\":\"^5.0.7\",\"mock-local-storage\":\"^1.1.15\",\"rimraf\":\"^3.0.2\",\"vue-template-compiler\":\"^2.6.12\"},\"dependencies\":{\"mkdirp\":\"^1.0.4\",\"moment\":\"^2.29.0\",\"pluralize\":\"^8.0.0\"},\"jest\":{\"projects\":[{\"displayName\":\"default\",\"testMatch\":[\"<rootDir>/tests/localstorage/*.test.js\"]},{\"displayName\":\"electron\",\"runner\":\"jest-electron/runner\",\"testEnvironment\":\"jest-electron/environment\",\"testMatch\":[\"<rootDir>/tests/electron/*.test.js\"]}]},\"directories\":{\"test\":\"tests\"}}");
+
+/***/ }),
+
+/***/ "./src/Database.js":
+/*!*************************!*\
+  !*** ./src/Database.js ***!
+  \*************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Database; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Database = /*#__PURE__*/function () {
+  function Database() {
+    _classCallCheck(this, Database);
+
+    this.events = {};
+    this.deletingBuffer = {};
+  }
+
+  _createClass(Database, [{
+    key: "isAlreadyDeleting",
+    value: function isAlreadyDeleting(table, id) {
+      if (!this.deletingBuffer[table]) return false;
+      return !!this.deletingBuffer[table][id];
+    }
+  }, {
+    key: "addToDeletingBuffer",
+    value: function addToDeletingBuffer(table, id) {
+      if (!this.deletingBuffer[table]) {
+        this.deletingBuffer[table] = {};
+      }
+
+      this.deletingBuffer[table][id] = true;
+      if (this.deletingBufferListener) this.deletingBufferListener(this.cloneProperty('deletingBuffer'));
+    }
+  }, {
+    key: "removeFromDeletingBuffer",
+    value: function removeFromDeletingBuffer(table, id) {
+      if (!this.deletingBuffer[table]) return;
+      delete this.deletingBuffer[table][id];
+      if (this.deletingBufferListener) this.deletingBufferListener(this.cloneProperty('deletingBuffer'));
+    }
+  }, {
+    key: "registerDeletingBufferListener",
+    value: function registerDeletingBufferListener(listenerFunction) {
+      this.deletingBufferListener = listenerFunction;
+    }
+  }, {
+    key: "cloneProperty",
+    value: function cloneProperty(property) {
+      return JSON.parse(JSON.stringify(this[property]));
+    }
+  }]);
+
+  return Database;
+}();
+
+
+
+/***/ }),
+
 /***/ "./src/Drivers/Driver.js":
 /*!*******************************!*\
   !*** ./src/Drivers/Driver.js ***!
@@ -23128,11 +23209,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var pluralize__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(pluralize__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _Relationships_HasMany__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Relationships/HasMany */ "./src/Relationships/HasMany.js");
 /* harmony import */ var _Relationships_BelongsTo__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Relationships/BelongsTo */ "./src/Relationships/BelongsTo.js");
+/* harmony import */ var _Relationships_HasOne__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Relationships/HasOne */ "./src/Relationships/HasOne.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
@@ -23155,7 +23240,8 @@ var Model = /*#__PURE__*/function () {
   _createClass(Model, [{
     key: "__set",
     value: function __set(obj, name, value) {
-      return obj[name] = value;
+      obj[name] = value;
+      return true;
     }
   }, {
     key: "__get",
@@ -23192,6 +23278,25 @@ var Model = /*#__PURE__*/function () {
       return new _Query__WEBPACK_IMPORTED_MODULE_0__["default"](this.constructor).findOrFail(this.id);
     }
   }, {
+    key: "fill",
+    value: function fill(data) {
+      var _this2 = this;
+
+      Object.keys(data).forEach(function (key) {
+        return _this2[key] = data[key];
+      });
+      return this;
+    }
+  }, {
+    key: "save",
+    value: function save() {
+      if (!this.isSaved()) {
+        return this.constructor.create(this);
+      }
+
+      return this.update(this);
+    }
+  }, {
     key: "update",
     value: function update() {
       var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -23200,14 +23305,19 @@ var Model = /*#__PURE__*/function () {
         throw new Error('It is not possible to update an object that is not currently saved on database');
       }
 
+      if (this.constructor.updating) data = this.constructor.updating(data, this);
       this.fillFromData(data, true);
-      return new _Query__WEBPACK_IMPORTED_MODULE_0__["default"](this.constructor).update(this.id, this);
+      var wasUpdated = new _Query__WEBPACK_IMPORTED_MODULE_0__["default"](this.constructor).update(this.id, this);
+      if (this.constructor.updated) this.constructor.updated(this);
+      return wasUpdated;
     }
   }, {
     key: "delete",
     value: function _delete() {
       if (!this.id) throw new Error('It is not possible to delete an object that is not currently saved on database');
+      if (this.constructor.deleting) this.constructor.deleting(this);
       new _Query__WEBPACK_IMPORTED_MODULE_0__["default"](this.constructor)["delete"](this.id);
+      if (this.constructor.deleted) this.constructor.deleted(this.id);
       this.clearData();
       return true;
     }
@@ -23219,16 +23329,21 @@ var Model = /*#__PURE__*/function () {
   }, {
     key: "clearData",
     value: function clearData() {
-      var _this2 = this;
+      var _this3 = this;
 
       Object.keys(this).forEach(function (key) {
-        delete _this2[key];
+        delete _this3[key];
       });
     }
   }, {
     key: "relationships",
     value: function relationships() {
       return {};
+    }
+  }, {
+    key: "hasOne",
+    value: function hasOne(model, foreignKey, localKey) {
+      return new _Relationships_HasOne__WEBPACK_IMPORTED_MODULE_4__["default"](model, this.constructor).setForeignKey(foreignKey).setLocalKey(localKey);
     }
   }, {
     key: "hasMany",
@@ -23272,13 +23387,25 @@ var Model = /*#__PURE__*/function () {
       return this.getRelationshipsByInstanceType(_Relationships_HasMany__WEBPACK_IMPORTED_MODULE_2__["default"]);
     }
   }, {
+    key: "hasOneRelationships",
+    value: function hasOneRelationships() {
+      return this.getRelationshipsByInstanceType(_Relationships_HasOne__WEBPACK_IMPORTED_MODULE_4__["default"]);
+    }
+  }, {
+    key: "hasSomethingRelationships",
+    value: function hasSomethingRelationships() {
+      var hasManyRelationships = this.hasManyRelationships(),
+          hasOneRelationships = this.hasOneRelationships();
+      return hasManyRelationships.concat(hasOneRelationships);
+    }
+  }, {
     key: "getRelationshipsByInstanceType",
     value: function getRelationshipsByInstanceType(instanceOfClass) {
-      var _this3 = this;
+      var _this4 = this;
 
       var relationships = [];
       Object.keys(this.relationships()).forEach(function (relationshipName) {
-        var relationship = _this3.getRelationship(relationshipName);
+        var relationship = _this4.getRelationship(relationshipName);
 
         if (relationship instanceof instanceOfClass) {
           relationships.push(relationship);
@@ -23296,6 +23423,11 @@ var Model = /*#__PURE__*/function () {
     value: function getRelationshipFunction(name) {
       return this.relationships()[name];
     }
+  }, {
+    key: "isSaved",
+    value: function isSaved() {
+      return !!this[this.constructor.primaryKey()];
+    }
   }], [{
     key: "count",
     value: function count() {
@@ -23305,12 +23437,15 @@ var Model = /*#__PURE__*/function () {
     key: "create",
     value: function create() {
       var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      return new _Query__WEBPACK_IMPORTED_MODULE_0__["default"](this).create(data);
+      if (this.creating) data = this.creating(data);
+      var item = new _Query__WEBPACK_IMPORTED_MODULE_0__["default"](this).create(data);
+      if (this.created) this.created(item);
+      return item;
     }
   }, {
     key: "get",
     value: function get() {
-      return new _Query__WEBPACK_IMPORTED_MODULE_0__["default"](this).get();
+      return new _Query__WEBPACK_IMPORTED_MODULE_0__["default"](this).setFilters(this.filters).get();
     }
   }, {
     key: "find",
@@ -23344,10 +23479,29 @@ var Model = /*#__PURE__*/function () {
     value: function timestamps() {
       return true;
     }
+  }, {
+    key: "orderBy",
+    value: function orderBy(field) {
+      var direction = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'asc';
+      this.clearFilters();
+      this.filters.push({
+        field: field,
+        type: 'order',
+        direction: direction
+      });
+      return this;
+    }
+  }, {
+    key: "clearFilters",
+    value: function clearFilters() {
+      this.filters = [];
+    }
   }]);
 
   return Model;
 }();
+
+_defineProperty(Model, "filters", []);
 
 
 
@@ -23365,6 +23519,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Query; });
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _package_json__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../package.json */ "./package.json");
+var _package_json__WEBPACK_IMPORTED_MODULE_1___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../package.json */ "./package.json", 1);
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -23385,12 +23541,15 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 
+
 var Query = /*#__PURE__*/function () {
   function Query(model) {
     _classCallCheck(this, Query);
 
+    if (!window.RelaDB) throw new Error('window.RelaDB is undefined. Please define it as window.RelaDB = new Database() before using the database capabilities');
     this.model = model;
     this.filteredIndex = null;
+    this.filters = [];
   }
 
   _createClass(Query, [{
@@ -23402,9 +23561,16 @@ var Query = /*#__PURE__*/function () {
     key: "create",
     value: function create() {
       var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      if (window.RelaDB.events.creating) window.RelaDB.events.creating();
       var tableData = this.getTableData(),
           id = ++tableData.lastPrimaryKey,
           item = null;
+
+      if (data[this.model.primaryKey()]) {
+        delete data[this.model.primaryKey()];
+      }
+
+      this.blockFieldsReplacingRelationships(data);
       data[this.model.primaryKey()] = id;
       this.saveItem(id, data);
       tableData.count++;
@@ -23412,6 +23578,7 @@ var Query = /*#__PURE__*/function () {
       this.saveTableData(tableData);
       item = new this.model(data);
       this.addIndexesByItem(item);
+      if (window.RelaDB.events.creating) window.RelaDB.events.created();
       return item;
     }
   }, {
@@ -23428,7 +23595,7 @@ var Query = /*#__PURE__*/function () {
         }
       });
       this.clearFilteredIndex();
-      return data;
+      return this.applyFilters(data);
     }
   }, {
     key: "find",
@@ -23460,29 +23627,87 @@ var Query = /*#__PURE__*/function () {
     key: "update",
     value: function update(id) {
       var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      if (window.RelaDB.events.updating) window.RelaDB.events.updating();
       var oldItem = this.findOrFail(id);
       this.removeIndexesByItem(oldItem);
+      this.blockFieldsReplacingRelationships(data);
       this.checkItemData(data, id);
       this.saveItem(id, data);
       var item = this.findOrFail(id);
       this.addIndexesByItem(item);
       oldItem = null;
+      if (window.RelaDB.events.updated) window.RelaDB.events.updated();
       return true;
     }
   }, {
     key: "delete",
     value: function _delete(id) {
-      var tableData = this.getTableData(),
-          item = this.getItem(id);
-      this.checkItemData(item, id);
+      if (this.isAlreadyDeleting(id) || this.isAlreadyDeleted(id)) return;
+      this.addToDeletingBuffer(id);
+      if (window.RelaDB.events.deleting) window.RelaDB.events.deleting();
+      var item = this.getItem(id);
+      if (!item) return;
       this.checkForeignKeyConstraints(item);
       this.deleteChildrenByCascadeDelete(item);
       this.removeIndexesByItem(item);
       this.removeItem(id);
+      var tableData = this.getTableData();
       tableData.count--;
       delete tableData.index[id];
       this.saveTableData(tableData);
+      if (window.RelaDB.events.deleted) window.RelaDB.events.deleted();
+      this.removeFromDeletingBuffer(id);
       return true;
+    }
+  }, {
+    key: "isAlreadyDeleting",
+    value: function isAlreadyDeleting(id) {
+      return window.RelaDB.isAlreadyDeleting(this.tableKey(), id);
+    }
+  }, {
+    key: "isAlreadyDeleted",
+    value: function isAlreadyDeleted(id) {
+      return !!!this.getItem(id);
+    }
+  }, {
+    key: "addToDeletingBuffer",
+    value: function addToDeletingBuffer(id) {
+      return window.RelaDB.addToDeletingBuffer(this.tableKey(), id);
+    }
+  }, {
+    key: "removeFromDeletingBuffer",
+    value: function removeFromDeletingBuffer(id) {
+      return window.RelaDB.removeFromDeletingBuffer(this.tableKey(), id);
+    }
+  }, {
+    key: "blockFieldsReplacingRelationships",
+    value: function blockFieldsReplacingRelationships(data) {
+      var relationships = new this.model().relationships();
+      data = Object.assign({}, data);
+      Object.keys(relationships).forEach(function (relationshipName) {
+        if (typeof data[relationshipName] !== 'undefined') {
+          throw new Error("It is not possible to set the field ".concat(relationshipName, " because there is already a relationship with the same name"));
+        }
+      });
+    }
+  }, {
+    key: "setFilters",
+    value: function setFilters(filters) {
+      this.filters = filters;
+      return this;
+    }
+  }, {
+    key: "applyFilters",
+    value: function applyFilters(data) {
+      var _this2 = this;
+
+      var orderFilters = this.filters.filter(function (filter) {
+        return filter.type == 'order';
+      });
+      orderFilters.forEach(function (filter) {
+        data = data.sort(_this2.compare(filter.field, filter.direction));
+      });
+      return data;
     }
   }, {
     key: "setFilteredIndex",
@@ -23554,24 +23779,27 @@ var Query = /*#__PURE__*/function () {
     key: "saveTableData",
     value: function saveTableData(data) {
       var tableKey = this.tableKey();
+      this.log("Saving Data on table: ".concat(tableKey), data);
       this.dbDriver().set(tableKey, data);
       return true;
     }
   }, {
     key: "checkForeignKeyConstraints",
     value: function checkForeignKeyConstraints(item) {
+      // It checks has one relations too, as HasOne extends HasMany
       var hasManyItemsCount = item.hasManyRelationships().reduce(function (acc, hasManyRelationship) {
         if (hasManyRelationship.usesCascadeDelete) return acc;
-        return acc + hasManyRelationship.execute(item).length;
+        return acc + hasManyRelationship.getAllItems(item).length;
       }, 0);
       if (hasManyItemsCount) throw new Error('Cannot delete a parent item: a foreign key constraint fails');
     }
   }, {
     key: "deleteChildrenByCascadeDelete",
     value: function deleteChildrenByCascadeDelete(item) {
+      // It deletes has one relations too, as HasOne extends HasMany
       item.hasManyRelationships().forEach(function (hasManyRelationship) {
         if (hasManyRelationship.usesCascadeDelete) {
-          var children = hasManyRelationship.execute(item);
+          var children = hasManyRelationship.getAllItems(item);
           children.forEach(function (child) {
             return child["delete"]();
           });
@@ -23581,26 +23809,31 @@ var Query = /*#__PURE__*/function () {
   }, {
     key: "addIndexesByItem",
     value: function addIndexesByItem(item) {
-      var _this2 = this;
+      var _this3 = this;
 
       item.belongsToRelationships().forEach(function (belongsToRelationship) {
-        return _this2.addItemToParentHasManyIndex(belongsToRelationship, item);
+        return _this3.addItemToParentHasManyIndex(belongsToRelationship, item);
       });
     }
   }, {
     key: "removeIndexesByItem",
     value: function removeIndexesByItem(item) {
-      var _this3 = this;
+      var _this4 = this;
 
       item.belongsToRelationships().forEach(function (belongsToRelationship) {
-        return _this3.removeItemFromParentHasManyIndex(belongsToRelationship, item);
+        return _this4.removeItemFromParentHasManyIndex(belongsToRelationship, item);
       });
     }
   }, {
     key: "addItemToParentHasManyIndex",
     value: function addItemToParentHasManyIndex(relationship, item) {
       if (!item[relationship.foreignKey]) return;
+      this.log('Adding to parent has many: ' + relationship.signature());
       this.manipulateHasManyIndex(function (hasManyIndex) {
+        if (relationship.allowsOnlyOne && hasManyIndex.length > 0) {
+          throw new Error("Has One relation doesn't allow more than one relation at same time | ".concat(relationship.signature()));
+        }
+
         hasManyIndex.push(item.id);
         hasManyIndex = _toConsumableArray(new Set(hasManyIndex));
         return hasManyIndex;
@@ -23610,6 +23843,7 @@ var Query = /*#__PURE__*/function () {
     key: "removeItemFromParentHasManyIndex",
     value: function removeItemFromParentHasManyIndex(relationship, item) {
       if (!item[relationship.foreignKey]) return;
+      this.log('Removing from parent has many: ' + relationship.signature());
       this.manipulateHasManyIndex(function (hasManyIndex) {
         hasManyIndex.splice(hasManyIndex.indexOf(item.id), 1);
         hasManyIndex = _toConsumableArray(new Set(hasManyIndex));
@@ -23619,12 +23853,15 @@ var Query = /*#__PURE__*/function () {
   }, {
     key: "manipulateHasManyIndex",
     value: function manipulateHasManyIndex(manipulationCallback, relationship, item) {
-      var parent = relationship.getParentFromItem(item),
-          parentQuery = parent.constructor.getQuery(),
+      var parent = relationship.getParentFromItem(item);
+      if (!parent) return;
+      var parentQuery = parent.constructor.getQuery(),
           parentIndex = parentQuery.getItemIndex(parent),
           indexKey = "".concat(item.getTable(), ".").concat(relationship.foreignKey),
           hasManyIndex = parentIndex.hasMany[indexKey] || [];
+      this.log("Before manipulating has many index: ".concat(indexKey, " parent: ").concat(parent.id, " item: ").concat(item.id), hasManyIndex);
       parentIndex.hasMany[indexKey] = manipulationCallback(hasManyIndex);
+      this.log("After manipulating has many index: ".concat(indexKey, " parent: ").concat(parent.id, " item: ").concat(item.id), hasManyIndex);
       parentQuery.updateItemIndex(parent, parentIndex);
     }
   }, {
@@ -23668,7 +23905,8 @@ var Query = /*#__PURE__*/function () {
         index: {},
         additionalIndexes: {},
         items: [],
-        relations: []
+        relations: [],
+        reladbVersion: _package_json__WEBPACK_IMPORTED_MODULE_1__["version"]
       };
     }
   }, {
@@ -23685,6 +23923,36 @@ var Query = /*#__PURE__*/function () {
     key: "dbDriver",
     value: function dbDriver() {
       return window.RelaDB.driver.setTable(this.model.table());
+    }
+  }, {
+    key: "compare",
+    value: function compare(field) {
+      var direction = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'asc';
+      return function (a, b) {
+        if (typeof a[field] === 'undefined' || typeof b[field] === 'undefined') return 0;
+        var itemA = a[field].toString().toUpperCase();
+        var itemB = b[field].toString().toUpperCase();
+        var comparison = 0;
+
+        if (itemA > itemB) {
+          comparison = 1;
+        } else if (itemA < itemB) {
+          comparison = -1;
+        }
+
+        return direction == 'asc' ? comparison : comparison * -1;
+      };
+    }
+  }, {
+    key: "log",
+    value: function log() {
+      if (window.RelaDB.mode === 'development') {
+        var _console;
+
+        (_console = console).log.apply(_console, arguments);
+
+        console.log('');
+      }
     }
   }]);
 
@@ -23742,6 +24010,12 @@ var BelongsTo = /*#__PURE__*/function (_Relationship) {
   }
 
   _createClass(BelongsTo, [{
+    key: "atMostOne",
+    value: function atMostOne() {
+      this.allowsOnlyOne = true;
+      return this;
+    }
+  }, {
     key: "setForeignKey",
     value: function setForeignKey(foreignKey) {
       if (!foreignKey) {
@@ -23765,12 +24039,18 @@ var BelongsTo = /*#__PURE__*/function (_Relationship) {
     key: "getParentFromItem",
     value: function getParentFromItem(item) {
       if (!item[this.foreignKey]) return null;
-      return this.getQuery().findOrFail(item[this.foreignKey]);
+      return this.getQuery().find(item[this.foreignKey]);
     }
   }, {
     key: "execute",
     value: function execute(item) {
       return this.getParentFromItem(item);
+    }
+  }, {
+    key: "signature",
+    value: function signature() {
+      var type = this.allowsOnlyOne ? 'BelongsTo_One' : 'BelongsTo';
+      return "".concat(this.localModel.name, "->").concat(type, "(").concat(this.model.name, "):").concat(this.foreignKey, ",").concat(this.ownerKey);
     }
   }]);
 
@@ -23854,17 +24134,113 @@ var HasMany = /*#__PURE__*/function (_Relationship) {
       return this;
     }
   }, {
+    key: "orderBy",
+    value: function orderBy(field) {
+      var direction = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'asc';
+      this.setFilters([{
+        field: field,
+        type: 'order',
+        direction: direction
+      }]);
+      return this;
+    }
+  }, {
+    key: "getAllItems",
+    value: function getAllItems(item) {
+      return this.execute(item);
+    }
+  }, {
     key: "execute",
     value: function execute(item) {
-      var itemIndex = item.constructor.getQuery().getItemIndex(item),
-          indexKey = "".concat(this.model.table(), ".").concat(this.foreignKey),
+      var itemIndex = item.constructor.getQuery().getItemIndex(item);
+      if (!itemIndex) return [];
+      var indexKey = "".concat(this.model.table(), ".").concat(this.foreignKey),
           hasManyIndex = itemIndex.hasMany[indexKey] || [];
-      return this.getQuery().setFilteredIndex(hasManyIndex).get();
+      return this.getQuery().setFilters(this.filters).setFilteredIndex(hasManyIndex).get();
+    }
+  }, {
+    key: "signature",
+    value: function signature() {
+      return "".concat(this.localModel.name, "->HasMany(").concat(this.model.name, "):").concat(this.foreignKey, ",").concat(this.localKey);
     }
   }]);
 
   return HasMany;
 }(_Relationship__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
+
+/***/ }),
+
+/***/ "./src/Relationships/HasOne.js":
+/*!*************************************!*\
+  !*** ./src/Relationships/HasOne.js ***!
+  \*************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return HasOne; });
+/* harmony import */ var _HasMany__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./HasMany */ "./src/Relationships/HasMany.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
+
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+var HasOne = /*#__PURE__*/function (_HasMany) {
+  _inherits(HasOne, _HasMany);
+
+  var _super = _createSuper(HasOne);
+
+  function HasOne() {
+    _classCallCheck(this, HasOne);
+
+    return _super.apply(this, arguments);
+  }
+
+  _createClass(HasOne, [{
+    key: "getAllItems",
+    value: function getAllItems(item) {
+      return _get(_getPrototypeOf(HasOne.prototype), "execute", this).call(this, item);
+    }
+  }, {
+    key: "execute",
+    value: function execute(item) {
+      return _get(_getPrototypeOf(HasOne.prototype), "execute", this).call(this, item)[0];
+    }
+  }, {
+    key: "signature",
+    value: function signature() {
+      return "".concat(this.localModel.name, "->HasMany(").concat(this.model.name, "):").concat(this.foreignKey, ",").concat(this.localKey);
+    }
+  }]);
+
+  return HasOne;
+}(_HasMany__WEBPACK_IMPORTED_MODULE_0__["default"]);
 
 
 
@@ -23895,12 +24271,18 @@ var Relationship = /*#__PURE__*/function () {
 
     this.model = model;
     this.localModel = localModel;
+    this.filters = [];
   }
 
   _createClass(Relationship, [{
     key: "getQuery",
     value: function getQuery() {
       return new _Query__WEBPACK_IMPORTED_MODULE_0__["default"](this.model);
+    }
+  }, {
+    key: "setFilters",
+    value: function setFilters(filters) {
+      this.filters = filters;
     }
   }]);
 
@@ -23984,6 +24366,301 @@ var Comment = /*#__PURE__*/function (_Model) {
 
 /***/ }),
 
+/***/ "./tests/models/Document.js":
+/*!**********************************!*\
+  !*** ./tests/models/Document.js ***!
+  \**********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Document; });
+/* harmony import */ var _User__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./User */ "./tests/models/User.js");
+/* harmony import */ var _src_Model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../src/Model */ "./src/Model.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+
+var Document = /*#__PURE__*/function (_Model) {
+  _inherits(Document, _Model);
+
+  var _super = _createSuper(Document);
+
+  function Document() {
+    _classCallCheck(this, Document);
+
+    return _super.apply(this, arguments);
+  }
+
+  _createClass(Document, [{
+    key: "relationships",
+    value: function relationships() {
+      var _this = this;
+
+      return {
+        user: function user() {
+          return _this.belongsTo(_User__WEBPACK_IMPORTED_MODULE_0__["default"]).atMostOne();
+        },
+        parent: function parent() {
+          return _this.belongsTo(Document, 'parentId').atMostOne();
+        },
+        child: function child() {
+          return _this.hasOne(Document, 'parentId').cascadeDelete();
+        }
+      };
+    }
+  }]);
+
+  return Document;
+}(_src_Model__WEBPACK_IMPORTED_MODULE_1__["default"]);
+
+
+
+/***/ }),
+
+/***/ "./tests/models/Person.js":
+/*!********************************!*\
+  !*** ./tests/models/Person.js ***!
+  \********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Person; });
+/* harmony import */ var _Photo__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Photo */ "./tests/models/Photo.js");
+/* harmony import */ var _src_Model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../src/Model */ "./src/Model.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+
+var Person = /*#__PURE__*/function (_Model) {
+  _inherits(Person, _Model);
+
+  var _super = _createSuper(Person);
+
+  function Person() {
+    _classCallCheck(this, Person);
+
+    return _super.apply(this, arguments);
+  }
+
+  _createClass(Person, [{
+    key: "relationships",
+    value: function relationships() {
+      var _this = this;
+
+      return {
+        photos: function photos() {
+          return _this.hasMany(_Photo__WEBPACK_IMPORTED_MODULE_0__["default"]);
+        }
+      };
+    }
+  }], [{
+    key: "deleting",
+    value: function deleting(user) {
+      user.photos.forEach(function (photo) {
+        return photo["delete"]();
+      });
+    }
+  }, {
+    key: "deleted",
+    value: function deleted(id) {
+      throw new Error("Person ".concat(id, " was deleted"));
+    }
+  }]);
+
+  return Person;
+}(_src_Model__WEBPACK_IMPORTED_MODULE_1__["default"]);
+
+
+
+/***/ }),
+
+/***/ "./tests/models/Phone.js":
+/*!*******************************!*\
+  !*** ./tests/models/Phone.js ***!
+  \*******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Phone; });
+/* harmony import */ var _User__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./User */ "./tests/models/User.js");
+/* harmony import */ var _src_Model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../src/Model */ "./src/Model.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+
+var Phone = /*#__PURE__*/function (_Model) {
+  _inherits(Phone, _Model);
+
+  var _super = _createSuper(Phone);
+
+  function Phone() {
+    _classCallCheck(this, Phone);
+
+    return _super.apply(this, arguments);
+  }
+
+  _createClass(Phone, [{
+    key: "relationships",
+    value: function relationships() {
+      var _this = this;
+
+      return {
+        owner: function owner() {
+          return _this.belongsTo(_User__WEBPACK_IMPORTED_MODULE_0__["default"], 'ownerId');
+        }
+      };
+    }
+  }]);
+
+  return Phone;
+}(_src_Model__WEBPACK_IMPORTED_MODULE_1__["default"]);
+
+
+
+/***/ }),
+
+/***/ "./tests/models/Photo.js":
+/*!*******************************!*\
+  !*** ./tests/models/Photo.js ***!
+  \*******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Photo; });
+/* harmony import */ var _User__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./User */ "./tests/models/User.js");
+/* harmony import */ var _Person__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Person */ "./tests/models/Person.js");
+/* harmony import */ var _src_Model__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../src/Model */ "./src/Model.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+
+
+var Photo = /*#__PURE__*/function (_Model) {
+  _inherits(Photo, _Model);
+
+  var _super = _createSuper(Photo);
+
+  function Photo() {
+    _classCallCheck(this, Photo);
+
+    return _super.apply(this, arguments);
+  }
+
+  _createClass(Photo, [{
+    key: "relationships",
+    value: function relationships() {
+      var _this = this;
+
+      return {
+        user: function user() {
+          return _this.belongsTo(_User__WEBPACK_IMPORTED_MODULE_0__["default"]);
+        },
+        owner: function owner() {
+          return _this.belongsTo(_Person__WEBPACK_IMPORTED_MODULE_1__["default"]);
+        }
+      };
+    }
+  }]);
+
+  return Photo;
+}(_src_Model__WEBPACK_IMPORTED_MODULE_2__["default"]);
+
+
+
+/***/ }),
+
 /***/ "./tests/models/Post.js":
 /*!******************************!*\
   !*** ./tests/models/Post.js ***!
@@ -24044,7 +24721,7 @@ var Post = /*#__PURE__*/function (_Model) {
           return _this.belongsTo(_User__WEBPACK_IMPORTED_MODULE_0__["default"], 'ownerId');
         },
         comments: function comments() {
-          return _this.hasMany(_Comment__WEBPACK_IMPORTED_MODULE_1__["default"]).cascadeDelete();
+          return _this.hasMany(_Comment__WEBPACK_IMPORTED_MODULE_1__["default"]).orderBy('order').cascadeDelete();
         }
       };
     }
@@ -24068,7 +24745,10 @@ var Post = /*#__PURE__*/function (_Model) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return User; });
 /* harmony import */ var _Post__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Post */ "./tests/models/Post.js");
-/* harmony import */ var _src_Model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../src/Model */ "./src/Model.js");
+/* harmony import */ var _Phone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Phone */ "./tests/models/Phone.js");
+/* harmony import */ var _Photo__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Photo */ "./tests/models/Photo.js");
+/* harmony import */ var _Document__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Document */ "./tests/models/Document.js");
+/* harmony import */ var _src_Model__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../src/Model */ "./src/Model.js");
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -24094,6 +24774,9 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 
 
+
+
+
 var User = /*#__PURE__*/function (_Model) {
   _inherits(User, _Model);
 
@@ -24111,15 +24794,57 @@ var User = /*#__PURE__*/function (_Model) {
       var _this = this;
 
       return {
+        photos: function photos() {
+          return _this.hasMany(_Photo__WEBPACK_IMPORTED_MODULE_2__["default"]);
+        },
         posts: function posts() {
           return _this.hasMany(_Post__WEBPACK_IMPORTED_MODULE_0__["default"], 'ownerId', 'id');
+        },
+        document: function document() {
+          return _this.hasOne(_Document__WEBPACK_IMPORTED_MODULE_3__["default"]).cascadeDelete();
+        },
+        phones: function phones() {
+          return _this.hasMany(_Phone__WEBPACK_IMPORTED_MODULE_1__["default"], 'ownerId', 'id').cascadeDelete();
         }
       };
+    }
+  }, {
+    key: "testMethod",
+    value: function testMethod() {
+      return 'test';
+    }
+  }], [{
+    key: "creating",
+    value: function creating(data) {
+      data.email = 'my@email.com';
+      return data;
+    }
+  }, {
+    key: "created",
+    value: function created(user) {
+      _Phone__WEBPACK_IMPORTED_MODULE_1__["default"].create({
+        phone: '99999-9999',
+        ownerId: user.id
+      });
+    }
+  }, {
+    key: "updating",
+    value: function updating(data) {
+      data.email = 'my_edited@email.com';
+      return data;
+    }
+  }, {
+    key: "updated",
+    value: function updated(user) {
+      _Phone__WEBPACK_IMPORTED_MODULE_1__["default"].create({
+        phone: '77777-7777',
+        ownerId: user.id
+      });
     }
   }]);
 
   return User;
-}(_src_Model__WEBPACK_IMPORTED_MODULE_1__["default"]);
+}(_src_Model__WEBPACK_IMPORTED_MODULE_4__["default"]);
 
 
 

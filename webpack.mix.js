@@ -11,6 +11,11 @@ let mix = require('laravel-mix');
  |
  */
 
+mix.babelConfig({
+    "plugins": [
+        "@babel/plugin-proposal-class-properties"
+    ]
+})
 mix.js('index.js', 'testsHtml/').setPublicPath('testsHtml');
 
 // Full API
