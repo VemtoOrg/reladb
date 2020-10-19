@@ -47,9 +47,13 @@ export default class Query {
     }
 
     get() {
-        let data = []
+        let data = [],
+            filteredIndex = this.getFilteredIndex()
 
-        this.getFilteredIndex().forEach(id => {
+        this.log('Getting data from: ' + this.model.table())
+        this.log('Current filtered index: ', filteredIndex)
+
+        filteredIndex.forEach(id => {
             let item = null
             if(item = this.getItem(id)) {
                 data.push(new this.model(item))
@@ -58,11 +62,15 @@ export default class Query {
         
         this.clearFilteredIndex()
 
+        this.log('Retrieved data:', data)
+
         return this.applyFilters(data)
     }
 
     find(id = null) {
         if(!id) throw new Error('Please specify an identifier to find a row')
+
+        this.log(`Getting item ${id} from ${this.model.table()}`)
 
         try {
             let item = this.getItem(id)
@@ -71,6 +79,7 @@ export default class Query {
     
             return item
         } catch (error) {
+            this.log(`Item ${id} not found`)
             return null
         }
     }
@@ -414,7 +423,7 @@ export default class Query {
     log() {
         if(window.RelaDB.mode === 'development') {
             console.log(...arguments)
-            console.log('')
+            console.log('') // Blank Line
         }
     }
 
