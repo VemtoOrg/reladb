@@ -4,6 +4,10 @@ import Model from "../../src/Model";
 
 export default class Comment extends Model {
     
+    static identifier() {
+        return 'Comment'
+    }
+
     relationships() {
         return {
             post: () => this.belongsTo(Post),

@@ -24032,7 +24032,7 @@ var BelongsTo = /*#__PURE__*/function (_Relationship) {
     key: "setForeignKey",
     value: function setForeignKey(foreignKey) {
       if (!foreignKey) {
-        foreignKey = "".concat(this.model.name.toLowerCase(), "Id");
+        foreignKey = "".concat(this.model.identifier().toLowerCase(), "Id");
       }
 
       this.foreignKey = foreignKey;
@@ -24063,7 +24063,7 @@ var BelongsTo = /*#__PURE__*/function (_Relationship) {
     key: "signature",
     value: function signature() {
       var type = this.allowsOnlyOne ? 'BelongsTo_One' : 'BelongsTo';
-      return "".concat(this.localModel.name, "->").concat(type, "(").concat(this.model.name, "):").concat(this.foreignKey, ",").concat(this.ownerKey);
+      return "".concat(this.localModel.name, "->").concat(type, "(").concat(this.model.identifier(), "):").concat(this.foreignKey, ",").concat(this.ownerKey);
     }
   }]);
 
@@ -24174,7 +24174,7 @@ var HasMany = /*#__PURE__*/function (_Relationship) {
   }, {
     key: "signature",
     value: function signature() {
-      return "".concat(this.localModel.name, "->HasMany(").concat(this.model.name, "):").concat(this.foreignKey, ",").concat(this.localKey);
+      return "".concat(this.localModel.name, "->HasMany(").concat(this.model.identifier(), "):").concat(this.foreignKey, ",").concat(this.localKey);
     }
   }]);
 
@@ -24248,7 +24248,7 @@ var HasOne = /*#__PURE__*/function (_HasMany) {
   }, {
     key: "signature",
     value: function signature() {
-      return "".concat(this.localModel.name, "->HasMany(").concat(this.model.name, "):").concat(this.foreignKey, ",").concat(this.localKey);
+      return "".concat(this.localModel.name, "->HasMany(").concat(this.model.identifier(), "):").concat(this.foreignKey, ",").concat(this.localKey);
     }
   }]);
 

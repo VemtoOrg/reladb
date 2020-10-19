@@ -9,7 +9,7 @@ export default class BelongsTo extends Relationship {
 
     setForeignKey(foreignKey) {
         if(!foreignKey) {
-            foreignKey = `${this.model.name.toLowerCase()}Id`
+            foreignKey = `${this.model.identifier().toLowerCase()}Id`
         }
 
         this.foreignKey = foreignKey
@@ -38,7 +38,7 @@ export default class BelongsTo extends Relationship {
 
     signature() {
         let type = this.allowsOnlyOne ? 'BelongsTo_One' : 'BelongsTo'
-        return `${this.localModel.name}->${type}(${this.model.name}):${this.foreignKey},${this.ownerKey}`
+        return `${this.localModel.name}->${type}(${this.model.identifier()}):${this.foreignKey},${this.ownerKey}`
     }
 
 }

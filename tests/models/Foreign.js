@@ -4,6 +4,10 @@ import Model from '../../src/Model'
 
 export default class Foreign extends Model {
 
+    static identifier() {
+        return 'Foreign'
+    }
+
     relationships() {
         return {
             field: () => this.belongsTo(Field, 'fieldId').atMostOne(),

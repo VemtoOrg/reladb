@@ -9,6 +9,10 @@ export default class Model {
     constructor(data = {}) {
 
         this.constructor.initFilters()
+        
+        if(!this.constructor.hasOwnProperty('identifier')) {
+            throw new Error('Model does not have an identifier. Please declare a static identifier() method')
+        }
 
         this.fillFromData(data)
 
@@ -135,7 +139,7 @@ export default class Model {
     }
 
     static table() {
-        return pluralize(this.name).toLowerCase()
+        return pluralize(this.identifier()).toLowerCase()
     }
 
     static timestamps() {
@@ -252,18 +256,18 @@ export default class Model {
     }
 
     static initFilters() {
-        if(!window.RelaDB.filters[this.name]) {
-            window.RelaDB.filters[this.name] = []
+        if(!window.RelaDB.filters[this.table()]) {
+            window.RelaDB.filters[this.table()] = []
         }
     }
 
     static clearFilters() {
         this.initFilters()
-        window.RelaDB.filters[this.name] = []
+        window.RelaDB.filters[this.table()] = []
     }
 
     static getFilters() {
         this.initFilters()
-        return window.RelaDB.filters[this.name]
+        return window.RelaDB.filters[this.table()]
     }
 }

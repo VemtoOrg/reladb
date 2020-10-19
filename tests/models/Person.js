@@ -3,6 +3,10 @@ import Model from "../../src/Model"
 
 export default class Person extends Model {
     
+    static identifier() {
+        return 'Person'
+    }
+
     relationships() {
         return {
             photos: () => this.hasMany(Photo),
