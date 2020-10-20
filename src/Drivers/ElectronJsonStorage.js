@@ -1,5 +1,5 @@
-import Driver from './Driver'
-import Storage from './Handlers/JsonStorage'
+const Driver = require('./Driver')
+const Storage = require('./Handlers/JsonStorage')
 
 class ElectronJsonStorage extends Driver {
 
@@ -25,4 +25,4 @@ class ElectronJsonStorage extends Driver {
 
 }
 
-export default new ElectronJsonStorage
+module.exports = new ElectronJsonStorage

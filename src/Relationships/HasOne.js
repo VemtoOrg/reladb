@@ -1,6 +1,6 @@
-import HasMany from "./HasMany"
+const HasMany = require("./HasMany")
 
-export default class HasOne extends HasMany {
+module.exports = class HasOne extends HasMany {
 
     getAllItems(item) {
         return super.execute(item)

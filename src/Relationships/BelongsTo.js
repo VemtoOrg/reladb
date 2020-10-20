@@ -1,6 +1,6 @@
-import Relationship from "./Relationship"
+const Relationship = require("./Relationship")
 
-export default class BelongsTo extends Relationship {
+module.exports = class BelongsTo extends Relationship {
 
     atMostOne() {
         this.allowsOnlyOne = true

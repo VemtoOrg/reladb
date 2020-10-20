@@ -1,6 +1,6 @@
-import Relationship from "./Relationship"
+const Relationship = require("./Relationship")
 
-export default class HasMany extends Relationship {
+module.exports = class HasMany extends Relationship {
     
     setForeignKey(foreignKey) {
         if(!foreignKey) {

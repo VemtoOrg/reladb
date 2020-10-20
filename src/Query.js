@@ -1,7 +1,7 @@
-import moment from "moment"
-import { version } from '../package.json'
+const moment = require('moment')
+const { version } = require('../package.json')
 
-export default class Query {
+module.exports = class Query {
 
     constructor(model) {
         if(!window.RelaDB) throw new Error('window.RelaDB is undefined. Please define it as window.RelaDB = new Database() before using the database capabilities')

@@ -151,4 +151,4 @@ class JsonStorage {
 
 }
 
-export default new JsonStorage
+module.exports = new JsonStorage

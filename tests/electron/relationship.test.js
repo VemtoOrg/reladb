@@ -1,5 +1,5 @@
-const { default: Database } = require('../../src/Database');
-const { default: ElectronJsonStorage } = require('../../src/Drivers/ElectronJsonStorage');
+const Database = require('../../src/Database');
+const ElectronJsonStorage = require('../../src/Drivers/ElectronJsonStorage');
 
 window.RelaDB = new Database
 window.RelaDB.driver = ElectronJsonStorage

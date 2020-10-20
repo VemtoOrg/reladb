@@ -1,6 +1,6 @@
-import Query from "../Query"
+const Query = require("../Query")
 
-export default class Relationship {
+module.exports = class Relationship {
 
     constructor(model, localModel) {
         this.model = model

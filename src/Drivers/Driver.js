@@ -1,4 +1,4 @@
-export default class Driver {
+module.exports = class Driver {
     
     setTable(table) {
         this.table = table

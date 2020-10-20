@@ -1,5 +1,5 @@
-const { default: Database } = require('../../src/Database');
-const { default: LocalStorage } = require('../../src/Drivers/LocalStorage');
+const Database = require('../../src/Database');
+const LocalStorage = require('../../src/Drivers/LocalStorage');
 
 window.RelaDB = new Database
 window.RelaDB.driver = LocalStorage

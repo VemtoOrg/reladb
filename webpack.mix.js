@@ -11,10 +11,7 @@ let mix = require('laravel-mix');
  |
  */
 
-mix.webpackConfig({ target: 'node' });
-
 mix.js('index.js', 'testsHtml/');
-mix.js('./src/main.js', 'dist/');
 
 // Full API
 // mix.js(src, output);
