@@ -1,4 +1,4 @@
 {
-    "/main.js": "/main.js",
+    "/dist/main.js": "/dist/main.js",
     "/testsHtml/index.js": "/testsHtml/index.js"
 }
