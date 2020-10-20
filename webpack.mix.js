@@ -11,7 +11,10 @@ let mix = require('laravel-mix');
  |
  */
 
-mix.js('index.js', 'testsHtml/').setPublicPath('testsHtml');
+mix.webpackConfig({ node: { fs: 'empty' }});
+
+mix.js('index.js', 'testsHtml/');
+mix.js('./src/main.js', 'dist/');
 
 // Full API
 // mix.js(src, output);
