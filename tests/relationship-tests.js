@@ -262,5 +262,73 @@ test('it removes all indexes correctly after removing complex relations', () => 
     fieldsTableData = Field.getQuery().getTableData()
 
     expect(fieldsTableData.index[userLogFkField.id].hasMany['foreigns.fieldId'].includes(foreign.id)).toBe(false)
-    expect(fieldsTableData.index[logIdField.id].hasMany['foreigns.relatedFieldId'].includes(foreign.id)).toBe(false)
+    expect(typeof fieldsTableData.index[logIdField.id] === 'undefined').toBe(true)
+})
+
+test('it orders a relation correctly by a numeric field', () => {
+    window.RelaDB.driver.clear()
+
+    let project = Project.create({name: 'My Project'}),
+        userEntity = Entity.create({name: 'User', projectId: project.id}),
+        field0 = Field.create({name: 'field0', order: 0, entityId: userEntity.id}),
+        field7 = Field.create({name: 'field7', order: 7, entityId: userEntity.id}),
+        field1 = Field.create({name: 'field1', order: 1, entityId: userEntity.id}),
+        field2 = Field.create({name: 'field2', order: 2, entityId: userEntity.id}),
+        field4 = Field.create({name: 'field4', order: 4, entityId: userEntity.id}),
+        field8 = Field.create({name: 'field8', order: 8, entityId: userEntity.id}),
+        field5 = Field.create({name: 'field5', order: 5, entityId: userEntity.id}),
+        field6 = Field.create({name: 'field6', order: 6, entityId: userEntity.id}),
+        field9 = Field.create({name: 'field9', order: 9, entityId: userEntity.id}),
+        field3 = Field.create({name: 'field3', order: 3, entityId: userEntity.id}),
+        field10 = Field.create({name: 'field10', order: 10, entityId: userEntity.id}),
+        field11 = Field.create({name: 'field11', order: 11, entityId: userEntity.id})
+
+    let fields = userEntity.fresh().fields
+
+    expect(fields[0].id).toBe(field0.id)
+    expect(fields[1].id).toBe(field1.id)
+    expect(fields[2].id).toBe(field2.id)
+    expect(fields[3].id).toBe(field3.id)
+    expect(fields[4].id).toBe(field4.id)
+    expect(fields[5].id).toBe(field5.id)
+    expect(fields[6].id).toBe(field6.id)
+    expect(fields[7].id).toBe(field7.id)
+    expect(fields[8].id).toBe(field8.id)
+    expect(fields[9].id).toBe(field9.id)
+    expect(fields[10].id).toBe(field10.id)
+    expect(fields[11].id).toBe(field11.id)
+})
+
+test('it orders a relation correctly by an alphabetical field', () => {
+    window.RelaDB.driver.clear()
+
+    let project = Project.create({name: 'My Project'}),
+        userEntity = Entity.create({name: 'User', projectId: project.id}),
+        field2 = Field.create({name: 'field2', order: 'c', entityId: userEntity.id}),
+        field3 = Field.create({name: 'field3', order: 'd', entityId: userEntity.id}),
+        field0 = Field.create({name: 'field0', order: 'a', entityId: userEntity.id}),
+        field6 = Field.create({name: 'field6', order: 'g', entityId: userEntity.id}),
+        field7 = Field.create({name: 'field7', order: 'h', entityId: userEntity.id}),
+        field1 = Field.create({name: 'field1', order: 'b', entityId: userEntity.id}),
+        field4 = Field.create({name: 'field4', order: 'e', entityId: userEntity.id}),
+        field9 = Field.create({name: 'field9', order: 'j', entityId: userEntity.id}),
+        field5 = Field.create({name: 'field5', order: 'f', entityId: userEntity.id}),
+        field8 = Field.create({name: 'field8', order: 'i', entityId: userEntity.id}),
+        field10 = Field.create({name: 'field10', order: 'k', entityId: userEntity.id}),
+        field11 = Field.create({name: 'field11', order: 'l', entityId: userEntity.id})
+
+    let fields = userEntity.fresh().fields
+
+    expect(fields[0].id).toBe(field0.id)
+    expect(fields[1].id).toBe(field1.id)
+    expect(fields[2].id).toBe(field2.id)
+    expect(fields[3].id).toBe(field3.id)
+    expect(fields[4].id).toBe(field4.id)
+    expect(fields[5].id).toBe(field5.id)
+    expect(fields[6].id).toBe(field6.id)
+    expect(fields[7].id).toBe(field7.id)
+    expect(fields[8].id).toBe(field8.id)
+    expect(fields[9].id).toBe(field9.id)
+    expect(fields[10].id).toBe(field10.id)
+    expect(fields[11].id).toBe(field11.id)
 })

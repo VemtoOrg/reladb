@@ -405,8 +405,8 @@ module.exports = class Query {
         return function(a, b) {
             if(typeof a[field] === 'undefined' || typeof b[field] === 'undefined') return 0
 
-            const itemA = a[field].toString().toUpperCase()
-            const itemB = b[field].toString().toUpperCase()
+            const itemA = typeof a[field] === 'number' ? a[field] : a[field].toString().toUpperCase()
+            const itemB = typeof b[field] === 'number' ? b[field] : b[field].toString().toUpperCase()
           
             let comparison = 0
             
