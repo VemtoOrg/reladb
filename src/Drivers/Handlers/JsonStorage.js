@@ -69,6 +69,19 @@ class JsonStorage {
         }
     }
 
+    async getAsync(key) {
+        this.setCurrentKey(key)
+
+        let filePath = this.getFilePathByKey(key)
+
+        try {
+            let file = fs.readFile(filePath, 'utf8')
+            return JSON.parse(file)            
+        } catch (error) {
+            return null
+        }
+    }
+
     remove(key) {
         this.setCurrentKey(key)
 

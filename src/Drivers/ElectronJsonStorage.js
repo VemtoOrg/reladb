@@ -11,6 +11,10 @@ class ElectronJsonStorage extends Driver {
         return Storage.setRelativePath(this.table).get(key)
     }
 
+    async getAsync(key) {
+        return Storage.setRelativePath(this.table).getAsync(key)
+    }
+
     remove(key) {
         return Storage.setRelativePath(this.table).remove(key)
     }

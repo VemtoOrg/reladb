@@ -16,6 +16,10 @@ class LocalStorage extends Driver {
         return data ? JSON.parse(data) : null
     }
 
+    async getAsync(key) {
+        return this.get(key)
+    }
+
     remove(key) {
         key = this.getCompleteKey(key)
 
