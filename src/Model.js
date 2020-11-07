@@ -1,5 +1,6 @@
 const Query = require('./Query')
 const pluralize = require('pluralize')
+const AsyncQuery = require('./AsyncQuery')
 const HasOne = require('./Relationships/HasOne')
 const HasMany = require('./Relationships/HasMany')
 const BelongsTo = require('./Relationships/BelongsTo')
@@ -68,6 +69,16 @@ module.exports = class Model {
         return item
     }
 
+    static async createAsync(data = {}) {
+        if(this.creating) data = this.creating(data)
+        
+        let item = await (new AsyncQuery(this)).create(data)
+        
+        if(this.created) this.created(item)
+        
+        return item
+    }
+
     static get() {
         return new Query(this)
             .setFilters(this.getFilters())
@@ -83,7 +94,7 @@ module.exports = class Model {
     }
 
     static async findAsync(id = null) {
-        return new Query(this).findAsync(id)
+        return new AsyncQuery(this).find(id)
     }
 
     fill(data) {

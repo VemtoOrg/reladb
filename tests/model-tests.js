@@ -19,6 +19,16 @@ test('it allows to create data', () => {
     expect(user.name).toBe('Tiago')
 })
 
+test('it allows to async create data', () => {
+    window.RelaDB.driver.clear()
+
+    return User.createAsync({name: 'Tiago', table: 'oiapoque'}).then(user => {
+        expect(user.id).toBe(1)
+        expect(user.name).toBe('Tiago')
+    })
+
+})
+
 test('it allows to save data from a model instance', () => {
     window.RelaDB.driver.clear()
 

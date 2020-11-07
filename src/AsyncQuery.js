@@ -1,24 +1,18 @@
 const moment = require('moment')
+const Query = require('./Query')
 const { version } = require('../package.json')
 
-module.exports = class Query {
+module.exports = class AsyncQuery extends Query {
 
-    constructor(model) {
-        if(!window.RelaDB) throw new Error('window.RelaDB is undefined. Please define it as window.RelaDB = new Database() before using the database capabilities')
-
-        this.model = model
-        this.filteredIndex = null
-        this.filters = []
+    async count() {
+        let tableData = await this.getTableData()
+        return tableData.count
     }
 
-    count() {
-        return this.getTableData().count
-    }
-
-    create(data = {}) {
+    async create(data = {}) {
         if(window.RelaDB.events.creating) window.RelaDB.events.creating()
 
-        let tableData = this.getTableData(),
+        let tableData = await this.getTableData(),
             id = ++tableData.lastPrimaryKey,
             item = null
 
@@ -67,7 +61,7 @@ module.exports = class Query {
         return this.applyFilters(data)
     }
 
-    find(id = null) {
+    async findAsync(id = null) {
         if(!id) throw new Error('Please specify an identifier to find a row')
 
         this.log(`Getting item ${id} from ${this.model.table()}`)
@@ -82,16 +76,6 @@ module.exports = class Query {
             this.log(`Item ${id} not found`)
             return null
         }
-    }
-
-    findOrFail(id = null) {
-        let data = null
-
-        if(data = this.find(id)) {
-            return data
-        }
-
-        throw new Error(`Item with identifier ${id} not found on table ${this.model.table()}`)
     }
 
     update(id, data = {}) {
@@ -253,9 +237,9 @@ module.exports = class Query {
         return true
     }
 
-    getTableData() {
+    async getTableData() {
         let tableKey = this.tableKey(),
-            tableData = this.dbDriver().get(tableKey)
+            tableData = await this.dbDriver().getAsync(tableKey)
 
         if(!tableData) return this.tableStructure()
 
@@ -375,65 +359,6 @@ module.exports = class Query {
         tableData.index[item.id] = newIndexData
 
         return this.saveTableData(tableData)
-    }
-
-    tableKey() {
-        return this.model.table()
-    }
-
-    tableItemKey(id) {
-        return `item_${id}`
-    }
-
-    tableStructure() {
-        return {
-            count: 0,
-            lastPrimaryKey: 0,
-            index: {},
-            additionalIndexes: {},
-            items: [],
-            relations: [],
-            reladbVersion: version,
-        }
-    }
-
-    indexStructure() {
-        return {
-            hasMany: {},
-            hasOne: {},
-            belongsTo: {},
-            belongsToMany: {},
-        }
-    }
-
-    dbDriver() {
-        return window.RelaDB.driver.setTable(this.model.table())
-    }
-
-    compare(field, direction = 'asc') {
-        return function(a, b) {
-            if(typeof a[field] === 'undefined' || typeof b[field] === 'undefined') return 0
-
-            const itemA = typeof a[field] === 'number' ? a[field] : a[field].toString().toUpperCase()
-            const itemB = typeof b[field] === 'number' ? b[field] : b[field].toString().toUpperCase()
-          
-            let comparison = 0
-            
-            if (itemA > itemB) {
-              comparison = 1
-            } else if (itemA < itemB) {
-              comparison = -1
-            }
-    
-            return direction == 'asc' ? comparison : comparison * -1
-        }
-    }
-
-    log() {
-        if(window.RelaDB.mode === 'development') {
-            console.log(...arguments)
-            console.log('') // Blank Line
-        }
     }
 
 }
