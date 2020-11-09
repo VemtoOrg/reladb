@@ -127,32 +127,8 @@ module.exports = class AsyncQuery extends Query {
         return true
     }
 
-    isAlreadyDeleting(id) {
-        return window.RelaDB.isAlreadyDeleting(this.tableKey(), id)
-    }
-
     isAlreadyDeleted(id) {
         return !! !this.getItem(id)
-    }
-    
-    addToDeletingBuffer(id) {
-        return window.RelaDB.addToDeletingBuffer(this.tableKey(), id)
-    }
-
-    removeFromDeletingBuffer(id) {
-        return window.RelaDB.removeFromDeletingBuffer(this.tableKey(), id)
-    }
-
-    blockFieldsReplacingRelationships(data) {
-        let relationships = (new this.model).relationships()
-
-        data = Object.assign({}, data)
-
-        Object.keys(relationships).forEach(relationshipName => {
-            if(typeof data[relationshipName] !== 'undefined') {
-                throw new Error(`It is not possible to set the field ${relationshipName} because there is already a relationship with the same name`)
-            }
-        })
     }
 
     setFilters(filters) {
