@@ -48,6 +48,12 @@
   "jest": {
     "projects": [
       {
+        "displayName": "behavior",
+        "testMatch": [
+          "<rootDir>/tests/behavior/*.test.js"
+        ]
+      },
+      {
         "displayName": "default",
         "testMatch": [
           "<rootDir>/tests/localstorage/*.test.js"
