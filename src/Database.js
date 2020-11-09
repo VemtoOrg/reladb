@@ -1,3 +1,5 @@
+const Command = require("./Command")
+
 module.exports = class Database {
 
     constructor() {
@@ -5,7 +7,7 @@ module.exports = class Database {
         this.driver = null
         this.filters = []
         this.deletingBuffer = {}
-        this.dispatches = []
+        this.commands = []
 
         this.cache = {tables: {}}
         this.onCacheMode = false
@@ -106,7 +108,17 @@ module.exports = class Database {
         return this.onCacheMode
     }
 
-    runCommand(command, data) {
+    dispatchCommand(cmd, data = null) {
+        let command = new Command(cmd, data)
+        
+        this.commands.push(command)
+        
+        return command
+    }
 
+    removeCommand(command) {
+        this.commands = this.commands.filter(
+            otherCommand => otherCommand.id !== command.id
+        )
     }
 }

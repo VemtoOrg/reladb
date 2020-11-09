@@ -4,6 +4,8 @@ const { default: Post } = require('./tests/models/Post')
 const { default: User } = require('./tests/models/User')
 const LocalStorage = require("./src/Drivers/LocalStorage")
 
+window.User = User
+
 window.RelaDB = new Database
 window.RelaDB.driver = LocalStorage
 window.RelaDB.driver.clear()

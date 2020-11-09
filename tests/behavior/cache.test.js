@@ -64,3 +64,85 @@ test('it can stop caching data', () => {
 
     expect(typeof window.RelaDB.cache.tables.users === 'undefined').toBe(true)
 })
+
+test('it can save data on cache', () => {
+    window.RelaDB.driver.clear()
+
+    let user = User.create({name: 'Tiago', 'table': 'oiapoque'}),
+            post = Post.create({name: 'Post', ownerId: user.id}),
+            comment = Comment.create({comment: 'Hey!', postId: post.id})
+    
+    window.RelaDB.cacheFrom(user)
+
+    user.name = 'Oiapoque'
+    user.save()
+
+    expect(window.RelaDB.cache.tables.users.item_1.name).toBe('Oiapoque')
+})
+
+test('it can remove data from cache', () => {
+    window.RelaDB.driver.clear()
+
+    let user = User.create({name: 'Tiago', 'table': 'oiapoque'}),
+            post = Post.create({name: 'Post', ownerId: user.id}),
+            comment = Comment.create({comment: 'Hey!', postId: post.id})
+    
+    window.RelaDB.cacheFrom(user)
+
+    user.delete()
+
+    expect(typeof window.RelaDB.cache.tables.users.item_1 === 'undefined').toBe(true)
+})
+
+test('it generates executable commands when manipulating data on cache', () => {
+    window.RelaDB.driver.clear()
+
+    let user = User.create({name: 'Tiago', 'table': 'oiapoque'})
+    
+    window.RelaDB.cacheFrom(user)
+
+    user.name = 'Oiapoque'
+    user.save()
+
+    expect(window.RelaDB.commands.length > 0).toBe(true)
+})
+
+test('it can execute a database command that stores data', () => {
+    window.RelaDB.driver.clear()
+
+    let user = User.create({name: 'Tiago', 'table': 'oiapoque'})
+    
+    window.RelaDB.cacheFrom(user)
+
+    // Manipulates the data on the RAM cache storage
+    user.name = 'Oiapoque'
+    user.save()
+
+    window.RelaDB.stopCaching()
+
+    expect(window.RelaDB.commands[0].command === 'set item_1 on users').toBe(true)
+
+    // Execute the command to transfer the data from cache to the database storage
+    window.RelaDB.commands[0].execute()
+
+    // Now gets the data from the database storage
+    user = User.find(user.id)
+
+    expect(user.name).toBe('Oiapoque')
+
+    // Check if the command was removed from the commands list
+    expect(window.RelaDB.commands[0].command === 'set item_1 on users').toBe(false)
+})
+
+test('it blocks wrong commands', () => {
+    window.RelaDB.driver.clear()
+
+    
+    let command0 = window.RelaDB.dispatchCommand('something'),
+        command1 = window.RelaDB.dispatchCommand('settt something on something'),
+        command2 = window.RelaDB.dispatchCommand('set item_1 on phones', {})
+
+    expect(() => command0.parseCommand()).toThrow()
+    expect(() => command1.parseCommand()).toThrow()
+    expect(() => command2.parseCommand()).not.toThrow()
+})

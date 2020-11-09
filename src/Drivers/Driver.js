@@ -26,6 +26,7 @@ module.exports = class Driver {
     }
 
     setFromCache(key, data) {
+        window.RelaDB.dispatchCommand(`set ${key} on ${this.table}`, data)
         return window.RelaDB.cache.tables[this.table][key] = data
     }
 
@@ -34,10 +35,12 @@ module.exports = class Driver {
     }
 
     removeFromCache(key) {
+        window.RelaDB.dispatchCommand(`remove ${key} from ${this.table}`)
         delete window.RelaDB.cache.tables[this.table][key]
     }
 
     clearFromCache() {
+        window.RelaDB.dispatchCommand(`clear`)
         return window.RelaDB.clearCache()
     }
     
