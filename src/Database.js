@@ -83,6 +83,7 @@ module.exports = class Database {
 
     stopCaching() {
         this.onCacheMode = false
+        this.cache = {tables: {}}
     }
 
     isCaching() {

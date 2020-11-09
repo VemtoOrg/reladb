@@ -22310,6 +22310,9 @@ module.exports = /*#__PURE__*/function () {
     key: "stopCaching",
     value: function stopCaching() {
       this.onCacheMode = false;
+      this.cache = {
+        tables: {}
+      };
     }
   }, {
     key: "isCaching",
