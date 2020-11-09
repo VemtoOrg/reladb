@@ -53,7 +53,7 @@ module.exports = class HasMany extends Relationship {
         return this.getQuery()
             .setFilters(this.filters)
             .setFilteredIndex(hasManyIndex)
-            .get()
+            .get() || []
     }
 
     signature() {

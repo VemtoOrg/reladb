@@ -227,7 +227,7 @@ module.exports = class Model {
                 relationships.push(relationship)
             }
         })
-
+        
         return relationships
     }
 

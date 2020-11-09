@@ -54,7 +54,13 @@ module.exports = class Database {
 
     cacheItemRelationships(item) {
         item.hasManyRelationships().forEach((relationship) => {
-            relationship.execute().forEach(relatedItem => {
+            let relationshipItems = relationship.execute(item)
+            
+            if(!relationshipItems) return
+
+            relationshipItems = Array.isArray(relationshipItems) ? relationshipItems : [relationshipItems]
+
+            relationshipItems.forEach(relatedItem => {
                 this.addItemToTableCache(relatedItem)
                 this.cacheItemRelationships(relatedItem)
             })
@@ -62,15 +68,17 @@ module.exports = class Database {
     }
 
     addItemToTableCache(item) {
-        if(!this.cache.tables[item.table()]) {
-            this.cache.tables[item.table()] = {}
+        let table = item.constructor.table()
+
+        if(!this.cache.tables[table]) {
+            this.cache.tables[table] = {}
         }
 
         let itemPrimary = item[item.constructor.primaryKey()]
 
-        if(this.cache.tables[item.table()][`item_${itemPrimary}`]) return
+        if(this.cache.tables[table][`item_${itemPrimary}`]) return
 
-        this.cache.tables[item.table()][`item_${itemPrimary}`] = item
+        this.cache.tables[table][`item_${itemPrimary}`] = item
     }
 
     stopCaching() {
