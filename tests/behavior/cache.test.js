@@ -138,6 +138,27 @@ test('it can execute a database command that stores data', () => {
     expect(window.RelaDB.commands[0].command === 'set item_1 on users').toBe(false)
 })
 
+test('it can execute a database command that removes data', () => {
+    window.RelaDB.driver.clear()
+
+    let user = User.create({name: 'Tiago'}),
+        userId = user.id
+    
+    window.RelaDB.cacheFrom(user)
+
+    // Manipulates the data on the RAM cache storage
+    user.delete()
+
+    window.RelaDB.stopCaching()
+
+    window.RelaDB.commands.forEach(command => command.execute())
+
+    // Now gets the data from the database storage
+    user = User.find(userId)
+
+    expect(user).toBe(null)
+})
+
 test('it blocks wrong commands', () => {
     window.RelaDB.driver.clear()
 
