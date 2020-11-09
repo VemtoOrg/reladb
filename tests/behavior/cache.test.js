@@ -171,3 +171,17 @@ test('it blocks wrong commands', () => {
     expect(() => command1.parseCommand()).toThrow()
     expect(() => command2.parseCommand()).not.toThrow()
 })
+
+test('it fires an event after dispatching a command', () => {
+    window.RelaDB.driver.clear()
+
+    let commands = []
+
+    window.RelaDB.onDispatchCommand = command => commands.push(command)
+
+    let command0 = window.RelaDB.dispatchCommand('something'),
+        command1 = window.RelaDB.dispatchCommand('other')
+
+    expect(commands[0].command).toBe(command0.command)
+    expect(commands[1].command).toBe(command1.command)
+})

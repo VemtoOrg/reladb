@@ -23251,6 +23251,11 @@ module.exports = /*#__PURE__*/function () {
       var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
       var command = new Command(cmd, data);
       this.commands.push(command);
+
+      if (this.onDispatchCommand) {
+        this.onDispatchCommand(command);
+      }
+
       return command;
     }
   }, {

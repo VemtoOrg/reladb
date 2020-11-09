@@ -119,6 +119,10 @@ module.exports = class Database {
         
         this.commands.push(command)
         
+        if(this.onDispatchCommand) {
+            this.onDispatchCommand(command)
+        }
+
         return command
     }
 
