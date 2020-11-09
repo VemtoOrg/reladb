@@ -22353,6 +22353,26 @@ module.exports = /*#__PURE__*/function () {
       this.table = table;
       return this;
     }
+  }, {
+    key: "set",
+    value: function set(key, data) {
+      return this.setFromDriver(key, data);
+    }
+  }, {
+    key: "get",
+    value: function get(key) {
+      return this.getFromDriver(key);
+    }
+  }, {
+    key: "remove",
+    value: function remove(key) {
+      return this.removeFromDriver(key);
+    }
+  }, {
+    key: "clear",
+    value: function clear() {
+      return this.clearFromDriver();
+    }
   }]);
 
   return Driver;
@@ -22403,27 +22423,27 @@ var LocalStorage = /*#__PURE__*/function (_Driver) {
   }
 
   _createClass(LocalStorage, [{
-    key: "set",
-    value: function set(key, data) {
+    key: "setFromDriver",
+    value: function setFromDriver(key, data) {
       key = this.getCompleteKey(key);
       return window.localStorage.setItem(key, JSON.stringify(data));
     }
   }, {
-    key: "get",
-    value: function get(key) {
+    key: "getFromDriver",
+    value: function getFromDriver(key) {
       key = this.getCompleteKey(key);
       var data = window.localStorage.getItem(key);
       return data ? JSON.parse(data) : null;
     }
   }, {
-    key: "remove",
-    value: function remove(key) {
+    key: "removeFromDriver",
+    value: function removeFromDriver(key) {
       key = this.getCompleteKey(key);
       return window.localStorage.removeItem(key);
     }
   }, {
-    key: "clear",
-    value: function clear() {
+    key: "clearFromDriver",
+    value: function clearFromDriver() {
       return window.localStorage.clear();
     }
   }, {

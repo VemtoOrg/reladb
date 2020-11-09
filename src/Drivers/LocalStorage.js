@@ -2,13 +2,13 @@ const Driver = require("./Driver")
 
 class LocalStorage extends Driver {
 
-    set(key, data) {
+    setFromDriver(key, data) {
         key = this.getCompleteKey(key)
 
         return window.localStorage.setItem(key, JSON.stringify(data))
     }
 
-    get(key) {
+    getFromDriver(key) {
         key = this.getCompleteKey(key)
 
         let data = window.localStorage.getItem(key)
@@ -16,13 +16,13 @@ class LocalStorage extends Driver {
         return data ? JSON.parse(data) : null
     }
 
-    remove(key) {
+    removeFromDriver(key) {
         key = this.getCompleteKey(key)
 
         return window.localStorage.removeItem(key)
     }
 
-    clear() {
+    clearFromDriver() {
         return window.localStorage.clear()
     }
 
