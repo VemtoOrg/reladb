@@ -24,6 +24,8 @@ test('it caches an item and all relations', () => {
 
     let cachedTables = window.RelaDB.cache.tables
 
+    expect(window.RelaDB.isCaching()).toBe(true)
+
     expect(typeof cachedTables.users !== 'undefined').toBe(true)
     expect(typeof cachedTables.posts !== 'undefined').toBe(true)
     expect(typeof cachedTables.phones !== 'undefined').toBe(true)
@@ -35,4 +37,18 @@ test('it caches an item and all relations', () => {
     expect(typeof cachedTables.posts.item_1 !== 'undefined').toBe(true)
     expect(typeof cachedTables.phones.item_1 !== 'undefined').toBe(true)
     expect(typeof cachedTables.comments.item_1 !== 'undefined').toBe(true)
+})
+
+test('it can stop caching data', () => {
+    window.RelaDB.driver.clear()
+
+    let user = User.create({name: 'Tiago', 'table': 'oiapoque'})
+    
+    window.RelaDB.cacheFrom(user)
+
+    expect(window.RelaDB.isCaching()).toBe(true)
+
+    window.RelaDB.stopCaching()
+
+    expect(window.RelaDB.isCaching()).toBe(false)
 })
