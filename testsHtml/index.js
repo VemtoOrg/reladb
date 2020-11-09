@@ -23189,6 +23189,8 @@ module.exports = /*#__PURE__*/function () {
       var _this = this;
 
       item.hasManyRelationships().forEach(function (relationship) {
+        _this.setupCacheTable(relationship.model.table());
+
         var relationshipItems = relationship.execute(item);
         if (!relationshipItems) return;
         relationshipItems = Array.isArray(relationshipItems) ? relationshipItems : [relationshipItems];
@@ -23203,11 +23205,7 @@ module.exports = /*#__PURE__*/function () {
     key: "addItemToTableCache",
     value: function addItemToTableCache(item) {
       var table = item.getTable();
-
-      if (!this.cache.tables[table]) {
-        this.cache.tables[table] = {};
-      }
-
+      this.setupCacheTable(table);
       this.addItemTableDataToCache(item);
       var itemPrimary = item[item.constructor.primaryKey()];
       if (this.cache.tables[table]["item_".concat(itemPrimary)]) return;
@@ -23217,9 +23215,17 @@ module.exports = /*#__PURE__*/function () {
     key: "addItemTableDataToCache",
     value: function addItemTableDataToCache(item) {
       var table = item.getTable();
+      this.setupCacheTable(table);
       if (this.cache.tables[table][table]) return;
       var tableData = item.getTableData();
       this.cache.tables[table][table] = tableData;
+    }
+  }, {
+    key: "setupCacheTable",
+    value: function setupCacheTable(table) {
+      if (!this.cache.tables[table]) {
+        this.cache.tables[table] = {};
+      }
     }
   }, {
     key: "stopCaching",

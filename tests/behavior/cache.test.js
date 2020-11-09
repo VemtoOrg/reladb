@@ -89,6 +89,10 @@ test('it can remove data from cache', () => {
     
     window.RelaDB.cacheFrom(user)
 
+    // Removing some non-cascade-delete relations
+    user.posts.forEach(post => post.delete())
+    user.photos.forEach(photo => photo.delete())
+
     user.delete()
 
     expect(typeof window.RelaDB.cache.tables.users.item_1 === 'undefined').toBe(true)

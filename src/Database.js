@@ -56,6 +56,8 @@ module.exports = class Database {
 
     cacheItemRelationships(item) {
         item.hasManyRelationships().forEach((relationship) => {
+            this.setupCacheTable(relationship.model.table())
+
             let relationshipItems = relationship.execute(item)
             
             if(!relationshipItems) return
@@ -71,10 +73,7 @@ module.exports = class Database {
 
     addItemToTableCache(item) {
         let table = item.getTable()
-
-        if(!this.cache.tables[table]) {
-            this.cache.tables[table] = {}
-        }
+        this.setupCacheTable(table)
 
         this.addItemTableDataToCache(item)
 
@@ -87,12 +86,19 @@ module.exports = class Database {
 
     addItemTableDataToCache(item) {
         let table = item.getTable()
+        this.setupCacheTable(table)
 
         if(this.cache.tables[table][table]) return
 
         let tableData = item.getTableData()
-
+        
         this.cache.tables[table][table] = tableData
+    }
+
+    setupCacheTable(table) {
+        if(!this.cache.tables[table]) {
+            this.cache.tables[table] = {}
+        }
     }
 
     stopCaching() {
