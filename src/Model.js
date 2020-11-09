@@ -138,6 +138,11 @@ module.exports = class Model {
         return this.constructor.table()
     }
 
+    getTableData() {
+        return new Query(this.constructor)
+            .getTableData()
+    }
+
     static table() {
         return pluralize(this.identifier()).toLowerCase()
     }

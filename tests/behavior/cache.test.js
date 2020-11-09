@@ -7,7 +7,10 @@ const LocalStorage = require('../../src/Drivers/LocalStorage')
 window.RelaDB = new Database
 window.RelaDB.setDriver(LocalStorage)
 
-afterAll(() => window.RelaDB.driver.clear())
+afterEach(() => {
+    window.RelaDB.stopCaching()
+    window.RelaDB.driver.clear() 
+})
 
 test('it caches an item and all relations', () => {
     window.RelaDB.driver.clear()
@@ -33,6 +36,11 @@ test('it caches an item and all relations', () => {
 
     expect(typeof cachedTables.others === 'undefined').toBe(true)
 
+    expect(typeof cachedTables.users.users !== 'undefined').toBe(true)
+    expect(typeof cachedTables.posts.posts !== 'undefined').toBe(true)
+    expect(typeof cachedTables.phones.phones !== 'undefined').toBe(true)
+    expect(typeof cachedTables.comments.comments !== 'undefined').toBe(true)
+
     expect(typeof cachedTables.users.item_1 !== 'undefined').toBe(true)
     expect(typeof cachedTables.posts.item_1 !== 'undefined').toBe(true)
     expect(typeof cachedTables.phones.item_1 !== 'undefined').toBe(true)
@@ -48,7 +56,11 @@ test('it can stop caching data', () => {
 
     expect(window.RelaDB.isCaching()).toBe(true)
 
+    expect(typeof window.RelaDB.cache.tables.users.item_1 !== 'undefined').toBe(true)
+
     window.RelaDB.stopCaching()
 
     expect(window.RelaDB.isCaching()).toBe(false)
+
+    expect(typeof window.RelaDB.cache.tables.users === 'undefined').toBe(true)
 })

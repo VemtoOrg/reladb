@@ -22296,20 +22296,34 @@ module.exports = /*#__PURE__*/function () {
   }, {
     key: "addItemToTableCache",
     value: function addItemToTableCache(item) {
-      var table = item.constructor.table();
+      var table = item.getTable();
 
       if (!this.cache.tables[table]) {
         this.cache.tables[table] = {};
       }
 
+      this.addItemTableDataToCache(item);
       var itemPrimary = item[item.constructor.primaryKey()];
       if (this.cache.tables[table]["item_".concat(itemPrimary)]) return;
       this.cache.tables[table]["item_".concat(itemPrimary)] = item;
     }
   }, {
+    key: "addItemTableDataToCache",
+    value: function addItemTableDataToCache(item) {
+      var table = item.getTable();
+      if (this.cache.tables[table][table]) return;
+      var tableData = item.getTableData();
+      this.cache.tables[table][table] = tableData;
+    }
+  }, {
     key: "stopCaching",
     value: function stopCaching() {
       this.onCacheMode = false;
+      this.clearCache();
+    }
+  }, {
+    key: "clearCache",
+    value: function clearCache() {
       this.cache = {
         tables: {}
       };
@@ -22356,22 +22370,46 @@ module.exports = /*#__PURE__*/function () {
   }, {
     key: "set",
     value: function set(key, data) {
+      if (window.RelaDB.isCaching()) return this.setFromCache(key, data);
       return this.setFromDriver(key, data);
     }
   }, {
     key: "get",
     value: function get(key) {
+      if (window.RelaDB.isCaching()) return this.getFromCache(key);
       return this.getFromDriver(key);
     }
   }, {
     key: "remove",
     value: function remove(key) {
+      if (window.RelaDB.isCaching()) return this.removeFromCache(key);
       return this.removeFromDriver(key);
     }
   }, {
     key: "clear",
     value: function clear() {
+      if (window.RelaDB.isCaching()) return this.clearFromCache();
       return this.clearFromDriver();
+    }
+  }, {
+    key: "setFromCache",
+    value: function setFromCache(key, data) {
+      return window.RelaDB.cache.tables[this.table][key] = data;
+    }
+  }, {
+    key: "getFromCache",
+    value: function getFromCache(key) {
+      return window.RelaDB.cache.tables[this.table][key];
+    }
+  }, {
+    key: "removeFromCache",
+    value: function removeFromCache(key) {
+      delete window.RelaDB.cache.tables[this.table][key];
+    }
+  }, {
+    key: "clearFromCache",
+    value: function clearFromCache() {
+      return window.RelaDB.clearCache();
     }
   }]);
 
@@ -22590,6 +22628,11 @@ module.exports = /*#__PURE__*/function () {
     key: "getTable",
     value: function getTable() {
       return this.constructor.table();
+    }
+  }, {
+    key: "getTableData",
+    value: function getTableData() {
+      return new Query(this.constructor).getTableData();
     }
   }, {
     key: "clearData",

@@ -68,11 +68,13 @@ module.exports = class Database {
     }
 
     addItemToTableCache(item) {
-        let table = item.constructor.table()
+        let table = item.getTable()
 
         if(!this.cache.tables[table]) {
             this.cache.tables[table] = {}
         }
+
+        this.addItemTableDataToCache(item)
 
         let itemPrimary = item[item.constructor.primaryKey()]
 
@@ -81,8 +83,22 @@ module.exports = class Database {
         this.cache.tables[table][`item_${itemPrimary}`] = item
     }
 
+    addItemTableDataToCache(item) {
+        let table = item.getTable()
+
+        if(this.cache.tables[table][table]) return
+
+        let tableData = item.getTableData()
+
+        this.cache.tables[table][table] = tableData
+    }
+
     stopCaching() {
         this.onCacheMode = false
+        this.clearCache()
+    }
+
+    clearCache() {
         this.cache = {tables: {}}
     }
 
