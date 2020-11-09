@@ -82,10 +82,6 @@ module.exports = class Model {
         return new Query(this).findOrFail(id)
     }
 
-    static async findAsync(id = null) {
-        return new Query(this).findAsync(id)
-    }
-
     fill(data) {
         Object.keys(data).forEach(key => this[key] = data[key])
         return this

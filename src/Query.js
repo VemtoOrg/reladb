@@ -94,23 +94,6 @@ module.exports = class Query {
         throw new Error(`Item with identifier ${id} not found on table ${this.model.table()}`)
     }
 
-    async findAsync(id = null) {
-        if(!id) throw new Error('Please specify an identifier to find a row')
-
-        this.log(`Getting item ${id} from ${this.model.table()}`)
-
-        try {
-            let item = this.getItem(id)
-    
-            this.checkItemData(item, id)
-    
-            return item
-        } catch (error) {
-            this.log(`Item ${id} not found`)
-            return null
-        }
-    }
-
     update(id, data = {}) {
         if(window.RelaDB.events.updating) window.RelaDB.events.updating()
 
@@ -228,15 +211,6 @@ module.exports = class Query {
     getItem(id) {
         let itemKey = this.tableItemKey(id),
             itemData = this.dbDriver().get(itemKey)
-
-        if(!itemData) return null
-
-        return new this.model(itemData)
-    }
-
-    async getItemAsync(id) {
-        let itemKey = this.tableItemKey(id),
-            itemData = await this.dbDriver().getAsync(itemKey)
 
         if(!itemData) return null
 

@@ -71,17 +71,6 @@ test('it allows to find data', () => {
     expect(user.table).toBe('oiapoque')
 })
 
-test('it allows to async find data', () => {
-    window.RelaDB.driver.clear()
-
-    User.create({name: 'Tiago', table: 'oiapoque'})
-
-    return User.findAsync(1).then(user => {
-        expect(user.name).toBe('Tiago')
-        expect(user.table).toBe('oiapoque')
-    })
-})
-
 test('it can return empty data when trying to find nonexistent data', () => {
     window.RelaDB.driver.clear()
 
