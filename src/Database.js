@@ -2,8 +2,17 @@ module.exports = class Database {
 
     constructor() {
         this.events = {}
+        this.driver = null
         this.filters = []
         this.deletingBuffer = {}
+        this.dispatches = []
+
+        this.cache = {tables: {}}
+        this.onCacheMode = false
+    }
+
+    setDriver(driver) {
+        this.driver = driver
     }
 
     isAlreadyDeleting(table, id) {
@@ -34,5 +43,45 @@ module.exports = class Database {
 
     cloneProperty(property) {
         return JSON.parse(JSON.stringify(this[property]))
+    }
+
+    cacheFrom(item) {
+        this.addItemToTableCache(item)
+        this.cacheItemRelationships(item)
+
+        this.onCacheMode = true
+    }
+
+    cacheItemRelationships(item) {
+        item.hasManyRelationships().forEach((relationship) => {
+            relationship.execute().forEach(relatedItem => {
+                this.addItemToTableCache(relatedItem)
+                this.cacheItemRelationships(relatedItem)
+            })
+        })
+    }
+
+    addItemToTableCache(item) {
+        if(!this.cache.tables[item.table()]) {
+            this.cache.tables[item.table()] = {}
+        }
+
+        let itemPrimary = item[item.constructor.primaryKey()]
+
+        if(this.cache.tables[item.table()][`item_${itemPrimary}`]) return
+
+        this.cache.tables[item.table()][`item_${itemPrimary}`] = item
+    }
+
+    stopCaching() {
+        this.onCacheMode = false
+    }
+
+    isCaching() {
+        return this.onCacheMode
+    }
+
+    runCommand(command, data) {
+
     }
 }
