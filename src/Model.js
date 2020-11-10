@@ -229,6 +229,7 @@ module.exports = class Model {
         Object.keys(this.relationships()).forEach(relationshipName => {
             let relationship = this.getRelationship(relationshipName)
             if(relationship instanceof instanceOfClass) {
+                relationship.__nameOnModel = relationshipName
                 relationships.push(relationship)
             }
         })

@@ -16,4 +16,12 @@ module.exports = class Relationship {
         this.filters = filters
     }
 
+    getModelIdentifier() {
+        return `${this.localModel.identifier()}:${this.__nameOnModel}`
+    }
+
+    getItemModelIdentifier(item) {
+        return `${this.localModel.identifier()}:${item.id}:${this.__nameOnModel}`
+    }
+
 }

@@ -3,6 +3,10 @@ const { default: Post } = require('../models/Post')
 const { default: User } = require('../models/User')
 const { default: Comment } = require('../models/Comment')
 const LocalStorage = require('../../src/Drivers/LocalStorage')
+const { default: Project } = require('../models/Project')
+const { default: Entity } = require('../models/Entity')
+const { default: Relationship } = require('../models/Relationship')
+const { default: Field } = require('../models/Field')
 
 window.RelaDB = new Database
 window.RelaDB.setDriver(LocalStorage)
@@ -184,4 +188,25 @@ test('it fires an event after dispatching a command', () => {
 
     expect(commands[0].command).toBe(command0.command)
     expect(commands[1].command).toBe(command1.command)
+})
+
+test('it can cache items with recursive relations', () => {
+    window.RelaDB.driver.clear()
+
+    let project = Project.create({name: 'My Project'}),
+        userEntity = Entity.create({name: 'User', projectId: project.id})
+
+    Field.create({name: 'field2', order: 'c', entityId: userEntity.id})
+
+    let firstRelationship = Relationship.create(
+            {name: 'test', entityId: userEntity.id}
+        ),
+        secondRelationship = Relationship.create(
+            {name: 'test', entityId: userEntity.id, inverseId: firstRelationship.id}
+        )
+
+    firstRelationship.inverseId = secondRelationship.id
+    firstRelationship.save()
+
+    window.RelaDB.cacheFrom(project)
 })

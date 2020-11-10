@@ -11,6 +11,8 @@ module.exports = class Database {
 
         this.cache = {tables: {}}
         this.onCacheMode = false
+
+        this.cachedRelationships = []
     }
 
     setDriver(driver) {
@@ -56,6 +58,10 @@ module.exports = class Database {
 
     cacheItemRelationships(item) {
         item.hasManyRelationships().forEach((relationship) => {
+            if(this.cachedRelationships.some(cached => cached === relationship.getItemModelIdentifier(item))) return
+
+            this.cachedRelationships.push(relationship.getItemModelIdentifier(item))
+            
             this.setupCacheTable(relationship.model.table())
 
             let relationshipItems = relationship.execute(item)
@@ -108,6 +114,7 @@ module.exports = class Database {
 
     clearCache() {
         this.cache = {tables: {}}
+        this.cachedRelationships = []
     }
 
     isCaching() {

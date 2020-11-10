@@ -23136,6 +23136,7 @@ module.exports = /*#__PURE__*/function () {
       tables: {}
     };
     this.onCacheMode = false;
+    this.cachedRelationships = [];
   }
 
   _createClass(Database, [{
@@ -23189,6 +23190,12 @@ module.exports = /*#__PURE__*/function () {
       var _this = this;
 
       item.hasManyRelationships().forEach(function (relationship) {
+        if (_this.cachedRelationships.some(function (cached) {
+          return cached === relationship.getItemModelIdentifier(item);
+        })) return;
+
+        _this.cachedRelationships.push(relationship.getItemModelIdentifier(item));
+
         _this.setupCacheTable(relationship.model.table());
 
         var relationshipItems = relationship.execute(item);
@@ -23239,6 +23246,7 @@ module.exports = /*#__PURE__*/function () {
       this.cache = {
         tables: {}
       };
+      this.cachedRelationships = [];
     }
   }, {
     key: "isCaching",
@@ -23648,6 +23656,7 @@ module.exports = /*#__PURE__*/function () {
         var relationship = _this4.getRelationship(relationshipName);
 
         if (relationship instanceof instanceOfClass) {
+          relationship.__nameOnModel = relationshipName;
           relationships.push(relationship);
         }
       });
@@ -24510,6 +24519,16 @@ module.exports = /*#__PURE__*/function () {
     key: "setFilters",
     value: function setFilters(filters) {
       this.filters = filters;
+    }
+  }, {
+    key: "getModelIdentifier",
+    value: function getModelIdentifier() {
+      return "".concat(this.localModel.identifier(), ":").concat(this.__nameOnModel);
+    }
+  }, {
+    key: "getItemModelIdentifier",
+    value: function getItemModelIdentifier(item) {
+      return "".concat(this.localModel.identifier(), ":").concat(item.id, ":").concat(this.__nameOnModel);
     }
   }]);
 
