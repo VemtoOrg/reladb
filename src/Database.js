@@ -12,6 +12,7 @@ module.exports = class Database {
         this.cache = {tables: {}}
         this.onCacheMode = false
 
+        this.cachedItems = []
         this.cachedRelationships = []
     }
 
@@ -50,6 +51,11 @@ module.exports = class Database {
     }
 
     cacheFrom(item) {
+
+        if(this.cachedItems.some(cached => cached === item.getItemIdentifier())) return
+
+        this.cachedItems.push(item.getItemIdentifier())
+
         this.addItemToTableCache(item)
         this.cacheItemRelationships(item)
 
@@ -114,6 +120,7 @@ module.exports = class Database {
 
     clearCache() {
         this.cache = {tables: {}}
+        this.cachedItems = []
         this.cachedRelationships = []
     }
 

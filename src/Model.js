@@ -138,6 +138,11 @@ module.exports = class Model {
         return this.constructor.table()
     }
 
+    getItemIdentifier() {
+        let pk = this.constructor.primaryKey()
+        return `${this.getTable()}:${this[pk]}`
+    }
+
     getTableData() {
         return new Query(this.constructor)
             .getTableData()

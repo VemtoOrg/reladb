@@ -23136,6 +23136,7 @@ module.exports = /*#__PURE__*/function () {
       tables: {}
     };
     this.onCacheMode = false;
+    this.cachedItems = [];
     this.cachedRelationships = [];
   }
 
@@ -23180,6 +23181,10 @@ module.exports = /*#__PURE__*/function () {
   }, {
     key: "cacheFrom",
     value: function cacheFrom(item) {
+      if (this.cachedItems.some(function (cached) {
+        return cached === item.getItemIdentifier();
+      })) return;
+      this.cachedItems.push(item.getItemIdentifier());
       this.addItemToTableCache(item);
       this.cacheItemRelationships(item);
       this.onCacheMode = true;
@@ -23246,6 +23251,7 @@ module.exports = /*#__PURE__*/function () {
       this.cache = {
         tables: {}
       };
+      this.cachedItems = [];
       this.cachedRelationships = [];
     }
   }, {
@@ -23568,6 +23574,12 @@ module.exports = /*#__PURE__*/function () {
     key: "getTable",
     value: function getTable() {
       return this.constructor.table();
+    }
+  }, {
+    key: "getItemIdentifier",
+    value: function getItemIdentifier() {
+      var pk = this.constructor.primaryKey();
+      return "".concat(this.getTable(), ":").concat(this[pk]);
     }
   }, {
     key: "getTableData",
