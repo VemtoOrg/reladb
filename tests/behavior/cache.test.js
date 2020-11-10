@@ -208,5 +208,5 @@ test('it can cache items with recursive relations', () => {
     firstRelationship.inverseId = secondRelationship.id
     firstRelationship.save()
 
-    window.RelaDB.cacheFrom(project)
+    expect(() => window.RelaDB.cacheFrom(project)).not.toThrow()
 })
