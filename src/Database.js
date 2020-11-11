@@ -14,6 +14,10 @@ module.exports = class Database {
 
         this.cachedItems = []
         this.cachedRelationships = []
+
+        this.settings = {
+            addCommandToQueueOnDispatch: true
+        }
     }
 
     setDriver(driver) {
@@ -131,7 +135,9 @@ module.exports = class Database {
     dispatchCommand(cmd, data = null) {
         let command = new Command(cmd, data)
         
-        this.commands.push(command)
+        if(this.settings.addCommandToQueueOnDispatch) {
+            this.addCommand(command)
+        }
         
         if(this.onDispatchCommand) {
             this.onDispatchCommand(command)
@@ -140,9 +146,21 @@ module.exports = class Database {
         return command
     }
 
+    addCommand(command) {
+        this.commands.push(command)
+
+        if(this.onAddCommand) {
+            this.onAddCommand(command)
+        }
+    }
+
     removeCommand(command) {
         this.commands = this.commands.filter(
             otherCommand => otherCommand.id !== command.id
         )
+
+        if(this.onRemoveCommand) {
+            this.onRemoveCommand(command)
+        }
     }
 }
