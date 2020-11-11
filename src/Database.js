@@ -57,7 +57,7 @@ module.exports = class Database {
 
     cacheFrom(item) {
 
-        if(this.cachedItems.some(cached => cached === item.getItemIdentifier())) return
+        if(this.isCachingItem(item)) return
 
         this.cachedItems.push(item.getItemIdentifier())
 
@@ -69,7 +69,7 @@ module.exports = class Database {
 
     cacheItemRelationships(item) {
         item.hasManyRelationships().forEach((relationship) => {
-            if(this.cachedRelationships.some(cached => cached === relationship.getItemModelIdentifier(item))) return
+            if(this.isCachingRelationship(item, relationship)) return
 
             this.cachedRelationships.push(relationship.getItemModelIdentifier(item))
             
@@ -131,6 +131,18 @@ module.exports = class Database {
 
     isCaching() {
         return this.onCacheMode
+    }
+
+    isCachingItem(item) {
+        return this.cachedItems.some(
+            cached => cached === item.getItemIdentifier()
+        )
+    }
+
+    isCachingRelationship(item, relationship) {
+        return this.cachedRelationships.some(
+            cached => cached === relationship.getItemModelIdentifier(item)
+        )
     }
 
     dispatchCommand(cmd, data = null) {
