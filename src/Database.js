@@ -151,6 +151,10 @@ module.exports = class Database {
         return !! this.executingCommandId
     }
 
+    canExecuteCommands() {
+        return !this.isExecutingCommands() && this.commands.length > 0
+    }
+
     markAsExecuting(command) {
         this.executingCommandId = command.id
     }
@@ -180,7 +184,7 @@ module.exports = class Database {
     }
 
     executeNextCommand() {
-        if(this.commands.length > 0) {
+        if(this.canExecuteCommands()) {
             this.commands[0].execute()
         }
     }
