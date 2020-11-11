@@ -422,8 +422,21 @@ module.exports = class Query {
 
     log() {
         if(window.RelaDB.mode === 'development') {
+            if(!this.lastLogTime) this.lastLogTime = moment()
+            
+            let difference = moment().diff(this.lastLogTime)
+
             console.log(...arguments)
-            console.log('') // Blank Line
+
+            if(difference > 10) {
+                console.log(`%cExecution time: ${difference} ms`, 'color: #e74c3c; font-style: italic;')
+            } else if(difference > 5) {
+                console.log(`%cExecution time: ${difference} ms`, 'color: #f39c12; font-style: italic;')
+            } else {
+                console.log(`%cExecution time: ${difference} ms`, 'color: #3498db; font-style: italic;')
+            }
+
+            this.lastLogTime = moment()
         }
     }
 
