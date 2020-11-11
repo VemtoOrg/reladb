@@ -9,9 +9,19 @@ module.exports = class Command {
     }
 
     execute() {
-        this.executeParsedCommand()
+        try {
+            window.RelaDB.markAsExecuting(this)
+            this.executeParsedCommand()
+            window.RelaDB.removeCommand(this)
+        } catch (error) {
 
-        window.RelaDB.removeCommand(this)
+            if(window.RelaDB.mode === 'development') {
+                throw error
+            }
+
+            window.RelaDB.removeCommand(this)
+
+        }
     }
 
     executeParsedCommand() {

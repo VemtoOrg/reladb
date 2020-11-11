@@ -210,3 +210,26 @@ test('it can cache items with recursive relations', () => {
 
     expect(() => window.RelaDB.cacheFrom(project)).not.toThrow()
 })
+
+test('it marks as not executing after finishing a command', () => {
+    window.RelaDB.driver.clear()
+
+    let user = User.create({name: 'Tiago', 'table': 'oiapoque'})
+    
+    window.RelaDB.cacheFrom(user)
+
+    // Manipulates the data on the RAM cache storage
+    user.name = 'Oiapoque'
+    user.save()
+
+    window.RelaDB.stopCaching()
+
+    // Execute the command to transfer the data from cache to the database storage
+    window.RelaDB.markAsExecuting(window.RelaDB.commands[0])
+    
+    expect(window.RelaDB.isExecutingCommands()).toBe(true)
+
+    window.RelaDB.commands[0].execute()
+
+    expect(window.RelaDB.isExecutingCommands()).toBe(false)
+})

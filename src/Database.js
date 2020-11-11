@@ -8,6 +8,7 @@ module.exports = class Database {
         this.filters = []
         this.deletingBuffer = {}
         this.commands = []
+        this.executingCommandId = null
 
         this.cache = {tables: {}}
         this.onCacheMode = false
@@ -146,6 +147,18 @@ module.exports = class Database {
         return command
     }
 
+    isExecutingCommands() {
+        return !! this.executingCommandId
+    }
+
+    markAsExecuting(command) {
+        this.executingCommandId = command.id
+    }
+
+    markAsNotExecuting() {
+        this.executingCommandId = null
+    }
+
     addCommand(command) {
         this.commands.push(command)
 
@@ -155,6 +168,8 @@ module.exports = class Database {
     }
 
     removeCommand(command) {
+        this.markAsNotExecuting()
+
         this.commands = this.commands.filter(
             otherCommand => otherCommand.id !== command.id
         )
