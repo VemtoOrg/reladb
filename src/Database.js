@@ -178,4 +178,10 @@ module.exports = class Database {
             this.onRemoveCommand(command)
         }
     }
+
+    executeNextCommand() {
+        if(this.commands.length > 0) {
+            this.commands[0].execute()
+        }
+    }
 }
