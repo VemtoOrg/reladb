@@ -329,9 +329,11 @@ module.exports = class Query {
         if(!parent) return
 
         let parentQuery = parent.constructor.getQuery(),
-            
-            parentIndex = parentQuery.getItemIndex(parent),
-            indexKey = `${item.getTable()}.${relationship.foreignKey}`,
+            parentIndex = parentQuery.getItemIndex(parent)
+
+        if(!parentIndex) return
+
+        let indexKey = `${item.getTable()}.${relationship.foreignKey}`,
             hasManyIndex = parentIndex.hasMany[indexKey] || []
 
         this.log(`Before manipulating has many index: ${indexKey} parent: ${parent.id} item: ${item.id}`, hasManyIndex)
