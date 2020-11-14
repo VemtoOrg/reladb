@@ -51,7 +51,7 @@ module.exports = class Query {
             filteredIndex = this.getFilteredIndex()
 
         this.log('Getting data from: ' + this.model.table())
-        this.log('Current filtered index: ', filteredIndex)
+        this.log('Current filtered index for query: ', filteredIndex)
 
         filteredIndex.forEach(id => {
             let item = null
