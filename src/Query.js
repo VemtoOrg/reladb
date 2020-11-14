@@ -298,7 +298,7 @@ module.exports = class Query {
     addItemToParentHasManyIndex(relationship, item) {
         if(!item[relationship.foreignKey]) return
         
-        this.log('Adding to parent has many: ' + relationship.signature())
+        this.log('%c Adding to parent has many: ' + relationship.signature(), 'color: orange')
         
         this.manipulateHasManyIndex(hasManyIndex => {
             if(relationship.allowsOnlyOne && hasManyIndex.length > 0) {
@@ -336,11 +336,11 @@ module.exports = class Query {
         let indexKey = `${item.getTable()}.${relationship.foreignKey}`,
             hasManyIndex = parentIndex.hasMany[indexKey] || []
 
-        this.log(`Before manipulating has many index: ${indexKey} parent: ${parent.id} item: ${item.id}`, hasManyIndex)
+        this.log(`%c Before manipulating has many index: ${indexKey} parent: ${parent.id} item: ${item.id}`, 'color: red', hasManyIndex)
 
         parentIndex.hasMany[indexKey] = manipulationCallback(hasManyIndex)
 
-        this.log(`After manipulating has many index: ${indexKey} parent: ${parent.id} item: ${item.id}`, hasManyIndex)
+        this.log(`%c After manipulating has many index: ${indexKey} parent: ${parent.id} item: ${item.id}`, 'color: blue', hasManyIndex)
 
         parentQuery.updateItemIndex(parent, parentIndex)
     }
