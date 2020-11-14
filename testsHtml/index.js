@@ -23035,7 +23035,7 @@ module.exports = function(module) {
 /*! exports provided: name, version, description, main, scripts, repository, keywords, author, license, bugs, homepage, devDependencies, dependencies, jest, directories, default */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"name\":\"@tiago_silva_pereira/reladb\",\"version\":\"0.2.14\",\"description\":\"A relational database layer on top of LocalStorage\",\"main\":\"main.js\",\"scripts\":{\"test\":\"jest --runInBand\",\"dev\":\"npm run development\",\"development\":\"cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js\",\"watch\":\"npm run development -- --watch\",\"hot\":\"cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js\",\"prod\":\"npm run production\",\"production\":\"cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js\"},\"repository\":{\"type\":\"git\",\"url\":\"git+https://github.com/TiagoSilvaPereira/reladb.git\"},\"keywords\":[\"database\",\"relational\",\"localstorage\",\"browser\",\"db\",\"sync\"],\"author\":\"Tiago Silva Pereira Rodrigues\",\"license\":\"MIT\",\"bugs\":{\"url\":\"https://github.com/TiagoSilvaPereira/reladb/issues\"},\"homepage\":\"https://github.com/TiagoSilvaPereira/reladb#readme\",\"devDependencies\":{\"@babel/plugin-transform-modules-commonjs\":\"^7.10.4\",\"cross-env\":\"^7.0.2\",\"jest\":\"^26.4.2\",\"jest-electron\":\"^0.1.11\",\"laravel-mix\":\"^5.0.7\",\"mock-local-storage\":\"^1.1.15\",\"rimraf\":\"^3.0.2\",\"vue-template-compiler\":\"^2.6.12\"},\"dependencies\":{\"mkdirp\":\"^1.0.4\",\"moment\":\"^2.29.0\",\"pluralize\":\"^8.0.0\",\"uuid\":\"^8.3.1\"},\"jest\":{\"projects\":[{\"displayName\":\"behavior\",\"testMatch\":[\"<rootDir>/tests/behavior/*.test.js\"]},{\"displayName\":\"default\",\"testMatch\":[\"<rootDir>/tests/localstorage/*.test.js\"]},{\"displayName\":\"electron\",\"runner\":\"jest-electron/runner\",\"testEnvironment\":\"jest-electron/environment\",\"testMatch\":[\"<rootDir>/tests/electron/*.test.js\"]}]},\"directories\":{\"test\":\"tests\"}}");
+module.exports = JSON.parse("{\"name\":\"@tiago_silva_pereira/reladb\",\"version\":\"0.2.21\",\"description\":\"A relational database layer on top of LocalStorage\",\"main\":\"main.js\",\"scripts\":{\"test\":\"jest --runInBand\",\"dev\":\"npm run development\",\"development\":\"cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js\",\"watch\":\"npm run development -- --watch\",\"hot\":\"cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js\",\"prod\":\"npm run production\",\"production\":\"cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js\"},\"repository\":{\"type\":\"git\",\"url\":\"git+https://github.com/TiagoSilvaPereira/reladb.git\"},\"keywords\":[\"database\",\"relational\",\"localstorage\",\"browser\",\"db\",\"sync\"],\"author\":\"Tiago Silva Pereira Rodrigues\",\"license\":\"MIT\",\"bugs\":{\"url\":\"https://github.com/TiagoSilvaPereira/reladb/issues\"},\"homepage\":\"https://github.com/TiagoSilvaPereira/reladb#readme\",\"devDependencies\":{\"@babel/plugin-transform-modules-commonjs\":\"^7.10.4\",\"cross-env\":\"^7.0.2\",\"jest\":\"^26.4.2\",\"jest-electron\":\"^0.1.11\",\"laravel-mix\":\"^5.0.7\",\"mock-local-storage\":\"^1.1.15\",\"rimraf\":\"^3.0.2\",\"vue-template-compiler\":\"^2.6.12\"},\"dependencies\":{\"mkdirp\":\"^1.0.4\",\"moment\":\"^2.29.0\",\"pluralize\":\"^8.0.0\",\"uuid\":\"^8.3.1\"},\"jest\":{\"projects\":[{\"displayName\":\"behavior\",\"testMatch\":[\"<rootDir>/tests/behavior/*.test.js\"]},{\"displayName\":\"default\",\"testMatch\":[\"<rootDir>/tests/localstorage/*.test.js\"]},{\"displayName\":\"electron\",\"runner\":\"jest-electron/runner\",\"testEnvironment\":\"jest-electron/environment\",\"testMatch\":[\"<rootDir>/tests/electron/*.test.js\"]}]},\"directories\":{\"test\":\"tests\"}}");
 
 /***/ }),
 
@@ -23070,8 +23070,17 @@ module.exports = /*#__PURE__*/function () {
   _createClass(Command, [{
     key: "execute",
     value: function execute() {
-      this.executeParsedCommand();
-      window.RelaDB.removeCommand(this);
+      try {
+        window.RelaDB.markAsExecuting(this);
+        this.executeParsedCommand();
+        window.RelaDB.removeCommand(this);
+      } catch (error) {
+        if (window.RelaDB.mode === 'development') {
+          throw error;
+        }
+
+        window.RelaDB.removeCommand(this);
+      }
     }
   }, {
     key: "executeParsedCommand",
@@ -23132,12 +23141,16 @@ module.exports = /*#__PURE__*/function () {
     this.filters = [];
     this.deletingBuffer = {};
     this.commands = [];
+    this.executingCommandId = null;
     this.cache = {
       tables: {}
     };
     this.onCacheMode = false;
     this.cachedItems = [];
     this.cachedRelationships = [];
+    this.settings = {
+      addCommandToQueueOnDispatch: true
+    };
   }
 
   _createClass(Database, [{
@@ -23181,9 +23194,7 @@ module.exports = /*#__PURE__*/function () {
   }, {
     key: "cacheFrom",
     value: function cacheFrom(item) {
-      if (this.cachedItems.some(function (cached) {
-        return cached === item.getItemIdentifier();
-      })) return;
+      if (this.isCachingItem(item)) return;
       this.cachedItems.push(item.getItemIdentifier());
       this.addItemToTableCache(item);
       this.cacheItemRelationships(item);
@@ -23195,9 +23206,7 @@ module.exports = /*#__PURE__*/function () {
       var _this = this;
 
       item.hasManyRelationships().forEach(function (relationship) {
-        if (_this.cachedRelationships.some(function (cached) {
-          return cached === relationship.getItemModelIdentifier(item);
-        })) return;
+        if (_this.isCachingRelationship(item, relationship)) return;
 
         _this.cachedRelationships.push(relationship.getItemModelIdentifier(item));
 
@@ -23260,11 +23269,28 @@ module.exports = /*#__PURE__*/function () {
       return this.onCacheMode;
     }
   }, {
+    key: "isCachingItem",
+    value: function isCachingItem(item) {
+      return this.cachedItems.some(function (cached) {
+        return cached === item.getItemIdentifier();
+      });
+    }
+  }, {
+    key: "isCachingRelationship",
+    value: function isCachingRelationship(item, relationship) {
+      return this.cachedRelationships.some(function (cached) {
+        return cached === relationship.getItemModelIdentifier(item);
+      });
+    }
+  }, {
     key: "dispatchCommand",
     value: function dispatchCommand(cmd) {
       var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
       var command = new Command(cmd, data);
-      this.commands.push(command);
+
+      if (this.settings.addCommandToQueueOnDispatch) {
+        this.addCommand(command);
+      }
 
       if (this.onDispatchCommand) {
         this.onDispatchCommand(command);
@@ -23273,11 +23299,52 @@ module.exports = /*#__PURE__*/function () {
       return command;
     }
   }, {
+    key: "isExecutingCommands",
+    value: function isExecutingCommands() {
+      return !!this.executingCommandId;
+    }
+  }, {
+    key: "canExecuteCommands",
+    value: function canExecuteCommands() {
+      return !this.isExecutingCommands() && this.commands.length > 0;
+    }
+  }, {
+    key: "markAsExecuting",
+    value: function markAsExecuting(command) {
+      this.executingCommandId = command.id;
+    }
+  }, {
+    key: "markAsNotExecuting",
+    value: function markAsNotExecuting() {
+      this.executingCommandId = null;
+    }
+  }, {
+    key: "addCommand",
+    value: function addCommand(command) {
+      this.commands.push(command);
+
+      if (this.onAddCommand) {
+        this.onAddCommand(command);
+      }
+    }
+  }, {
     key: "removeCommand",
     value: function removeCommand(command) {
+      this.markAsNotExecuting();
       this.commands = this.commands.filter(function (otherCommand) {
         return otherCommand.id !== command.id;
       });
+
+      if (this.onRemoveCommand) {
+        this.onRemoveCommand(command);
+      }
+    }
+  }, {
+    key: "executeNextCommand",
+    value: function executeNextCommand() {
+      if (this.canExecuteCommands()) {
+        this.commands[0].execute();
+      }
     }
   }]);
 
@@ -23407,9 +23474,17 @@ var LocalStorage = /*#__PURE__*/function (_Driver) {
   }
 
   _createClass(LocalStorage, [{
+    key: "getAllTableNames",
+    value: function getAllTableNames() {
+      var tablesKey = this.getTablesKey(),
+          storedTablesNames = window.localStorage.getItem(tablesKey);
+      return storedTablesNames ? JSON.parse(storedTablesNames) : [];
+    }
+  }, {
     key: "setFromDriver",
     value: function setFromDriver(key, data) {
       key = this.getCompleteKey(key);
+      this.updateTablesNames();
       return window.localStorage.setItem(key, JSON.stringify(data));
     }
   }, {
@@ -23433,7 +23508,33 @@ var LocalStorage = /*#__PURE__*/function (_Driver) {
   }, {
     key: "getCompleteKey",
     value: function getCompleteKey(key) {
-      return "reladb_database_".concat(this.table, "_").concat(key);
+      return "".concat(this.getBaseKey(), "_").concat(this.table, "_").concat(key);
+    }
+  }, {
+    key: "getTablesKey",
+    value: function getTablesKey() {
+      return "".concat(this.getBaseKey(), "_tables");
+    }
+  }, {
+    key: "getBaseKey",
+    value: function getBaseKey() {
+      return 'reladb_database';
+    }
+  }, {
+    key: "updateTablesNames",
+    value: function updateTablesNames() {
+      var _this = this;
+
+      var tablesKey = this.getTablesKey(),
+          tablesNames = this.getAllTableNames();
+
+      if (!tablesNames.some(function (table) {
+        return table === _this.table;
+      })) {
+        tablesNames.push(this.table);
+      }
+
+      return window.localStorage.setItem(tablesKey, JSON.stringify(tablesNames));
     }
   }]);
 
@@ -24128,8 +24229,9 @@ module.exports = /*#__PURE__*/function () {
       var parent = relationship.getParentFromItem(item);
       if (!parent) return;
       var parentQuery = parent.constructor.getQuery(),
-          parentIndex = parentQuery.getItemIndex(parent),
-          indexKey = "".concat(item.getTable(), ".").concat(relationship.foreignKey),
+          parentIndex = parentQuery.getItemIndex(parent);
+      if (!parentIndex) return;
+      var indexKey = "".concat(item.getTable(), ".").concat(relationship.foreignKey),
           hasManyIndex = parentIndex.hasMany[indexKey] || [];
       this.log("Before manipulating has many index: ".concat(indexKey, " parent: ").concat(parent.id, " item: ").concat(item.id), hasManyIndex);
       parentIndex.hasMany[indexKey] = manipulationCallback(hasManyIndex);
@@ -24221,9 +24323,20 @@ module.exports = /*#__PURE__*/function () {
       if (window.RelaDB.mode === 'development') {
         var _console;
 
+        if (!this.lastLogTime) this.lastLogTime = moment();
+        var difference = moment().diff(this.lastLogTime);
+
         (_console = console).log.apply(_console, arguments);
 
-        console.log(''); // Blank Line
+        if (difference > 10) {
+          console.log("%cExecution time: ".concat(difference, " ms"), 'color: #e74c3c; font-style: italic;');
+        } else if (difference > 5) {
+          console.log("%cExecution time: ".concat(difference, " ms"), 'color: #f39c12; font-style: italic;');
+        } else {
+          console.log("%cExecution time: ".concat(difference, " ms"), 'color: #3498db; font-style: italic;');
+        }
+
+        this.lastLogTime = moment();
       }
     }
   }]);

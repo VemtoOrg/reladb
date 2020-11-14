@@ -82,6 +82,20 @@ class JsonStorage {
         }
     }
 
+    getAllTableNames() {
+        let tablesPath = this.getStorageDirectory(false)
+
+        const isDirectory = source => {
+            return fs.lstatSync(path.join(tablesPath, source)).isDirectory()
+        }
+
+        try {
+            return fs.readdirSync(tablesPath).filter(isDirectory)        
+        } catch (error) {
+            return []
+        }
+    }
+
     remove(key) {
         this.setCurrentKey(key)
 

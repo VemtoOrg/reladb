@@ -3,6 +3,7 @@ const { default: User } = require("./models/User")
 const packageSettings = require('../package.json')
 const { default: Photo } = require("./models/Photo")
 const { default: Person } = require('./models/Person')
+const { default: Category } = require("./models/Category")
 
 try {
     jest.useFakeTimers()
@@ -339,4 +340,19 @@ test('it saves data being deleted on a buffer to avoid recursive deletion', () =
     // { users: {}, phones: {} }
     expect(!! iterations[3].users[1]).toBe(false)
     expect(!! iterations[3].phones[1]).toBe(false)
+})
+
+test('it can gets all tables names', () => {
+    window.RelaDB.driver.clear()
+
+    User.create({name: 'Tiago', table: 'oiapoque'})
+    Category.create({name: 'testt'})
+
+    let tables = window.RelaDB.driver.getAllTableNames()
+
+    expect(tables.includes('users')).toStrictEqual(true)
+    expect(tables.includes('phones')).toStrictEqual(true)
+    expect(tables.includes('categories')).toStrictEqual(true)
+    expect(tables.includes('others')).toStrictEqual(false)
+    expect(tables.includes('wrolds')).toStrictEqual(false)
 })

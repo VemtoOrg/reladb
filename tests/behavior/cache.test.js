@@ -1,12 +1,13 @@
 const Database = require('../../src/Database')
 const { default: Post } = require('../models/Post')
 const { default: User } = require('../models/User')
-const { default: Comment } = require('../models/Comment')
-const LocalStorage = require('../../src/Drivers/LocalStorage')
-const { default: Project } = require('../models/Project')
-const { default: Entity } = require('../models/Entity')
-const { default: Relationship } = require('../models/Relationship')
 const { default: Field } = require('../models/Field')
+const { default: Entity } = require('../models/Entity')
+const { default: Project } = require('../models/Project')
+const { default: Comment } = require('../models/Comment')
+const { default: Category } = require('../models/Category')
+const LocalStorage = require('../../src/Drivers/LocalStorage')
+const { default: Relationship } = require('../models/Relationship')
 
 window.RelaDB = new Database
 window.RelaDB.setDriver(LocalStorage)
@@ -49,6 +50,51 @@ test('it caches an item and all relations', () => {
     expect(typeof cachedTables.posts.item_1 !== 'undefined').toBe(true)
     expect(typeof cachedTables.phones.item_1 !== 'undefined').toBe(true)
     expect(typeof cachedTables.comments.item_1 !== 'undefined').toBe(true)
+})
+
+test('it caches table data not related with the item', () => {
+    window.RelaDB.driver.clear()
+
+
+    let user = User.create({name: 'Tiago', 'table': 'oiapoque'}),
+        post = Post.create({name: 'Post', ownerId: user.id}),
+        comment = Comment.create({comment: 'Hey!', postId: post.id})
+
+    // This data is not related with the user, but the table data (not items)
+    // needs to be cached to avoid problems with primary keys and
+    // table count. For example, if this table is not cached, then if
+    // I create a category on cached context, the primary key will be 1,
+    // instead of the latest primary key + 1 (in this case, 2). Notice
+    // that only the table relevant information will be cached, never the
+    // table items, as it is not necessary in thos cache context
+    Category.create({category: 'test'})
+    Entity.create({name: 'test entity'})
+
+    window.RelaDB.cacheFrom(user)
+
+    let cachedTables = window.RelaDB.cache.tables
+
+    expect(window.RelaDB.isCaching()).toBe(true)
+
+    expect(typeof cachedTables.users !== 'undefined').toBe(true)
+    expect(typeof cachedTables.posts !== 'undefined').toBe(true)
+    expect(typeof cachedTables.phones !== 'undefined').toBe(true)
+    expect(typeof cachedTables.comments !== 'undefined').toBe(true)
+    expect(typeof cachedTables.categories !== 'undefined').toBe(true)
+    expect(typeof cachedTables.entities !== 'undefined').toBe(true)
+
+    expect(typeof cachedTables.others === 'undefined').toBe(true)
+
+    expect(typeof cachedTables.users.users !== 'undefined').toBe(true)
+    expect(typeof cachedTables.posts.posts !== 'undefined').toBe(true)
+    expect(typeof cachedTables.phones.phones !== 'undefined').toBe(true)
+    expect(typeof cachedTables.comments.comments !== 'undefined').toBe(true)
+    expect(typeof cachedTables.categories.categories !== 'undefined').toBe(true)
+    expect(typeof cachedTables.entities.entities !== 'undefined').toBe(true)
+
+    expect(cachedTables.users.users.lastPrimaryKey).toBe(1)
+    expect(cachedTables.categories.categories.lastPrimaryKey).toBe(1)
+    expect(cachedTables.entities.entities.lastPrimaryKey).toBe(1)
 })
 
 test('it can stop caching data', () => {

@@ -59,6 +59,8 @@ module.exports = class Database {
 
         if(this.isCachingItem(item)) return
 
+        this.cacheTablesInformation()
+
         this.cachedItems.push(item.getItemIdentifier())
 
         this.addItemToTableCache(item)
@@ -92,8 +94,6 @@ module.exports = class Database {
         let table = item.getTable()
         this.setupCacheTable(table)
 
-        this.addItemTableDataToCache(item)
-
         let itemPrimary = item[item.constructor.primaryKey()]
 
         if(this.cache.tables[table][`item_${itemPrimary}`]) return
@@ -101,13 +101,17 @@ module.exports = class Database {
         this.cache.tables[table][`item_${itemPrimary}`] = item
     }
 
-    addItemTableDataToCache(item) {
-        let table = item.getTable()
+    cacheTablesInformation() {
+        let tables = this.driver.getAllTableNames()
+        tables.forEach(table => this.addTableDataToCache(table))
+    }
+
+    addTableDataToCache(table) {
         this.setupCacheTable(table)
 
         if(this.cache.tables[table][table]) return
 
-        let tableData = item.getTableData()
+        let tableData = this.driver.setTable(table).get(table)
         
         this.cache.tables[table][table] = tableData
     }

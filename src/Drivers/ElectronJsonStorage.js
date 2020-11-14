@@ -3,6 +3,10 @@ const Storage = require('./Handlers/JsonStorage')
 
 class ElectronJsonStorage extends Driver {
 
+    getAllTableNames() {
+        return Storage.getAllTableNames()
+    }
+
     setFromDriver(key, data) {
         return Storage.setRelativePath(this.table).set(key, data)
     }
