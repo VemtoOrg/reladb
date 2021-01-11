@@ -8,6 +8,8 @@ module.exports = class Model {
 
     constructor(data = {}) {
 
+        this.__returnRelationsAutomatically = true
+
         this.constructor.initFilters()
         
         if(!this.constructor.hasOwnProperty('identifier')) {
@@ -30,11 +32,19 @@ module.exports = class Model {
     }
 
     __get(obj, name) {
-        if(obj.hasRelationshipNamed(name)) {
+        if(obj.__returnRelationsAutomatically && obj.hasRelationshipNamed(name)) {
             return obj.executeRelationship(name)
         }
 
         return obj[name]
+    }
+
+    disableAutomaticRelations() {
+        this.__returnRelationsAutomatically = false
+    }
+
+    enableAutomaticRelations() {
+        this.__returnRelationsAutomatically = true
     }
 
     fillFromData(data = {}, disablePrimaryKeyFill = false) {

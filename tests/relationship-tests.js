@@ -332,3 +332,24 @@ test('it orders a relation correctly by an alphabetical field', () => {
     expect(fields[10].id).toBe(field10.id)
     expect(fields[11].id).toBe(field11.id)
 })
+
+test('it allows to disable getting automatic relations', () => {
+    window.RelaDB.driver.clear()
+
+    let user = User.create({name: 'Tiago'}),
+        post = Post.create({title: 'Test', ownerId: user.id})
+    
+    expect(post.owner.id).toBe(user.id)
+
+    post.disableAutomaticRelations()
+
+    expect(typeof post.owner === 'undefined').toBe(true)
+
+    post.owner = 'something'
+
+    expect(post.owner).toBe('something')
+
+    post.enableAutomaticRelations()
+
+    expect(post.owner.id).toBe(user.id)
+})
