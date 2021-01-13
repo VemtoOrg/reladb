@@ -2,6 +2,7 @@ const moment = require('moment')
 const { default: User } = require("./models/User")
 const packageSettings = require('../package.json')
 const { default: Photo } = require("./models/Photo")
+const { default: Order } = require("./models/Order")
 const { default: Person } = require('./models/Person')
 const { default: Category } = require("./models/Category")
 
@@ -239,6 +240,16 @@ test('it allows to execute code after saving using created method', () => {
 
     // phone is being added using created() event on Model definition
     expect(user.phones[0].phone).toBe('99999-9999')
+})
+
+test('it updates the instance data when using the created method', () => {
+    window.RelaDB.driver.clear()
+
+    let order = new Order({date: '2021-01-01'})
+    order.save()
+
+    // checks if the foo parameter is automatically set by the created method
+    expect(order.foo).toBe('bar')
 })
 
 test('it allows to manipulate data before update using updating method', () => {
