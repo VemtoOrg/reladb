@@ -99,7 +99,9 @@ module.exports = class Model {
 
     save() {
         if(!this.isSaved()) {
-            return this.constructor.create(this)
+            let createdItem = this.constructor.create(this)
+            this.fillFromData(createdItem, true)
+            return this
         }
 
         return this.update(this)
