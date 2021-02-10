@@ -27,15 +27,24 @@ module.exports = class Driver {
 
     setFromCache(key, data) {
         window.RelaDB.dispatchCommand(`set ${key} on ${this.table}`, data)
+
+        if(!window.RelaDB.cache.tables[this.table]) {
+            window.RelaDB.cache.tables[this.table] = {}
+        }
+
         return window.RelaDB.cache.tables[this.table][key] = data
     }
 
     getFromCache(key) {
+        if(!window.RelaDB.cache.tables[this.table]) return null
         return window.RelaDB.cache.tables[this.table][key]
     }
 
     removeFromCache(key) {
         window.RelaDB.dispatchCommand(`remove ${key} from ${this.table}`)
+
+        if(!window.RelaDB.cache.tables[this.table]) return
+
         delete window.RelaDB.cache.tables[this.table][key]
     }
 
