@@ -19,6 +19,16 @@ module.exports = class Database {
         this.settings = {
             addCommandToQueueOnDispatch: true
         }
+
+        this.__saveDataToStorage = true
+    }
+
+    disableSavingData() {
+        this.__saveDataToStorage = false
+    }
+
+    enableSavingData() {
+        this.__saveDataToStorage = true
     }
 
     setDriver(driver) {

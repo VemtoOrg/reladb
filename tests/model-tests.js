@@ -389,3 +389,25 @@ test('it allows to disable saving data to storage', () => {
 
     expect(user.fresh().name).toBe('Tiago Edited')
 })
+
+test('it allows to globally disable saving data to storage', () => {
+    window.RelaDB.driver.clear()
+
+    let user = User.create({name: 'Tiago'})
+    
+    expect(user.fresh().name).toBe('Tiago')
+
+    window.RelaDB.disableSavingData()
+
+    user.name = 'Tiago Edited'
+    user.save()
+
+    expect(user.fresh().name).toBe('Tiago')
+
+    window.RelaDB.enableSavingData()
+
+    user.name = 'Tiago Edited'
+    user.save()
+
+    expect(user.fresh().name).toBe('Tiago Edited')
+})

@@ -107,7 +107,7 @@ module.exports = class Model {
     }
 
     save() {
-        if(!this.__saveDataToStorage) return
+        if(!this.__saveDataToStorage || !window.RelaDB.__saveDataToStorage) return
 
         if(!this.isSaved()) {
             let createdItem = this.constructor.create(this)
@@ -119,7 +119,7 @@ module.exports = class Model {
     }
 
     update(data = {}) {
-        if(!this.__saveDataToStorage) return
+        if(!this.__saveDataToStorage || !window.RelaDB.__saveDataToStorage) return
 
         if(!this.id) {
             throw new Error('It is not possible to update an object that is not currently saved on database')
@@ -138,7 +138,7 @@ module.exports = class Model {
     }
 
     delete() {
-        if(!this.__saveDataToStorage) return
+        if(!this.__saveDataToStorage || !window.RelaDB.__saveDataToStorage) return
         
         if(!this.id) throw new Error('It is not possible to delete an object that is not currently saved on database')
 

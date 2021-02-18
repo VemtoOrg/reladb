@@ -1,6 +1,6 @@
 {
   "name": "@tiago_silva_pereira/reladb",
-  "version": "0.2.26",
+  "version": "0.2.27",
   "description": "A relational database layer on top of LocalStorage",
   "main": "main.js",
   "scripts": {
