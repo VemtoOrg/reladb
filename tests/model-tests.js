@@ -367,3 +367,25 @@ test('it can gets all tables names', () => {
     expect(tables.includes('others')).toStrictEqual(false)
     expect(tables.includes('wrolds')).toStrictEqual(false)
 })
+
+test('it allows to disable saving data to storage', () => {
+    window.RelaDB.driver.clear()
+
+    let user = User.create({name: 'Tiago'})
+    
+    expect(user.fresh().name).toBe('Tiago')
+
+    user.disableSavingData()
+
+    user.name = 'Tiago Edited'
+    user.save()
+
+    expect(user.fresh().name).toBe('Tiago')
+
+    user.enableSavingData()
+
+    user.name = 'Tiago Edited'
+    user.save()
+
+    expect(user.fresh().name).toBe('Tiago Edited')
+})

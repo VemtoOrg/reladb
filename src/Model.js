@@ -9,6 +9,7 @@ module.exports = class Model {
     constructor(data = {}) {
 
         this.__returnRelationsAutomatically = true
+        this.__saveDataToStorage = true
 
         this.constructor.initFilters()
         
@@ -45,6 +46,14 @@ module.exports = class Model {
 
     enableAutomaticRelations() {
         this.__returnRelationsAutomatically = true
+    }
+
+    disableSavingData() {
+        this.__saveDataToStorage = false
+    }
+
+    enableSavingData() {
+        this.__saveDataToStorage = true
     }
 
     fillFromData(data = {}, disablePrimaryKeyFill = false) {
@@ -98,6 +107,8 @@ module.exports = class Model {
     }
 
     save() {
+        if(!this.__saveDataToStorage) return
+
         if(!this.isSaved()) {
             let createdItem = this.constructor.create(this)
             this.fillFromData(createdItem, true)
@@ -108,6 +119,8 @@ module.exports = class Model {
     }
 
     update(data = {}) {
+        if(!this.__saveDataToStorage) return
+
         if(!this.id) {
             throw new Error('It is not possible to update an object that is not currently saved on database')
         }
@@ -125,6 +138,8 @@ module.exports = class Model {
     }
 
     delete() {
+        if(!this.__saveDataToStorage) return
+        
         if(!this.id) throw new Error('It is not possible to delete an object that is not currently saved on database')
 
         if(this.constructor.deleting) this.constructor.deleting(this)
