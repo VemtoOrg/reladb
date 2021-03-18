@@ -209,12 +209,18 @@ module.exports = class Query {
     }
 
     getItem(id) {
+        let itemData = this.getItemData(id)
+
+        return new this.model(itemData)
+    }
+
+    getItemData(id) {
         let itemKey = this.tableItemKey(id),
             itemData = this.dbDriver().get(itemKey)
 
         if(!itemData) return null
 
-        return new this.model(itemData)
+        return itemData
     }
 
     saveItem(id, data) {

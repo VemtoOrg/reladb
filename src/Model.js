@@ -11,6 +11,9 @@ module.exports = class Model {
         this.__returnRelationsAutomatically = true
         this.__saveDataToStorage = true
 
+        // Callbacks
+        this.__onUpdateCallback = null
+
         this.constructor.initFilters()
         
         if(!this.constructor.hasOwnProperty('identifier')) {
@@ -110,8 +113,8 @@ module.exports = class Model {
         if(!this.__saveDataToStorage || !window.RelaDB.__saveDataToStorage) return
 
         if(!this.isSaved()) {
-            let createdItem = this.constructor.create(this)
-            this.fillFromData(createdItem, true)
+            let createdItem = this.constructor.create(this.constructor.removeSpecialData(this))
+            this.fillFromData(createdItem)
             return this
         }
 
@@ -130,8 +133,9 @@ module.exports = class Model {
         this.fillFromData(data, true)
 
         let wasUpdated = new Query(this.constructor)
-            .update(this.id, this)
+            .update(this.id, this.constructor.removeSpecialData(this))
 
+        if(this.__onUpdateCallback) this.__onUpdateCallback(this)
         if(this.constructor.updated) this.constructor.updated(this)
 
         return wasUpdated
@@ -151,6 +155,23 @@ module.exports = class Model {
         this.clearData()
 
         return true
+    }
+
+    static removeSpecialData(data) {
+        let filteredData = {},
+            excludedKeys = [
+                '__onUpdateCallback',
+                '__saveDataToStorage',
+                '__returnRelationsAutomatically',
+            ]
+
+        Object.keys(data).forEach(key => {
+            if(!excludedKeys.includes(key)) {
+                filteredData[key] = data[key]
+            }
+        })
+
+        return filteredData
     }
 
     static getQuery() {
@@ -307,5 +328,10 @@ module.exports = class Model {
     static getFilters() {
         this.initFilters()
         return window.RelaDB.filters[this.table()]
+    }
+
+    onUpdate(callback) {
+        this.__onUpdateCallback = callback
+        return this
     }
 }

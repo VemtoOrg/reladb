@@ -411,3 +411,128 @@ test('it allows to globally disable saving data to storage', () => {
 
     expect(user.fresh().name).toBe('Tiago Edited')
 })
+
+test('it allows to listen to a model update', () => {
+    window.RelaDB.driver.clear()
+
+    let updatedName = ''
+
+    let user = User.create({name: 'Tiago'})
+    
+    user.onUpdate(user => {
+        updatedName = user.name
+    })
+
+    user.name = 'Tiago Edited'
+    user.save()
+
+    expect(updatedName).toBe('Tiago Edited')
+})
+
+test('it does not save model special data', () => {
+    window.RelaDB.driver.clear()
+
+    let user = User.create({name: 'Tiago'})
+
+    let tableData = User.getQuery().getItemData(user.id)
+    
+    expect(tableData.__onUpdateCallback).toBeUndefined()
+    expect(tableData.__saveDataToStorage).toBeUndefined()
+    expect(tableData.__returnRelationsAutomatically).toBeUndefined()
+
+    user.name = 'Tiago Edited'
+    user.save()
+
+    tableData = User.getQuery().getItemData(user.id)
+    
+    expect(tableData.__onUpdateCallback).toBeUndefined()
+    expect(tableData.__saveDataToStorage).toBeUndefined()
+    expect(tableData.__returnRelationsAutomatically).toBeUndefined()
+
+    expect(user.__saveDataToStorage).toBe(true)
+    expect(user.__onUpdateCallback).toBeNull()
+    expect(user.__returnRelationsAutomatically).toBe(true)
+
+    user.onUpdate(() => true)
+
+    user.disableSavingData()
+    user.disableAutomaticRelations()
+
+    expect(user.__saveDataToStorage).toBe(false)
+    expect(user.__onUpdateCallback).not.toBeNull()
+    expect(user.__returnRelationsAutomatically).toBe(false)
+
+    user.name = 'Tiago Edited 2'
+    user.save()
+
+    expect(user.__saveDataToStorage).toBe(false)
+    expect(user.__onUpdateCallback).not.toBeNull()
+    expect(user.__returnRelationsAutomatically).toBe(false)
+
+    user.enableSavingData()
+    user.enableAutomaticRelations()
+    user.onUpdate(null)
+
+    expect(user.__saveDataToStorage).toBe(true)
+    expect(user.__onUpdateCallback).toBeNull()
+    expect(user.__returnRelationsAutomatically).toBe(true)
+})
+
+test('it does not save special data for a post-saved model', () => {
+    window.RelaDB.driver.clear()
+
+    let user = new User({name: 'Tiago'})
+
+    expect(user.__saveDataToStorage).toBe(true)
+    expect(user.__onUpdateCallback).toBeNull()
+    expect(user.__returnRelationsAutomatically).toBe(true)
+
+    user.save()
+
+    expect(user.__saveDataToStorage).toBe(true)
+    expect(user.__onUpdateCallback).toBeNull()
+    expect(user.__returnRelationsAutomatically).toBe(true)
+
+    let tableData = User.getQuery().getItemData(user.id)
+    
+    expect(tableData.__onUpdateCallback).toBeUndefined()
+    expect(tableData.__saveDataToStorage).toBeUndefined()
+    expect(tableData.__returnRelationsAutomatically).toBeUndefined()
+
+    user.name = 'Tiago Edited'
+    user.save()
+
+    tableData = User.getQuery().getItemData(user.id)
+    
+    expect(tableData.__onUpdateCallback).toBeUndefined()
+    expect(tableData.__saveDataToStorage).toBeUndefined()
+    expect(tableData.__returnRelationsAutomatically).toBeUndefined()
+
+    expect(user.__saveDataToStorage).toBe(true)
+    expect(user.__onUpdateCallback).toBeNull()
+    expect(user.__returnRelationsAutomatically).toBe(true)
+
+    user.onUpdate(() => true)
+
+    user.disableSavingData()
+    user.disableAutomaticRelations()
+
+    expect(user.__saveDataToStorage).toBe(false)
+    expect(user.__onUpdateCallback).not.toBeNull()
+    expect(user.__returnRelationsAutomatically).toBe(false)
+
+    user.name = 'Tiago Edited 2'
+    user.save()
+
+    expect(user.__saveDataToStorage).toBe(false)
+    expect(user.__onUpdateCallback).not.toBeNull()
+    expect(user.__returnRelationsAutomatically).toBe(false)
+
+    user.enableSavingData()
+    user.enableAutomaticRelations()
+    user.onUpdate(null)
+
+    expect(user.__saveDataToStorage).toBe(true)
+    expect(user.__onUpdateCallback).toBeNull()
+    expect(user.__returnRelationsAutomatically).toBe(true)
+})
