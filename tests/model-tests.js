@@ -536,3 +536,14 @@ test('it does not save special data for a post-saved model', () => {
     expect(user.__onUpdateCallback).toBeNull()
     expect(user.__returnRelationsAutomatically).toBe(true)
 })
+
+test('it gets null when a model does not exists', () => {
+    window.RelaDB.driver.clear()
+
+    let user = User.create({name: 'Tiago'})
+    user.delete()
+
+    let tableData = User.getQuery().getItem(user.id)
+    
+    expect(tableData).toBeNull()
+})

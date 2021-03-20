@@ -211,6 +211,8 @@ module.exports = class Query {
     getItem(id) {
         let itemData = this.getItemData(id)
 
+        if(!itemData) return null
+
         return new this.model(itemData)
     }
 
