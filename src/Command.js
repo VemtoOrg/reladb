@@ -8,6 +8,12 @@ module.exports = class Command {
         this.data = data
     }
 
+    updateDataFromCommand(command) {
+        this.data = command.data
+
+        return this
+    }
+
     execute() {
         try {
             window.RelaDB.markAsExecuting(this)

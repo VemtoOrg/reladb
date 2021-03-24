@@ -279,3 +279,43 @@ test('it marks as not executing after finishing a command', () => {
 
     expect(window.RelaDB.isExecutingCommands()).toBe(false)
 })
+
+test('it removes unnecessary commands', () => {
+    window.RelaDB.driver.clear()
+
+    let user = User.create({name: 'Tiago', 'table': 'oiapoque'}),
+        post = Post.create({name: 'Post', ownerId: user.id})
+    
+    window.RelaDB.cacheFrom(user)
+
+    // Manipulate the data to generate some commands
+
+    user.name = 'Oiapoque'
+    user.save()
+
+    post.name = 'Updated Post'
+    post.save()
+
+    user.name = 'Oiapoque Edited'
+    user.save()
+
+    post.name = 'Updated Post 2'
+    post.save()
+
+    post.name = 'Updated Post 3'
+    post.save()
+
+    window.RelaDB.stopCaching()
+
+    let commandsEditingUser = window.RelaDB.commands.filter(
+        command => command.command == 'set item_1 on users'
+    )
+
+    expect(commandsEditingUser.length).toBe(1)
+
+    let commandsEditingPost = window.RelaDB.commands.filter(
+        command => command.command == 'set item_1 on posts'
+    )
+
+    expect(commandsEditingPost.length).toBe(1)
+})

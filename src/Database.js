@@ -8,6 +8,7 @@ module.exports = class Database {
         this.filters = []
         this.deletingBuffer = {}
         this.commands = []
+        this.addingCommand = false
         this.executingCommandId = null
 
         this.cache = {tables: {}}
@@ -178,7 +179,11 @@ module.exports = class Database {
     }
 
     canExecuteCommands() {
-        return !this.isExecutingCommands() && this.commands.length > 0
+        return !this.isExecutingCommands() && this.commands.length > 0 && !this.isAddingCommands()
+    }
+
+    isAddingCommands() {
+        return this.addingCommand
     }
 
     markAsExecuting(command) {
@@ -190,11 +195,35 @@ module.exports = class Database {
     }
 
     addCommand(command) {
-        this.commands.push(command)
+        this.addingCommand = true
+
+        let similarCommands = this.getSimilarCommands(command)
+
+        if(similarCommands.length) {
+            let latestSimilarCommand = similarCommands[similarCommands.length - 1]
+            latestSimilarCommand.updateDataFromCommand(command)
+
+            similarCommands.forEach(command => {
+                if(command.id !== latestSimilarCommand.id) {
+                    this.removeCommand(command)
+                }
+            })
+        } else {
+            this.commands.push(command)
+        }
 
         if(this.onAddCommand) {
             this.onAddCommand(command)
         }
+
+        this.addingCommand = false
+    }
+
+    getSimilarCommands(baseCommand) {
+        return this.commands.filter(command => {
+            return command.command === baseCommand.command
+                && this.executingCommandId !== command.id
+        })
     }
 
     removeCommand(command) {
