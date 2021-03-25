@@ -309,13 +309,21 @@ module.exports = class Query {
         this.log('%c Adding to parent has many: ' + relationship.signature(), 'color: orange')
         
         this.manipulateHasManyIndex(hasManyIndex => {
+
+            // If the item was already added to the hasMany Index
+            if(hasManyIndex.find(itemPk => itemPk === item.id)) {
+                return [...new Set(hasManyIndex)]
+            }
+
             if(relationship.allowsOnlyOne && hasManyIndex.length > 0) {
                 throw new Error(`Has One relation doesn't allow more than one relation at same time | ${relationship.signature()}`)
             }
 
             hasManyIndex.push(item.id)
             hasManyIndex = [...new Set(hasManyIndex)]
+
             return hasManyIndex
+            
         }, relationship, item)
     }
 
