@@ -246,7 +246,7 @@ module.exports = class Query {
 
     checkItemData(item, id) {
         if(!item) {
-            throw new Error(`Item with identifier ${id} not found on table ${this.table()}`)
+            throw new Error(`Item with identifier ${id} not found on table ${this.model.table()}`)
         }
 
         return true
