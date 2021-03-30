@@ -11,6 +11,8 @@ module.exports = class Database {
         this.addingCommand = false
         this.executingCommandId = null
 
+        this.tableCallbacks = {}
+
         this.cache = {tables: {}}
         this.onCacheMode = false
 
@@ -241,6 +243,16 @@ module.exports = class Database {
     executeNextCommand() {
         if(this.canExecuteCommands()) {
             this.commands[0].execute()
+        }
+    }
+
+    onUpdateTable(table, callback) {
+        this.tableCallbacks[table] = callback
+    }
+
+    executeOnUpdateCallbackForTable(table, data) {
+        if(this.tableCallbacks[table]) {
+            this.tableCallbacks[table](data)
         }
     }
 }

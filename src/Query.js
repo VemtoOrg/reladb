@@ -111,6 +111,8 @@ module.exports = class Query {
 
         if(window.RelaDB.events.updated) window.RelaDB.events.updated()
 
+        window.RelaDB.executeOnUpdateCallbackForTable(this.tableKey(), item)
+
         return true
     }
 

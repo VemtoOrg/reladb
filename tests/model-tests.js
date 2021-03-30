@@ -429,6 +429,23 @@ test('it allows to listen to a model update', () => {
     expect(updatedName).toBe('Tiago Edited')
 })
 
+test('it allows to listen to table updates', () => {
+    window.RelaDB.driver.clear()
+
+    let updatedName = ''
+
+    let user = User.create({name: 'Tiago'})
+    
+    window.RelaDB.onUpdateTable('users', user => {
+        updatedName = user.name
+    })
+
+    user.name = 'Tiago Edited'
+    user.save()
+
+    expect(updatedName).toBe('Tiago Edited')
+})
+
 test('it does not save model special data', () => {
     window.RelaDB.driver.clear()
 
