@@ -28,8 +28,13 @@ export default class User extends Model {
         Phone.create({phone: '99999-9999', ownerId: user.id})
     }
 
-    static updating(data) {
+    static updating(data, oldData) {
+        if(data.name != oldData.name) {
+            data.name = data.name + ' Edited'
+        }
+
         data.email = 'my_edited@email.com'
+        
         return data
     }
 

@@ -128,7 +128,7 @@ module.exports = class Model {
             throw new Error('It is not possible to update an object that is not currently saved on database')
         }
 
-        if(this.constructor.updating) data = this.constructor.updating(data, this)
+        if(this.constructor.updating) data = this.constructor.updating(data, this.fresh())
 
         this.fillFromData(data, true)
 

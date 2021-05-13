@@ -260,6 +260,7 @@ test('it allows to manipulate data before update using updating method', () => {
     user.save()
 
     // email is being changed using updating() event on Model definition
+    expect(user.fresh().name).toBe('Jonas Edited')
     expect(user.fresh().email).toBe('my_edited@email.com')
 })
 
