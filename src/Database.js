@@ -69,7 +69,6 @@ module.exports = class Database {
     }
 
     cacheFrom(item) {
-
         if(this.isCachingItem(item)) return
 
         this.cacheTablesInformation()
@@ -80,6 +79,32 @@ module.exports = class Database {
         this.cacheItemRelationships(item)
 
         this.onCacheMode = true
+    }
+
+    cacheTablesInformation() {
+        let tables = this.driver.getAllTableNames()
+        tables.forEach(table => this.addTableDataToCache(table))
+    }
+
+    addItemToTableCache(item) {
+        let table = item.getTable()
+        this.setupCacheTable(table)
+
+        let itemPrimary = item[item.constructor.primaryKey()]
+
+        if(this.cache.tables[table][`item_${itemPrimary}`]) return
+
+        this.cache.tables[table][`item_${itemPrimary}`] = item
+    }
+
+    addTableDataToCache(table) {
+        this.setupCacheTable(table)
+
+        if(this.cache.tables[table][table]) return
+
+        let tableData = this.driver.setTable(table).get(table)
+        
+        this.cache.tables[table][table] = tableData
     }
 
     cacheItemRelationships(item) {
@@ -101,32 +126,6 @@ module.exports = class Database {
                 this.cacheItemRelationships(relatedItem)
             })
         })
-    }
-
-    addItemToTableCache(item) {
-        let table = item.getTable()
-        this.setupCacheTable(table)
-
-        let itemPrimary = item[item.constructor.primaryKey()]
-
-        if(this.cache.tables[table][`item_${itemPrimary}`]) return
-
-        this.cache.tables[table][`item_${itemPrimary}`] = item
-    }
-
-    cacheTablesInformation() {
-        let tables = this.driver.getAllTableNames()
-        tables.forEach(table => this.addTableDataToCache(table))
-    }
-
-    addTableDataToCache(table) {
-        this.setupCacheTable(table)
-
-        if(this.cache.tables[table][table]) return
-
-        let tableData = this.driver.setTable(table).get(table)
-        
-        this.cache.tables[table][table] = tableData
     }
 
     setupCacheTable(table) {
