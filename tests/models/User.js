@@ -29,8 +29,8 @@ export default class User extends Model {
     }
 
     static updating(data, oldData) {
-        if(data.name != oldData.name) {
-            data.name = data.name + ' Edited'
+        if(data.role != oldData.role) {
+            data.role = data.role + ' Changed'
         }
 
         data.email = 'my_edited@email.com'

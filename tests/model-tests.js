@@ -255,12 +255,12 @@ test('it updates the instance data when using the created method', () => {
 test('it allows to manipulate data before update using updating method', () => {
     window.RelaDB.driver.clear()
 
-    let user = User.create({name: 'Tiago'})
-    user.name = 'Jonas'
+    let user = User.create({name: 'Tiago', role: 'User'})
+    user.role = 'Admin'
     user.save()
 
     // email is being changed using updating() event on Model definition
-    expect(user.fresh().name).toBe('Jonas Edited')
+    expect(user.fresh().role).toBe('Admin Changed')
     expect(user.fresh().email).toBe('my_edited@email.com')
 })
 
