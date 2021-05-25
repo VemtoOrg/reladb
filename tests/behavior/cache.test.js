@@ -30,7 +30,16 @@ test('it caches an item and all relations', () => {
 
     window.RelaDB.cacheFrom(firstUser)
 
-    let cachedTables = window.RelaDB.cache.tables
+    let cachedTables = window.RelaDB.cache.tables,
+        cachedItems = window.RelaDB.cache.cachedItems,
+        cachedRelationships = window.RelaDB.cache.cachedRelationships
+
+    expect(cachedItems[0]).toBe('users:1')
+    expect(cachedRelationships[0]).toBe('User:1:photos')
+    expect(cachedRelationships[1]).toBe('User:1:posts')
+    expect(cachedRelationships[2]).toBe('Post:1:comments')
+    expect(cachedRelationships[3]).toBe('User:1:document')
+    expect(cachedRelationships[4]).toBe('User:1:phones')
 
     expect(window.RelaDB.isCaching()).toBe(true)
 
@@ -51,6 +60,34 @@ test('it caches an item and all relations', () => {
     expect(typeof cachedTables.phones.item_1 !== 'undefined').toBe(true)
     expect(typeof cachedTables.comments.item_1 !== 'undefined').toBe(true)
 })
+
+test('it avoids caching an item twice', () => {
+    window.RelaDB.driver.clear()
+
+
+    let firstUser = User.create({name: 'Tiago', 'table': 'oiapoque'})
+    
+    Post.create({name: 'Post', ownerId: firstUser.id}),
+    Comment.create({comment: 'Hey!', postId: firstUser.id})
+
+    window.RelaDB.cacheFrom(firstUser)
+
+    let cachedItems = window.RelaDB.cache.cachedItems,
+        cachedRelationships = window.RelaDB.cache.cachedRelationships
+
+    expect(cachedItems.length).toBe(1)
+    expect(cachedItems[0]).toBe('users:1')
+    expect(cachedRelationships.length).toBe(5)
+    expect(cachedRelationships[0]).toBe('User:1:photos')
+
+    expect(window.RelaDB.isCaching()).toBe(true)
+
+    window.RelaDB.cacheFrom(firstUser)
+    
+    expect(cachedItems.length).toBe(1)
+    expect(cachedRelationships.length).toBe(5)
+})
+
 
 test('it caches table data not related with the item', () => {
     window.RelaDB.driver.clear()

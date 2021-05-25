@@ -1,3 +1,4 @@
+const Cache = require("./Cache")
 const Command = require("./Command")
 
 module.exports = class Database {
@@ -13,11 +14,8 @@ module.exports = class Database {
 
         this.tableCallbacks = {}
 
-        this.cache = {tables: {}}
+        this.cache = new Cache(this)
         this.onCacheMode = false
-
-        this.cachedItems = []
-        this.cachedRelationships = []
 
         this.settings = {
             addCommandToQueueOnDispatch: true
@@ -69,96 +67,18 @@ module.exports = class Database {
     }
 
     cacheFrom(item) {
-        if(this.isCachingItem(item)) return
-
-        this.cacheTablesInformation()
-
-        this.cachedItems.push(item.getItemIdentifier())
-
-        this.addItemToTableCache(item)
-        this.cacheItemRelationships(item)
+        this.cache.from(item)
 
         this.onCacheMode = true
     }
 
-    cacheTablesInformation() {
-        let tables = this.driver.getAllTableNames()
-        tables.forEach(table => this.addTableDataToCache(table))
-    }
-
-    addItemToTableCache(item) {
-        let table = item.getTable()
-        this.setupCacheTable(table)
-
-        let itemPrimary = item[item.constructor.primaryKey()]
-
-        if(this.cache.tables[table][`item_${itemPrimary}`]) return
-
-        this.cache.tables[table][`item_${itemPrimary}`] = item
-    }
-
-    addTableDataToCache(table) {
-        this.setupCacheTable(table)
-
-        if(this.cache.tables[table][table]) return
-
-        let tableData = this.driver.setTable(table).get(table)
-        
-        this.cache.tables[table][table] = tableData
-    }
-
-    cacheItemRelationships(item) {
-        item.hasManyRelationships().forEach((relationship) => {
-            if(this.isCachingRelationship(item, relationship)) return
-
-            this.cachedRelationships.push(relationship.getItemModelIdentifier(item))
-            
-            this.setupCacheTable(relationship.model.table())
-
-            let relationshipItems = relationship.execute(item)
-            
-            if(!relationshipItems) return
-
-            relationshipItems = Array.isArray(relationshipItems) ? relationshipItems : [relationshipItems]
-
-            relationshipItems.forEach(relatedItem => {
-                this.addItemToTableCache(relatedItem)
-                this.cacheItemRelationships(relatedItem)
-            })
-        })
-    }
-
-    setupCacheTable(table) {
-        if(!this.cache.tables[table]) {
-            this.cache.tables[table] = {}
-        }
-    }
-
     stopCaching() {
         this.onCacheMode = false
-        this.clearCache()
-    }
-
-    clearCache() {
-        this.cache = {tables: {}}
-        this.cachedItems = []
-        this.cachedRelationships = []
+        this.cache.clear()
     }
 
     isCaching() {
         return this.onCacheMode
-    }
-
-    isCachingItem(item) {
-        return this.cachedItems.some(
-            cached => cached === item.getItemIdentifier()
-        )
-    }
-
-    isCachingRelationship(item, relationship) {
-        return this.cachedRelationships.some(
-            cached => cached === relationship.getItemModelIdentifier(item)
-        )
     }
 
     dispatchCommand(cmd, data = null) {
@@ -254,4 +174,5 @@ module.exports = class Database {
             this.tableCallbacks[table](data)
         }
     }
+    
 }
