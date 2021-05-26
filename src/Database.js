@@ -1,5 +1,7 @@
 const Cache = require("./Cache")
 const Command = require("./Command")
+const Exporter = require("./Exporter")
+const Importer = require("./Importer")
 
 module.exports = class Database {
 
@@ -16,6 +18,9 @@ module.exports = class Database {
 
         this.cache = new Cache(this)
         this.onCacheMode = false
+
+        this.importer = new Importer(this)
+        this.exporter = new Exporter(this)
 
         this.settings = {
             addCommandToQueueOnDispatch: true
