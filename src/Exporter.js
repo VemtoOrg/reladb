@@ -30,4 +30,8 @@ module.exports = class Exporter {
         )
     }
 
+    clear() {
+        this.cache.clear()
+    }
+
 }

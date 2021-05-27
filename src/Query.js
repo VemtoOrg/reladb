@@ -409,6 +409,10 @@ module.exports = class Query {
     }
 
     indexStructure() {
+        return this.constructor.basicIndexStructure()
+    }
+
+    static basicIndexStructure() {
         return {
             hasMany: {},
             hasOne: {},
