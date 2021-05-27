@@ -63,17 +63,17 @@ module.exports = class Importer {
     }
 
     importHasManyRelationshipsItems(originalItemId, originalItemTable, importedItem) {
-        let tableData = this.importingData.tables[originalItemTable][originalItemTable]
+        let originalTableData = this.importingData.tables[originalItemTable][originalItemTable]
 
-        if(!tableData.index[originalItemId] || !tableData.index[originalItemId].hasMany) return
+        if(!originalTableData.index[originalItemId] || !originalTableData.index[originalItemId].hasMany) return
 
-        Object.keys(tableData.index[originalItemId].hasMany).forEach(indexName => {
-            let indexItems = tableData.index[originalItemId].hasMany[indexName],
+        Object.keys(originalTableData.index[originalItemId].hasMany).forEach(indexName => {
+            let indexItems = originalTableData.index[originalItemId].hasMany[indexName],
                 indexSections = indexName.split('.'),
                 relationshipTable = indexSections[0],
                 foreignName = indexSections[1]
             
-            tableData = this.addImportedItemIndexToTableData(tableData, importedItem, indexName)
+            let tableData = this.getTableDataWithImportedItemIndex(originalItemTable, importedItem, indexName)
 
             indexItems.forEach(originalRelatedItemId => {
                 let addedRelationshipItem = this.importItem(originalRelatedItemId, relationshipTable)
@@ -96,7 +96,11 @@ module.exports = class Importer {
         })
     }
 
-    addImportedItemIndexToTableData(tableData, importedItem, indexName) {
+    getTableDataWithImportedItemIndex(originalItemTable, importedItem, indexName) {
+        this.importerModel.table = () => originalItemTable
+
+        let tableData = (new Query(this.importerModel)).getTableData()
+
         if(!tableData.index[importedItem.id]) {
             tableData.index[importedItem.id] = Query.basicIndexStructure()
         } 

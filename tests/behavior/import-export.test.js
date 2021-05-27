@@ -10,7 +10,7 @@ window.RelaDB.setDriver(LocalStorage)
 
 afterEach(() => {
     window.RelaDB.stopCaching()
-    window.RelaDB.driver.clear() 
+    window.RelaDB.driver.clear()
 })
 
 test('it generates data for export', () => {
@@ -76,5 +76,6 @@ test('it can import the exported data', () => {
     expect(importedUser.posts[0].comments.length).toBe(1)
     expect(importedUser.posts[0].comments[0].id).toBe(2)
     expect(importedUser.posts[0].comments[0].postId).toBe(importedPost.id)
+
     expect(importedUser.posts[0].comments[0].authorId).toBe(importedUser.id)
 })

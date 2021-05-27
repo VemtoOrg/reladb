@@ -9,6 +9,8 @@ module.exports = class Exporter {
     }
 
     from(item) {
+        this.clear()
+        
         this.cache.from(item)
 
         return this
