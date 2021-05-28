@@ -81,7 +81,7 @@ test('it allows to find the latest added data', () => {
     User.create({name: 'Daniel', table: 'oiapoque'})
     User.create({name: 'Lisa', table: 'oiapoque'})
 
-    let user = User.findLatest()
+    let user = User.latest()
     
     expect(user.name).toBe('Lisa')
 })

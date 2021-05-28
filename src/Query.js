@@ -67,6 +67,14 @@ module.exports = class Query {
         return this.applyFilters(data)
     }
 
+    findLatest() {
+        let tableData = this.getTableData(),
+            primaryKeys = Object.keys(tableData.index),
+            latestPrimaryKey = Math.max(...primaryKeys)
+
+        return this.find(latestPrimaryKey)
+    }
+
     find(id = null) {
         if(!id) throw new Error('Please specify an identifier to find a row')
 
