@@ -73,6 +73,19 @@ test('it allows to find data', () => {
     expect(user.table).toBe('oiapoque')
 })
 
+test('it allows to find the latest added data', () => {
+    window.RelaDB.driver.clear()
+
+    User.create({name: 'Tiago', table: 'oiapoque'})
+    User.create({name: 'Jessica', table: 'oiapoque'})
+    User.create({name: 'Daniel', table: 'oiapoque'})
+    User.create({name: 'Lisa', table: 'oiapoque'})
+
+    let user = User.findLatest()
+    
+    expect(user.name).toBe('Lisa')
+})
+
 test('it can return empty data when trying to find nonexistent data', () => {
     window.RelaDB.driver.clear()
 

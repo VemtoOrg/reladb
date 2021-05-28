@@ -96,6 +96,13 @@ module.exports = class Model {
             .get()
     }
 
+    static findLatest() {
+        let query = new Query(this),
+            id = query.getTableData().lastPrimaryKey
+
+        return query.find(id)
+    }
+
     static find(id = null) {
         return new Query(this).find(id)
     }
