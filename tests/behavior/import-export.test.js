@@ -79,3 +79,43 @@ test('it can import the exported data', () => {
 
     expect(importedUser.posts[0].comments[0].authorId).toBe(importedUser.id)
 })
+
+test('it can import from json data', () => {
+    window.RelaDB.driver.clear()
+
+    let firstUser = User.create({name: 'Tiago', 'table': 'oiapoque'})
+    
+    Post.create({name: 'Post', ownerId: firstUser.id}),
+    Document.create({code: 'XTRE-123', userId: firstUser.id})
+    Comment.create({comment: 'Hey!', postId: firstUser.id, authorId: firstUser.id})
+
+    let exporter = window.RelaDB.exporter.from(firstUser),
+        data = exporter.toJson()
+
+    let importer = window.RelaDB.importer
+
+    importer.fromJson(data)
+
+    let importedUser = User.findOrFail(2)
+
+    expect(importedUser.name).toBe('Tiago')
+
+    let importedPost = Post.findOrFail(2)
+
+    expect(importedPost.name).toBe('Post')
+    expect(importedPost.ownerId).toBe(2)
+
+    expect(importedUser.posts.length).toBe(1)
+    expect(importedUser.posts[0].id).toBe(2)
+    expect(importedUser.posts[0].name).toBe('Post')
+    expect(importedUser.posts[0].ownerId).toBe(importedUser.id)
+
+    expect(importedUser.document.id).toBe(2)
+    expect(importedUser.document.code).toBe('XTRE-123')
+
+    expect(importedUser.posts[0].comments.length).toBe(1)
+    expect(importedUser.posts[0].comments[0].id).toBe(2)
+    expect(importedUser.posts[0].comments[0].postId).toBe(importedPost.id)
+
+    expect(importedUser.posts[0].comments[0].authorId).toBe(importedUser.id)
+})

@@ -17,6 +17,12 @@ module.exports = class Importer {
         this.importerModel = null
     }
 
+    fromJson(jsonData) {
+        this.fromData(
+            JSON.parse(jsonData)
+        )
+    }
+
     fromData(data) {
         if(!data) return
 
