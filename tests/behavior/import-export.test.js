@@ -4,6 +4,11 @@ const { default: User } = require('../models/User')
 const { default: Comment } = require('../models/Comment')
 const { default: Document } = require('../models/Document')
 const LocalStorage = require('../../src/Drivers/LocalStorage')
+const { default: Project } = require('../models/Project')
+const { default: Entity } = require('../models/Entity')
+const { default: Field } = require('../models/Field')
+const { default: Foreign } = require('../models/Foreign')
+const { default: Relationship } = require('../models/Relationship')
 
 window.RelaDB = new Database
 window.RelaDB.setDriver(LocalStorage)
@@ -118,4 +123,61 @@ test('it can import from json data', () => {
     expect(importedUser.posts[0].comments[0].postId).toBe(importedPost.id)
 
     expect(importedUser.posts[0].comments[0].authorId).toBe(importedUser.id)
+})
+
+test('it can import complex data', () => {
+    window.RelaDB.driver.clear()
+
+    let project = Project.create({name: 'My Project'}),
+        userEntity = Entity.create({name: 'User', projectId: project.id}),
+        userIdField = Field.create({name: 'id', entityId: userEntity.id}),
+        userLogFkField = Field.create({name: 'log_id', entityId: userEntity.id}),
+        logEntity = Entity.create({name: 'Log', projectId: project.id}),
+        logIdField = Field.create({name: 'id', entityId: logEntity.id}),
+        foreign = Foreign.create({fieldId: userLogFkField.id, relatedFieldId: logIdField.id, relatedEntityId: logEntity.id})
+
+    Relationship.create(
+        {name: 'logRelation', entityId: logEntity.id}
+    ),
+    Relationship.create(
+        {name: 'logSecondRelation', entityId: logEntity.id, inverseId: 1}
+    ),
+    Relationship.create(
+        {name: 'logThirdRelation', entityId: logEntity.id}
+    ),
+    Relationship.create(
+        {name: 'userRelation', entityId: userEntity.id}
+    )
+
+    let exporter = window.RelaDB.exporter.from(project),
+        data = exporter.getData()
+
+    let importer = window.RelaDB.importer
+
+    importer.fromData(data)
+
+    let importedProject = Project.find(2)
+
+    expect(importedProject.entities.length).toBe(2)
+
+    let importedForeign = Foreign.find(2)
+
+    expect(importedForeign.field.name).toBe('log_id')
+    expect(importedForeign.relatedField.name).toBe('id')
+    expect(importedForeign.relatedEntity.name).toBe('Log')
+
+    let importedUserEntity = Entity.find(3),
+        importedLogEntity = Entity.find(4)
+
+    expect(importedUserEntity.name).toBe('User')
+    expect(importedUserEntity.relations[0].name).toBe('userRelation')
+    expect(importedUserEntity.relations[0].entity.id).toBe(importedUserEntity.id)
+
+    expect(importedLogEntity.name).toBe('Log')
+    expect(importedLogEntity.relations[0].name).toBe('logRelation')
+    expect(importedLogEntity.relations[0].entity.id).toBe(importedLogEntity.id)
+    expect(importedLogEntity.relations[1].name).toBe('logSecondRelation')
+    expect(importedLogEntity.relations[1].entity.id).toBe(importedLogEntity.id)
+    expect(importedLogEntity.relations[2].name).toBe('logThirdRelation')
+    expect(importedLogEntity.relations[2].entity.id).toBe(importedLogEntity.id)
 })

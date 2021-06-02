@@ -78,8 +78,6 @@ module.exports = class Importer {
                 indexSections = indexName.split('.'),
                 relationshipTable = indexSections[0],
                 foreignName = indexSections[1]
-            
-            let tableData = this.getTableDataWithImportedItemIndex(originalItemTable, importedItem, indexName)
 
             indexItems.forEach(originalRelatedItemId => {
                 let addedRelationshipItem = this.importItem(originalRelatedItemId, relationshipTable)
@@ -92,6 +90,7 @@ module.exports = class Importer {
                 addedRelationshipItem.save()
 
                 // Add the item to the parent index
+                let tableData = this.getTableDataWithImportedItemIndex(originalItemTable, importedItem, indexName)
                 tableData.index[importedItem.id].hasMany[indexName].push(addedRelationshipItem.id)
                 
                 this.importerModel.table = () => originalItemTable
