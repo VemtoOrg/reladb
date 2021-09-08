@@ -366,11 +366,128 @@ test('it fires a belongsTo relationship created event', () => {
         listenerOcurrences++
     })
 
-    secondUser.on('posts:created', (post,number) => {
+    secondUser.on('posts:created', () => {
         listenerOcurrences++
     })
 
     Post.create({title: 'Test', ownerId: secondUser.id})
     
     expect(listenerOcurrences).toBe(1)
+})
+
+test('it receives data from a belongsTo relationship created event', () => {
+    window.RelaDB.driver.clear()
+
+    let createdPost = null
+
+    let user = User.create({name: 'Tiago'})
+
+    user.on('posts:created', post => {
+        createdPost = post
+    })
+
+    Post.create({title: 'Test', ownerId: user.id})
+    
+    expect(createdPost.id).toBe(1)
+    expect(createdPost.ownerId).toBe(user.id)
+})
+
+test('it fires a belongsTo relationship updated event', () => {
+    window.RelaDB.driver.clear()
+
+    let listenerOcurrences = 0
+
+    let firstUser = User.create({name: 'Tiago'}),
+        secondUser = User.create({name: 'Tiago'}),
+        post = Post.create({title: 'Test', ownerId: secondUser.id})
+
+    firstUser.on('posts:updated', () => {
+        listenerOcurrences++
+    })
+
+    secondUser.on('posts:updated', () => {
+        listenerOcurrences++
+    })
+
+    post.title = 'Updated Title'
+    post.save()
+    
+    expect(listenerOcurrences).toBe(1)
+})
+
+test('it receives data from a belongsTo relationship updated event', () => {
+    window.RelaDB.driver.clear()
+
+    let updatedPostTitle = ''
+
+    let user = User.create({name: 'Tiago'}),
+        post = Post.create({title: 'Test', ownerId: user.id})
+
+    user.on('posts:updated', post => {
+        updatedPostTitle = post.title
+    })
+
+    post.title = 'Updated Title'
+    post.save()
+    
+    expect(updatedPostTitle).toBe('Updated Title')
+})
+
+test('it fires a belongsTo relationship deleted event', () => {
+    window.RelaDB.driver.clear()
+
+    let listenerOcurrences = 0
+
+    let firstUser = User.create({name: 'Tiago'}),
+        secondUser = User.create({name: 'Tiago'}),
+        post = Post.create({title: 'Test', ownerId: secondUser.id})
+
+    firstUser.on('posts:deleted', () => {
+        listenerOcurrences++
+    })
+
+    secondUser.on('posts:deleted', () => {
+        listenerOcurrences++
+    })
+
+    post.delete()
+    
+    expect(listenerOcurrences).toBe(1)
+})
+
+test('it receives data from a belongsTo relationship deleted event', () => {
+    window.RelaDB.driver.clear()
+
+    let deletedPostId = null
+
+    let user = User.create({name: 'Tiago'}),
+        post = Post.create({title: 'Test', ownerId: user.id})
+
+    user.on('posts:deleted', postId => {
+        deletedPostId = postId
+    })
+
+    post.delete()
+    
+    expect(deletedPostId).toBe(1)
+})
+
+test('it can remove an event listener', () => {
+    window.RelaDB.driver.clear()
+
+    let listenerOcurrences = 0
+
+    let user = User.create({name: 'Tiago'})
+
+    user.on('posts:created', () => {
+        listenerOcurrences++
+    })
+
+    user.off('posts:created', () => {
+        listenerOcurrences++
+    })
+
+    Post.create({title: 'Test', ownerId: user.id})
+    
+    expect(listenerOcurrences).toBe(0)
 })

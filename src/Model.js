@@ -88,12 +88,12 @@ module.exports = class Model {
         
         if(this.created) this.created(item)
 
-        this.fireCreatedRelationshipEvents(item)
+        this.fireRelationshipEvents(item, 'created')
         
         return item
     }
 
-    static fireCreatedRelationshipEvents(item) {
+    static fireRelationshipEvents(item, eventSuffix) {
         let belongsToRelationships = item.belongsToRelationships()
 
         belongsToRelationships.forEach(relationship => {
@@ -105,9 +105,10 @@ module.exports = class Model {
 
             if(!parentInstance) return
 
-            let eventName = `${parentInstance.getItemIdentifier()}:${inverseRelationship.getNameOnModel()}:created`
+            let eventName = `${parentInstance.getItemIdentifier()}:${inverseRelationship.getNameOnModel()}:${eventSuffix}`
             
-            window.RelaDB.executeCustomEventListener(eventName, item)
+            let returnedData = eventSuffix === 'deleted' ? item.getItemIdentifierData() : item
+            window.RelaDB.executeCustomEventListener(eventName, returnedData)
         })
 
     }
@@ -164,6 +165,8 @@ module.exports = class Model {
         if(this.__onUpdateListener) this.__onUpdateListener(this)
         if(this.constructor.updated) this.constructor.updated(this)
 
+        this.constructor.fireRelationshipEvents(this, 'updated')
+
         return wasUpdated
     }
 
@@ -177,6 +180,8 @@ module.exports = class Model {
         new Query(this.constructor).delete(this.id)
 
         if(this.constructor.deleted) this.constructor.deleted(this.id)
+
+        this.constructor.fireRelationshipEvents(this, 'deleted')
 
         this.clearData()
 
@@ -216,6 +221,11 @@ module.exports = class Model {
     getItemIdentifier() {
         let pk = this.constructor.primaryKey()
         return `${this.getTable()}:${this[pk]}`
+    }
+
+    getItemIdentifierData() {
+        let pk = this.constructor.primaryKey()
+        return this[pk]
     }
 
     getTableData() {

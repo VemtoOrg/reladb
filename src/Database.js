@@ -40,7 +40,7 @@ module.exports = class Database {
 
     executeCustomEventListener(name, ...data) {
         if(!this.__customEventsListeners[name]) return
-
+        
         this.__customEventsListeners[name](...data)
     }
 
