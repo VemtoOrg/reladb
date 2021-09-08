@@ -467,7 +467,7 @@ test('it does not save model special data', () => {
 
     let tableData = User.getQuery().getItemData(user.id)
     
-    expect(tableData.__onUpdateCallback).toBeUndefined()
+    expect(tableData.__onUpdateListener).toBeUndefined()
     expect(tableData.__saveDataToStorage).toBeUndefined()
     expect(tableData.__returnRelationsAutomatically).toBeUndefined()
 
@@ -476,12 +476,12 @@ test('it does not save model special data', () => {
 
     tableData = User.getQuery().getItemData(user.id)
     
-    expect(tableData.__onUpdateCallback).toBeUndefined()
+    expect(tableData.__onUpdateListener).toBeUndefined()
     expect(tableData.__saveDataToStorage).toBeUndefined()
     expect(tableData.__returnRelationsAutomatically).toBeUndefined()
 
     expect(user.__saveDataToStorage).toBe(true)
-    expect(user.__onUpdateCallback).toBeNull()
+    expect(user.__onUpdateListener).toBeNull()
     expect(user.__returnRelationsAutomatically).toBe(true)
 
     user.onUpdate(() => true)
@@ -490,14 +490,14 @@ test('it does not save model special data', () => {
     user.disableAutomaticRelations()
 
     expect(user.__saveDataToStorage).toBe(false)
-    expect(user.__onUpdateCallback).not.toBeNull()
+    expect(user.__onUpdateListener).not.toBeNull()
     expect(user.__returnRelationsAutomatically).toBe(false)
 
     user.name = 'Tiago Edited 2'
     user.save()
 
     expect(user.__saveDataToStorage).toBe(false)
-    expect(user.__onUpdateCallback).not.toBeNull()
+    expect(user.__onUpdateListener).not.toBeNull()
     expect(user.__returnRelationsAutomatically).toBe(false)
 
     user.enableSavingData()
@@ -505,7 +505,7 @@ test('it does not save model special data', () => {
     user.onUpdate(null)
 
     expect(user.__saveDataToStorage).toBe(true)
-    expect(user.__onUpdateCallback).toBeNull()
+    expect(user.__onUpdateListener).toBeNull()
     expect(user.__returnRelationsAutomatically).toBe(true)
 })
 
@@ -515,18 +515,18 @@ test('it does not save special data for a post-saved model', () => {
     let user = new User({name: 'Tiago'})
 
     expect(user.__saveDataToStorage).toBe(true)
-    expect(user.__onUpdateCallback).toBeNull()
+    expect(user.__onUpdateListener).toBeNull()
     expect(user.__returnRelationsAutomatically).toBe(true)
 
     user.save()
 
     expect(user.__saveDataToStorage).toBe(true)
-    expect(user.__onUpdateCallback).toBeNull()
+    expect(user.__onUpdateListener).toBeNull()
     expect(user.__returnRelationsAutomatically).toBe(true)
 
     let tableData = User.getQuery().getItemData(user.id)
     
-    expect(tableData.__onUpdateCallback).toBeUndefined()
+    expect(tableData.__onUpdateListener).toBeUndefined()
     expect(tableData.__saveDataToStorage).toBeUndefined()
     expect(tableData.__returnRelationsAutomatically).toBeUndefined()
 
@@ -535,12 +535,12 @@ test('it does not save special data for a post-saved model', () => {
 
     tableData = User.getQuery().getItemData(user.id)
     
-    expect(tableData.__onUpdateCallback).toBeUndefined()
+    expect(tableData.__onUpdateListener).toBeUndefined()
     expect(tableData.__saveDataToStorage).toBeUndefined()
     expect(tableData.__returnRelationsAutomatically).toBeUndefined()
 
     expect(user.__saveDataToStorage).toBe(true)
-    expect(user.__onUpdateCallback).toBeNull()
+    expect(user.__onUpdateListener).toBeNull()
     expect(user.__returnRelationsAutomatically).toBe(true)
 
     user.onUpdate(() => true)
@@ -549,14 +549,14 @@ test('it does not save special data for a post-saved model', () => {
     user.disableAutomaticRelations()
 
     expect(user.__saveDataToStorage).toBe(false)
-    expect(user.__onUpdateCallback).not.toBeNull()
+    expect(user.__onUpdateListener).not.toBeNull()
     expect(user.__returnRelationsAutomatically).toBe(false)
 
     user.name = 'Tiago Edited 2'
     user.save()
 
     expect(user.__saveDataToStorage).toBe(false)
-    expect(user.__onUpdateCallback).not.toBeNull()
+    expect(user.__onUpdateListener).not.toBeNull()
     expect(user.__returnRelationsAutomatically).toBe(false)
 
     user.enableSavingData()
@@ -564,7 +564,7 @@ test('it does not save special data for a post-saved model', () => {
     user.onUpdate(null)
 
     expect(user.__saveDataToStorage).toBe(true)
-    expect(user.__onUpdateCallback).toBeNull()
+    expect(user.__onUpdateListener).toBeNull()
     expect(user.__returnRelationsAutomatically).toBe(true)
 })
 

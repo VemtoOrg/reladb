@@ -353,3 +353,24 @@ test('it allows to disable getting automatic relations', () => {
 
     expect(post.owner.id).toBe(user.id)
 })
+
+test('it fires a belongsTo relationship created event', () => {
+    window.RelaDB.driver.clear()
+
+    let listenerOcurrences = 0
+
+    let firstUser = User.create({name: 'Tiago'}),
+        secondUser = User.create({name: 'Tiago'})
+
+    firstUser.on('posts:created', () => {
+        listenerOcurrences++
+    })
+
+    secondUser.on('posts:created', (post,number) => {
+        listenerOcurrences++
+    })
+
+    Post.create({title: 'Test', ownerId: secondUser.id})
+    
+    expect(listenerOcurrences).toBe(1)
+})

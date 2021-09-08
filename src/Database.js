@@ -15,6 +15,7 @@ module.exports = class Database {
         this.executingCommandId = null
 
         this.tableCallbacks = {}
+        this.__customEventsListeners = {}
 
         this.cache = new Cache(this)
         this.onCacheMode = false
@@ -27,6 +28,20 @@ module.exports = class Database {
         }
 
         this.__saveDataToStorage = true
+    }
+
+    addCustomEventListener(name, listener) {
+        this.__customEventsListeners[name] = listener
+    }
+
+    removeCustomEventListener(name) {
+        delete this.__customEventsListeners[name]
+    }
+
+    executeCustomEventListener(name, ...data) {
+        if(!this.__customEventsListeners[name]) return
+
+        this.__customEventsListeners[name](...data)
     }
 
     disableSavingData() {

@@ -6,6 +6,12 @@ module.exports = class Relationship {
         this.model = model
         this.localModel = localModel
         this.filters = []
+
+        this.type = this.relationshipType()
+    }
+
+    relationshipType() {
+        return 'BasicRelationship'
     }
 
     getQuery() {
@@ -22,6 +28,16 @@ module.exports = class Relationship {
 
     getItemModelIdentifier(item) {
         return `${this.localModel.identifier()}:${item.id}:${this.__nameOnModel}`
+    }
+
+    setNameOnModel(name) {
+        this.__nameOnModel = name
+
+        return this
+    }
+
+    getNameOnModel() {
+        return this.__nameOnModel
     }
 
 }

@@ -12,7 +12,8 @@ module.exports = class Model {
         this.__saveDataToStorage = true
 
         // Callbacks
-        this.__onUpdateCallback = null
+        this.__onUpdateListener = null
+        this.__customEventsEnabled = false
 
         this.constructor.initFilters()
         
@@ -86,8 +87,29 @@ module.exports = class Model {
         let item = new Query(this).create(data)
         
         if(this.created) this.created(item)
+
+        this.fireCreatedRelationshipEvents(item)
         
         return item
+    }
+
+    static fireCreatedRelationshipEvents(item) {
+        let belongsToRelationships = item.belongsToRelationships()
+
+        belongsToRelationships.forEach(relationship => {
+            let inverseRelationship = relationship.inverse()
+
+            if(!inverseRelationship) return
+
+            let parentInstance = relationship.getParentFromItem(item)
+
+            if(!parentInstance) return
+
+            let eventName = `${parentInstance.getItemIdentifier()}:${inverseRelationship.getNameOnModel()}:created`
+            
+            window.RelaDB.executeCustomEventListener(eventName, item)
+        })
+
     }
 
     static get() {
@@ -139,7 +161,7 @@ module.exports = class Model {
         let wasUpdated = new Query(this.constructor)
             .update(this.id, this.constructor.removeSpecialData(this))
 
-        if(this.__onUpdateCallback) this.__onUpdateCallback(this)
+        if(this.__onUpdateListener) this.__onUpdateListener(this)
         if(this.constructor.updated) this.constructor.updated(this)
 
         return wasUpdated
@@ -164,9 +186,10 @@ module.exports = class Model {
     static removeSpecialData(data) {
         let filteredData = {},
             excludedKeys = [
-                '__onUpdateCallback',
+                '__onUpdateListener',
                 '__saveDataToStorage',
                 '__returnRelationsAutomatically',
+                '__customEventsEnabled',
             ]
 
         Object.keys(data).forEach(key => {
@@ -334,8 +357,24 @@ module.exports = class Model {
         return window.RelaDB.filters[this.table()]
     }
 
-    onUpdate(callback) {
-        this.__onUpdateCallback = callback
+    onUpdate(listener) {
+        this.__onUpdateListener = listener
+        return this
+    }
+
+    on(name, listener) {
+        let completeName = `${this.getItemIdentifier()}:${name}`
+        
+        window.RelaDB.addCustomEventListener(completeName, listener)
+
+        return this
+    }
+
+    off(name) {
+        let completeName = `${this.getItemIdentifier()}:${name}`
+        
+        window.RelaDB.removeCustomEventListener(completeName)
+
         return this
     }
 }

@@ -2,6 +2,10 @@ const Relationship = require("./Relationship")
 
 module.exports = class HasMany extends Relationship {
     
+    relationshipType() {
+        return 'HasMany'
+    }
+
     setForeignKey(foreignKey) {
         if(!foreignKey) {
             foreignKey = `${this.localModel.identifier().toLowerCase()}Id`

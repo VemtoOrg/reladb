@@ -2,6 +2,10 @@ const HasMany = require("./HasMany")
 
 module.exports = class HasOne extends HasMany {
 
+    relationshipType() {
+        return 'HasOne'
+    }
+
     getAllItems(item) {
         return super.execute(item)
     }
