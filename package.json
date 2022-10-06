@@ -1,10 +1,11 @@
 {
   "name": "@tiago_silva_pereira/reladb",
-  "version": "0.3.1",
+  "version": "2.0.0",
   "description": "A relational database layer on top of LocalStorage",
   "main": "main.js",
   "scripts": {
     "test": "jest --runInBand",
+    "test:basic": "jest --runInBand --selectProjects behavior unit default",
     "dev": "npm run development",
     "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
     "watch": "npm run development -- --watch",
