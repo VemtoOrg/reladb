@@ -7,13 +7,7 @@
     "test": "jest --runInBand",
     "test:basic": "jest --runInBand --selectProjects behavior unit default",
     "test:default": "jest --runInBand --selectProjects default",
-    "test:behavior": "jest --runInBand --selectProjects behavior",
-    "dev": "npm run development",
-    "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-    "watch": "npm run development -- --watch",
-    "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
-    "prod": "npm run production",
-    "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
+    "test:behavior": "jest --runInBand --selectProjects behavior"
   },
   "repository": {
     "type": "git",
@@ -35,16 +29,9 @@
   "homepage": "https://github.com/TiagoSilvaPereira/reladb#readme",
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.10.4",
-    "cross-env": "^7.0.2",
-    "jest": "^26.4.2",
-    "jest-electron": "^0.1.11",
-    "laravel-mix": "^5.0.7",
-    "mock-local-storage": "^1.1.15",
-    "rimraf": "^3.0.2",
-    "vue-template-compiler": "^2.6.12"
+    "jest": "^26.4.2"
   },
   "dependencies": {
-    "mkdirp": "^1.0.4",
     "moment": "^2.29.0",
     "pluralize": "^8.0.0",
     "uuid": "^8.3.1"
