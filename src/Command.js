@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require('uuid')
+const DatabaseResolver = require('./DatabaseResolver')
 
 module.exports = class Command {
 
@@ -16,31 +17,31 @@ module.exports = class Command {
 
     execute() {
         try {
-            window.RelaDB.markAsExecuting(this)
+            DatabaseResolver.resolve().markAsExecuting(this)
             this.executeParsedCommand()
-            window.RelaDB.removeCommand(this)
+            DatabaseResolver.resolve().removeCommand(this)
         } catch (error) {
 
-            if(window.RelaDB.mode === 'development') {
+            if(DatabaseResolver.resolve().mode === 'development') {
                 throw error
             }
 
-            window.RelaDB.removeCommand(this)
+            DatabaseResolver.resolve().removeCommand(this)
 
         }
     }
 
     executeParsedCommand() {
-        if(this.command === 'clear') return window.RelaDB.driver.clear()
+        if(this.command === 'clear') return DatabaseResolver.resolve().driver.clear()
 
         let parsed = this.parseCommand()
 
         if(parsed.type === 'set') {
-            window.RelaDB.driver.setTable(parsed.table).set(parsed.key, this.data)
+            DatabaseResolver.resolve().driver.setTable(parsed.table).set(parsed.key, this.data)
         }
 
         if(parsed.type === 'remove') {
-            window.RelaDB.driver.setTable(parsed.table).remove(parsed.key)
+            DatabaseResolver.resolve().driver.setTable(parsed.table).remove(parsed.key)
         }
     }
 

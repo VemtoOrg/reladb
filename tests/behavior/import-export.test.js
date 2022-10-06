@@ -9,6 +9,7 @@ const { default: Entity } = require('../models/Entity')
 const { default: Field } = require('../models/Field')
 const { default: Foreign } = require('../models/Foreign')
 const { default: Relationship } = require('../models/Relationship')
+const DatabaseResolver = require('../../src/DatabaseResolver')
 
 let database = new Database
 database.setDriver(LocalStorage)
@@ -16,12 +17,12 @@ database.setDriver(LocalStorage)
 DatabaseResolver.setDatabase(database)
 
 afterEach(() => {
-    window.RelaDB.stopCaching()
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().stopCaching()
+    DatabaseResolver.resolve().driver.clear()
 })
 
 test('it generates data for export', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let firstUser = User.create({name: 'Tiago', 'table': 'oiapoque'})
     
@@ -29,7 +30,7 @@ test('it generates data for export', () => {
     Comment.create({comment: 'Hey!', postId: firstUser.id})
     Document.create({code: 'XTRE-123', userId: firstUser.id})
 
-    let exporter = window.RelaDB.exporter.from(firstUser),
+    let exporter = DatabaseResolver.resolve().exporter.from(firstUser),
         data = exporter.getData()
 
     let exportedItems = data.exportedItems,
@@ -48,7 +49,7 @@ test('it generates data for export', () => {
 })
 
 test('it can import the exported data', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let firstUser = User.create({name: 'Tiago', 'table': 'oiapoque'})
     
@@ -56,10 +57,10 @@ test('it can import the exported data', () => {
     Document.create({code: 'XTRE-123', userId: firstUser.id})
     Comment.create({comment: 'Hey!', postId: firstUser.id, authorId: firstUser.id})
 
-    let exporter = window.RelaDB.exporter.from(firstUser),
+    let exporter = DatabaseResolver.resolve().exporter.from(firstUser),
         data = exporter.getData()
 
-    let importer = window.RelaDB.importer
+    let importer = DatabaseResolver.resolve().importer
 
     importer.fromData(data)
 
@@ -88,7 +89,7 @@ test('it can import the exported data', () => {
 })
 
 test('it can import from json data', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let firstUser = User.create({name: 'Tiago', 'table': 'oiapoque'})
     
@@ -96,10 +97,10 @@ test('it can import from json data', () => {
     Document.create({code: 'XTRE-123', userId: firstUser.id})
     Comment.create({comment: 'Hey!', postId: firstUser.id, authorId: firstUser.id})
 
-    let exporter = window.RelaDB.exporter.from(firstUser),
+    let exporter = DatabaseResolver.resolve().exporter.from(firstUser),
         data = exporter.toJson()
 
-    let importer = window.RelaDB.importer
+    let importer = DatabaseResolver.resolve().importer
 
     importer.fromJson(data)
 
@@ -128,7 +129,7 @@ test('it can import from json data', () => {
 })
 
 test('it can import complex data', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let project = Project.create({name: 'My Project'}),
         userEntity = Entity.create({name: 'User', projectId: project.id}),
@@ -151,10 +152,10 @@ test('it can import complex data', () => {
         {name: 'userRelation', entityId: userEntity.id}
     )
 
-    let exporter = window.RelaDB.exporter.from(project),
+    let exporter = DatabaseResolver.resolve().exporter.from(project),
         data = exporter.getData()
 
-    let importer = window.RelaDB.importer
+    let importer = DatabaseResolver.resolve().importer
 
     importer.fromData(data)
 

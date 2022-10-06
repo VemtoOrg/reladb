@@ -1,10 +1,11 @@
 const moment = require('moment')
 const { version } = require('../package.json')
+const DatabaseResolver = require('./DatabaseResolver')
 
 module.exports = class Query {
 
     constructor(model) {
-        if(!window.RelaDB) throw new Error('window.RelaDB is undefined. Please define it as window.RelaDB = new Database() before using the database capabilities')
+        if(!DatabaseResolver.resolve()) throw new Error('The database is undefined. Please define create a database and add to DatabaseResolver')
 
         this.model = model
         this.filteredIndex = null
@@ -16,7 +17,7 @@ module.exports = class Query {
     }
 
     create(data = {}) {
-        if(window.RelaDB.events.creating) window.RelaDB.events.creating()
+        if(DatabaseResolver.resolve().events.creating) DatabaseResolver.resolve().events.creating()
 
         let tableData = this.getTableData(),
             id = ++tableData.lastPrimaryKey,
@@ -41,7 +42,7 @@ module.exports = class Query {
         
         this.addIndexesByItem(item)
 
-        if(window.RelaDB.events.creating) window.RelaDB.events.created()
+        if(DatabaseResolver.resolve().events.creating) DatabaseResolver.resolve().events.created()
 
         return item
     }
@@ -103,7 +104,7 @@ module.exports = class Query {
     }
 
     update(id, data = {}) {
-        if(window.RelaDB.events.updating) window.RelaDB.events.updating()
+        if(DatabaseResolver.resolve().events.updating) DatabaseResolver.resolve().events.updating()
 
         let oldItem = this.findOrFail(id)
         this.removeIndexesByItem(oldItem)
@@ -117,9 +118,9 @@ module.exports = class Query {
 
         oldItem = null
 
-        if(window.RelaDB.events.updated) window.RelaDB.events.updated()
+        if(DatabaseResolver.resolve().events.updated) DatabaseResolver.resolve().events.updated()
 
-        window.RelaDB.executeOnUpdateCallbackForTable(this.tableKey(), item)
+        DatabaseResolver.resolve().executeOnUpdateCallbackForTable(this.tableKey(), item)
 
         return true
     }
@@ -129,7 +130,7 @@ module.exports = class Query {
 
         this.addToDeletingBuffer(id)
 
-        if(window.RelaDB.events.deleting) window.RelaDB.events.deleting()
+        if(DatabaseResolver.resolve().events.deleting) DatabaseResolver.resolve().events.deleting()
 
         let item = this.getItem(id)
         
@@ -146,7 +147,7 @@ module.exports = class Query {
         delete tableData.index[id]
         this.saveTableData(tableData)
 
-        if(window.RelaDB.events.deleted) window.RelaDB.events.deleted()
+        if(DatabaseResolver.resolve().events.deleted) DatabaseResolver.resolve().events.deleted()
 
         this.removeFromDeletingBuffer(id)
 
@@ -154,7 +155,7 @@ module.exports = class Query {
     }
 
     isAlreadyDeleting(id) {
-        return window.RelaDB.isAlreadyDeleting(this.tableKey(), id)
+        return DatabaseResolver.resolve().isAlreadyDeleting(this.tableKey(), id)
     }
 
     isAlreadyDeleted(id) {
@@ -162,11 +163,11 @@ module.exports = class Query {
     }
     
     addToDeletingBuffer(id) {
-        return window.RelaDB.addToDeletingBuffer(this.tableKey(), id)
+        return DatabaseResolver.resolve().addToDeletingBuffer(this.tableKey(), id)
     }
 
     removeFromDeletingBuffer(id) {
-        return window.RelaDB.removeFromDeletingBuffer(this.tableKey(), id)
+        return DatabaseResolver.resolve().removeFromDeletingBuffer(this.tableKey(), id)
     }
 
     blockFieldsReplacingRelationships(data) {
@@ -430,7 +431,7 @@ module.exports = class Query {
     }
 
     dbDriver() {
-        return window.RelaDB.driver.setTable(this.model.table())
+        return DatabaseResolver.resolve().driver.setTable(this.model.table())
     }
 
     compare(field, direction = 'asc') {
@@ -453,7 +454,7 @@ module.exports = class Query {
     }
 
     log() {
-        if(window.RelaDB.mode === 'development') {
+        if(DatabaseResolver.resolve().mode === 'development') {
             if(!this.lastLogTime) this.lastLogTime = moment()
             
             let difference = moment().diff(this.lastLogTime)

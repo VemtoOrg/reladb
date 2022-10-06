@@ -1,5 +1,6 @@
-const Database = require('../../src/Database');
-const LocalStorage = require('../../src/Drivers/LocalStorage');
+const Database = require('../../src/Database')
+const DatabaseResolver = require('../../src/DatabaseResolver')
+const LocalStorage = require('../../src/Drivers/LocalStorage')
 
 let database = new Database
 database.setDriver(LocalStorage)
@@ -8,4 +9,4 @@ DatabaseResolver.setDatabase(database)
 
 require('../relationship-tests')
 
-afterAll(() => window.RelaDB.driver.clear())
+afterAll(() => DatabaseResolver.resolve().driver.clear())

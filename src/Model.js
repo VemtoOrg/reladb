@@ -3,6 +3,7 @@ const pluralize = require('pluralize')
 const HasOne = require('./Relationships/HasOne')
 const HasMany = require('./Relationships/HasMany')
 const BelongsTo = require('./Relationships/BelongsTo')
+const DatabaseResolver = require('./DatabaseResolver')
 
 module.exports = class Model {
 
@@ -108,7 +109,7 @@ module.exports = class Model {
             let eventName = `${parentInstance.getItemIdentifier()}:${inverseRelationship.getNameOnModel()}:${eventSuffix}`
             
             let returnedData = eventSuffix === 'deleted' ? item.getItemIdentifierData() : item
-            window.RelaDB.executeCustomEventListener(eventName, returnedData)
+            DatabaseResolver.resolve().executeCustomEventListener(eventName, returnedData)
         })
 
     }
@@ -137,7 +138,7 @@ module.exports = class Model {
     }
 
     save() {
-        if(!this.__saveDataToStorage || !window.RelaDB.__saveDataToStorage) return
+        if(!this.__saveDataToStorage || !DatabaseResolver.resolve().__saveDataToStorage) return
 
         if(!this.isSaved()) {
             let createdItem = this.constructor.create(this.constructor.removeSpecialData(this))
@@ -149,7 +150,7 @@ module.exports = class Model {
     }
 
     update(data = {}) {
-        if(!this.__saveDataToStorage || !window.RelaDB.__saveDataToStorage) return
+        if(!this.__saveDataToStorage || !DatabaseResolver.resolve().__saveDataToStorage) return
 
         if(!this.id) {
             throw new Error('It is not possible to update an object that is not currently saved on database')
@@ -171,7 +172,7 @@ module.exports = class Model {
     }
 
     delete() {
-        if(!this.__saveDataToStorage || !window.RelaDB.__saveDataToStorage) return
+        if(!this.__saveDataToStorage || !DatabaseResolver.resolve().__saveDataToStorage) return
         
         if(!this.id) throw new Error('It is not possible to delete an object that is not currently saved on database')
 
@@ -352,19 +353,19 @@ module.exports = class Model {
     }
 
     static initFilters() {
-        if(!window.RelaDB.filters[this.table()]) {
-            window.RelaDB.filters[this.table()] = []
+        if(!DatabaseResolver.resolve().filters[this.table()]) {
+            DatabaseResolver.resolve().filters[this.table()] = []
         }
     }
 
     static clearFilters() {
         this.initFilters()
-        window.RelaDB.filters[this.table()] = []
+        DatabaseResolver.resolve().filters[this.table()] = []
     }
 
     static getFilters() {
         this.initFilters()
-        return window.RelaDB.filters[this.table()]
+        return DatabaseResolver.resolve().filters[this.table()]
     }
 
     onUpdate(listener) {
@@ -375,7 +376,7 @@ module.exports = class Model {
     on(name, listener) {
         let completeName = `${this.getItemIdentifier()}:${name}`
         
-        window.RelaDB.addCustomEventListener(completeName, listener)
+        DatabaseResolver.resolve().addCustomEventListener(completeName, listener)
 
         return this
     }
@@ -383,7 +384,7 @@ module.exports = class Model {
     off(name) {
         let completeName = `${this.getItemIdentifier()}:${name}`
         
-        window.RelaDB.removeCustomEventListener(completeName)
+        DatabaseResolver.resolve().removeCustomEventListener(completeName)
 
         return this
     }

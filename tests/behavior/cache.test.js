@@ -8,6 +8,7 @@ const { default: Comment } = require('../models/Comment')
 const { default: Category } = require('../models/Category')
 const LocalStorage = require('../../src/Drivers/LocalStorage')
 const { default: Relationship } = require('../models/Relationship')
+const DatabaseResolver = require('../../src/DatabaseResolver')
 
 let database = new Database
 database.setDriver(LocalStorage)
@@ -15,12 +16,12 @@ database.setDriver(LocalStorage)
 DatabaseResolver.setDatabase(database)
 
 afterEach(() => {
-    window.RelaDB.stopCaching()
-    window.RelaDB.driver.clear() 
+    DatabaseResolver.resolve().stopCaching()
+    DatabaseResolver.resolve().driver.clear() 
 })
 
 test('it caches an item and all relations', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     for (let index = 0; index < 10; index++) {
         let user = User.create({name: 'Tiago', 'table': 'oiapoque'}),
@@ -30,11 +31,11 @@ test('it caches an item and all relations', () => {
     
     let firstUser = User.find(1)
 
-    window.RelaDB.cacheFrom(firstUser)
+    DatabaseResolver.resolve().cacheFrom(firstUser)
 
-    let cachedTables = window.RelaDB.cache.tables,
-        cachedItems = window.RelaDB.cache.cachedItems,
-        cachedRelationships = window.RelaDB.cache.cachedRelationships
+    let cachedTables = DatabaseResolver.resolve().cache.tables,
+        cachedItems = DatabaseResolver.resolve().cache.cachedItems,
+        cachedRelationships = DatabaseResolver.resolve().cache.cachedRelationships
 
     expect(cachedItems[0]).toBe('users:1')
     expect(cachedRelationships[0]).toBe('User:1:photos')
@@ -43,7 +44,7 @@ test('it caches an item and all relations', () => {
     expect(cachedRelationships[3]).toBe('User:1:document')
     expect(cachedRelationships[4]).toBe('User:1:phones')
 
-    expect(window.RelaDB.isCaching()).toBe(true)
+    expect(DatabaseResolver.resolve().isCaching()).toBe(true)
 
     expect(typeof cachedTables.users !== 'undefined').toBe(true)
     expect(typeof cachedTables.posts !== 'undefined').toBe(true)
@@ -64,7 +65,7 @@ test('it caches an item and all relations', () => {
 })
 
 test('it avoids caching an item twice', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
 
     let firstUser = User.create({name: 'Tiago', 'table': 'oiapoque'})
@@ -72,19 +73,19 @@ test('it avoids caching an item twice', () => {
     Post.create({name: 'Post', ownerId: firstUser.id}),
     Comment.create({comment: 'Hey!', postId: firstUser.id})
 
-    window.RelaDB.cacheFrom(firstUser)
+    DatabaseResolver.resolve().cacheFrom(firstUser)
 
-    let cachedItems = window.RelaDB.cache.cachedItems,
-        cachedRelationships = window.RelaDB.cache.cachedRelationships
+    let cachedItems = DatabaseResolver.resolve().cache.cachedItems,
+        cachedRelationships = DatabaseResolver.resolve().cache.cachedRelationships
 
     expect(cachedItems.length).toBe(1)
     expect(cachedItems[0]).toBe('users:1')
     expect(cachedRelationships.length).toBe(5)
     expect(cachedRelationships[0]).toBe('User:1:photos')
 
-    expect(window.RelaDB.isCaching()).toBe(true)
+    expect(DatabaseResolver.resolve().isCaching()).toBe(true)
 
-    window.RelaDB.cacheFrom(firstUser)
+    DatabaseResolver.resolve().cacheFrom(firstUser)
     
     expect(cachedItems.length).toBe(1)
     expect(cachedRelationships.length).toBe(5)
@@ -92,7 +93,7 @@ test('it avoids caching an item twice', () => {
 
 
 test('it caches table data not related with the item', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
 
     let user = User.create({name: 'Tiago', 'table': 'oiapoque'}),
@@ -109,11 +110,11 @@ test('it caches table data not related with the item', () => {
     Category.create({category: 'test'})
     Entity.create({name: 'test entity'})
 
-    window.RelaDB.cacheFrom(user)
+    DatabaseResolver.resolve().cacheFrom(user)
 
-    let cachedTables = window.RelaDB.cache.tables
+    let cachedTables = DatabaseResolver.resolve().cache.tables
 
-    expect(window.RelaDB.isCaching()).toBe(true)
+    expect(DatabaseResolver.resolve().isCaching()).toBe(true)
 
     expect(typeof cachedTables.users !== 'undefined').toBe(true)
     expect(typeof cachedTables.posts !== 'undefined').toBe(true)
@@ -137,46 +138,46 @@ test('it caches table data not related with the item', () => {
 })
 
 test('it can stop caching data', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago', 'table': 'oiapoque'})
     
-    window.RelaDB.cacheFrom(user)
+    DatabaseResolver.resolve().cacheFrom(user)
 
-    expect(window.RelaDB.isCaching()).toBe(true)
+    expect(DatabaseResolver.resolve().isCaching()).toBe(true)
 
-    expect(typeof window.RelaDB.cache.tables.users.item_1 !== 'undefined').toBe(true)
+    expect(typeof DatabaseResolver.resolve().cache.tables.users.item_1 !== 'undefined').toBe(true)
 
-    window.RelaDB.stopCaching()
+    DatabaseResolver.resolve().stopCaching()
 
-    expect(window.RelaDB.isCaching()).toBe(false)
+    expect(DatabaseResolver.resolve().isCaching()).toBe(false)
 
-    expect(typeof window.RelaDB.cache.tables.users === 'undefined').toBe(true)
+    expect(typeof DatabaseResolver.resolve().cache.tables.users === 'undefined').toBe(true)
 })
 
 test('it can save data on cache', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago', 'table': 'oiapoque'}),
             post = Post.create({name: 'Post', ownerId: user.id}),
             comment = Comment.create({comment: 'Hey!', postId: post.id})
     
-    window.RelaDB.cacheFrom(user)
+    DatabaseResolver.resolve().cacheFrom(user)
 
     user.name = 'Oiapoque'
     user.save()
 
-    expect(window.RelaDB.cache.tables.users.item_1.name).toBe('Oiapoque')
+    expect(DatabaseResolver.resolve().cache.tables.users.item_1.name).toBe('Oiapoque')
 })
 
 test('it can remove data from cache', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago', 'table': 'oiapoque'}),
             post = Post.create({name: 'Post', ownerId: user.id}),
             comment = Comment.create({comment: 'Hey!', postId: post.id})
     
-    window.RelaDB.cacheFrom(user)
+    DatabaseResolver.resolve().cacheFrom(user)
 
     // Removing some non-cascade-delete relations
     user.posts.forEach(post => post.delete())
@@ -184,39 +185,39 @@ test('it can remove data from cache', () => {
 
     user.delete()
 
-    expect(typeof window.RelaDB.cache.tables.users.item_1 === 'undefined').toBe(true)
+    expect(typeof DatabaseResolver.resolve().cache.tables.users.item_1 === 'undefined').toBe(true)
 })
 
 test('it generates executable commands when manipulating data on cache', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago', 'table': 'oiapoque'})
     
-    window.RelaDB.cacheFrom(user)
+    DatabaseResolver.resolve().cacheFrom(user)
 
     user.name = 'Oiapoque'
     user.save()
 
-    expect(window.RelaDB.commands.length > 0).toBe(true)
+    expect(DatabaseResolver.resolve().commands.length > 0).toBe(true)
 })
 
 test('it can execute a database command that stores data', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago', 'table': 'oiapoque'})
     
-    window.RelaDB.cacheFrom(user)
+    DatabaseResolver.resolve().cacheFrom(user)
 
     // Manipulates the data on the RAM cache storage
     user.name = 'Oiapoque'
     user.save()
 
-    window.RelaDB.stopCaching()
+    DatabaseResolver.resolve().stopCaching()
 
-    expect(window.RelaDB.commands[0].command === 'set item_1 on users').toBe(true)
+    expect(DatabaseResolver.resolve().commands[0].command === 'set item_1 on users').toBe(true)
 
     // Execute the command to transfer the data from cache to the database storage
-    window.RelaDB.commands[0].execute()
+    DatabaseResolver.resolve().commands[0].execute()
 
     // Now gets the data from the database storage
     user = User.find(user.id)
@@ -224,23 +225,23 @@ test('it can execute a database command that stores data', () => {
     expect(user.name).toBe('Oiapoque')
 
     // Check if the command was removed from the commands list
-    expect(window.RelaDB.commands[0].command === 'set item_1 on users').toBe(false)
+    expect(DatabaseResolver.resolve().commands[0].command === 'set item_1 on users').toBe(false)
 })
 
 test('it can execute a database command that removes data', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago'}),
         userId = user.id
     
-    window.RelaDB.cacheFrom(user)
+    DatabaseResolver.resolve().cacheFrom(user)
 
     // Manipulates the data on the RAM cache storage
     user.delete()
 
-    window.RelaDB.stopCaching()
+    DatabaseResolver.resolve().stopCaching()
 
-    window.RelaDB.commands.forEach(command => command.execute())
+    DatabaseResolver.resolve().commands.forEach(command => command.execute())
 
     // Now gets the data from the database storage
     user = User.find(userId)
@@ -249,12 +250,12 @@ test('it can execute a database command that removes data', () => {
 })
 
 test('it blocks wrong commands', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     
-    let command0 = window.RelaDB.dispatchCommand('something'),
-        command1 = window.RelaDB.dispatchCommand('settt something on something'),
-        command2 = window.RelaDB.dispatchCommand('set item_1 on phones', {})
+    let command0 = DatabaseResolver.resolve().dispatchCommand('something'),
+        command1 = DatabaseResolver.resolve().dispatchCommand('settt something on something'),
+        command2 = DatabaseResolver.resolve().dispatchCommand('set item_1 on phones', {})
 
     expect(() => command0.parseCommand()).toThrow()
     expect(() => command1.parseCommand()).toThrow()
@@ -262,21 +263,21 @@ test('it blocks wrong commands', () => {
 })
 
 test('it fires an event after dispatching a command', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let commands = []
 
-    window.RelaDB.onDispatchCommand = command => commands.push(command)
+    DatabaseResolver.resolve().onDispatchCommand = command => commands.push(command)
 
-    let command0 = window.RelaDB.dispatchCommand('something'),
-        command1 = window.RelaDB.dispatchCommand('other')
+    let command0 = DatabaseResolver.resolve().dispatchCommand('something'),
+        command1 = DatabaseResolver.resolve().dispatchCommand('other')
 
     expect(commands[0].command).toBe(command0.command)
     expect(commands[1].command).toBe(command1.command)
 })
 
 test('it can cache items with recursive relations', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let project = Project.create({name: 'My Project'}),
         userEntity = Entity.create({name: 'User', projectId: project.id})
@@ -293,39 +294,39 @@ test('it can cache items with recursive relations', () => {
     firstRelationship.inverseId = secondRelationship.id
     firstRelationship.save()
 
-    expect(() => window.RelaDB.cacheFrom(project)).not.toThrow()
+    expect(() => DatabaseResolver.resolve().cacheFrom(project)).not.toThrow()
 })
 
 test('it marks as not executing after finishing a command', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago', 'table': 'oiapoque'})
     
-    window.RelaDB.cacheFrom(user)
+    DatabaseResolver.resolve().cacheFrom(user)
 
     // Manipulates the data on the RAM cache storage
     user.name = 'Oiapoque'
     user.save()
 
-    window.RelaDB.stopCaching()
+    DatabaseResolver.resolve().stopCaching()
 
     // Execute the command to transfer the data from cache to the database storage
-    window.RelaDB.markAsExecuting(window.RelaDB.commands[0])
+    DatabaseResolver.resolve().markAsExecuting(DatabaseResolver.resolve().commands[0])
     
-    expect(window.RelaDB.isExecutingCommands()).toBe(true)
+    expect(DatabaseResolver.resolve().isExecutingCommands()).toBe(true)
 
-    window.RelaDB.commands[0].execute()
+    DatabaseResolver.resolve().commands[0].execute()
 
-    expect(window.RelaDB.isExecutingCommands()).toBe(false)
+    expect(DatabaseResolver.resolve().isExecutingCommands()).toBe(false)
 })
 
 test('it removes unnecessary commands', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago', 'table': 'oiapoque'}),
         post = Post.create({name: 'Post', ownerId: user.id})
     
-    window.RelaDB.cacheFrom(user)
+    DatabaseResolver.resolve().cacheFrom(user)
 
     // Manipulate the data to generate some commands
 
@@ -344,15 +345,15 @@ test('it removes unnecessary commands', () => {
     post.name = 'Updated Post 3'
     post.save()
 
-    window.RelaDB.stopCaching()
+    DatabaseResolver.resolve().stopCaching()
 
-    let commandsEditingUser = window.RelaDB.commands.filter(
+    let commandsEditingUser = DatabaseResolver.resolve().commands.filter(
         command => command.command == 'set item_1 on users'
     )
 
     expect(commandsEditingUser.length).toBe(1)
 
-    let commandsEditingPost = window.RelaDB.commands.filter(
+    let commandsEditingPost = DatabaseResolver.resolve().commands.filter(
         command => command.command == 'set item_1 on posts'
     )
 

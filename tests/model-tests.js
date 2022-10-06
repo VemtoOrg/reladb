@@ -5,6 +5,7 @@ const { default: Photo } = require("./models/Photo")
 const { default: Order } = require("./models/Order")
 const { default: Person } = require('./models/Person')
 const { default: Category } = require("./models/Category")
+const DatabaseResolver = require('../src/DatabaseResolver')
 
 try {
     jest.useFakeTimers()
@@ -13,7 +14,7 @@ try {
 }
 
 test('it allows to create data', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago', table: 'oiapoque'})
 
@@ -22,7 +23,7 @@ test('it allows to create data', () => {
 })
 
 test('it allows to save data from a model instance', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = new User
     user.name = 'Tiago'
@@ -39,7 +40,7 @@ test('it allows to save data from a model instance', () => {
 })
 
 test('it allows to fill data on a model instance before saving', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = new User
     user.fill({'name': 'Tiago'})
@@ -51,7 +52,7 @@ test('it allows to fill data on a model instance before saving', () => {
 })
 
 test('it adds created data to the table index', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago'}),
         secondUser = User.create({name: 'Jessica'})
@@ -63,7 +64,7 @@ test('it adds created data to the table index', () => {
 })
 
 test('it allows to find data', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     User.create({name: 'Tiago', table: 'oiapoque'})
 
@@ -74,7 +75,7 @@ test('it allows to find data', () => {
 })
 
 test('it allows to find the latest added data', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     User.create({name: 'Tiago', table: 'oiapoque'})
     User.create({name: 'Jessica', table: 'oiapoque'})
@@ -87,20 +88,20 @@ test('it allows to find the latest added data', () => {
 })
 
 test('it can return empty data when trying to find nonexistent data', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     expect(User.find(1)).toBe(null)  
 })
 
 test('it fails when trying to find nonexistent data', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     expect(() => User.findOrFail(1))
         .toThrow('Item with identifier 1 not found on table users')  
 })
 
 test('it allows to update data', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago'})
 
@@ -114,7 +115,7 @@ test('it allows to update data', () => {
 })
 
 test('it allows to data update itself', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago'})
 
@@ -129,7 +130,7 @@ test('it allows to data update itself', () => {
 })
 
 test('it does not allow to update the identifier', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago'})
 
@@ -139,7 +140,7 @@ test('it does not allow to update the identifier', () => {
 })
 
 test('it allows to delete data', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago'}),
         userId = user.id
@@ -157,7 +158,7 @@ test('it allows to delete data', () => {
 })
 
 test('it allows to get data', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     User.create({name: 'Tiago'})
     User.create({name: 'Jessica'})
@@ -169,7 +170,7 @@ test('it allows to get data', () => {
 })
 
 test('it allows to get ordered data', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     User.create({name: 'Jessica'})
     User.create({name: 'Tiago'})
@@ -189,7 +190,7 @@ test('it allows to get ordered data', () => {
 })
 
 test('it adds the timestamps on create', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago', table: 'oiapoque'})
 
@@ -198,7 +199,7 @@ test('it adds the timestamps on create', () => {
 })
 
 test('it updates timestamps on update', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago'})
 
@@ -212,7 +213,7 @@ test('it updates timestamps on update', () => {
 })
 
 test('it allows to count data', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     User.create({name: 'Tiago'})
     User.create({name: 'Jessica'})
@@ -222,7 +223,7 @@ test('it allows to count data', () => {
 })
 
 test('it saves version on table data', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let tableData = User.getQuery().getTableData()
 
@@ -230,7 +231,7 @@ test('it saves version on table data', () => {
 })
 
 test('it allows to call a method on model object', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago'})
 
@@ -238,7 +239,7 @@ test('it allows to call a method on model object', () => {
 })
 
 test('it allows to manipulate data before saving using creating method', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago', table: 'oiapoque'})
 
@@ -247,7 +248,7 @@ test('it allows to manipulate data before saving using creating method', () => {
 })
 
 test('it allows to execute code after saving using created method', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago', table: 'oiapoque'})
 
@@ -256,7 +257,7 @@ test('it allows to execute code after saving using created method', () => {
 })
 
 test('it updates the instance data when using the created method', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let order = new Order({date: '2021-01-01'})
     order.save()
@@ -266,7 +267,7 @@ test('it updates the instance data when using the created method', () => {
 })
 
 test('it allows to manipulate data before update using updating method', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago', role: 'User'})
     user.role = 'Admin'
@@ -278,7 +279,7 @@ test('it allows to manipulate data before update using updating method', () => {
 })
 
 test('it allows to execute code after update using updated method', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago'})
     user.name = 'Jonas'
@@ -289,7 +290,7 @@ test('it allows to execute code after update using updated method', () => {
 })
 
 test('it allows to execute code before deleting data', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let person = Person.create({name: 'Tiago'})
     
@@ -303,7 +304,7 @@ test('it allows to execute code before deleting data', () => {
 })
 
 test('it allows to execute code after deleting data', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let person = Person.create({name: 'Tiago'})
 
@@ -311,16 +312,16 @@ test('it allows to execute code after deleting data', () => {
 })
 
 test('it allows to hear database global events', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let eventsCount = 0
 
-    window.RelaDB.events.creating = () => eventsCount++
-    window.RelaDB.events.created = () => eventsCount++
-    window.RelaDB.events.updating = () => eventsCount++
-    window.RelaDB.events.updated = () => eventsCount++
-    window.RelaDB.events.deleting = () => eventsCount++
-    window.RelaDB.events.deleted = () => eventsCount++
+    DatabaseResolver.resolve().events.creating = () => eventsCount++
+    DatabaseResolver.resolve().events.created = () => eventsCount++
+    DatabaseResolver.resolve().events.updating = () => eventsCount++
+    DatabaseResolver.resolve().events.updated = () => eventsCount++
+    DatabaseResolver.resolve().events.deleting = () => eventsCount++
+    DatabaseResolver.resolve().events.deleted = () => eventsCount++
     
     let user = User.create({name: 'Tiago'})
     user.name = 'Jonas'
@@ -337,13 +338,13 @@ test('it allows to hear database global events', () => {
  * Call Exceeded Error
  */
 test('it saves data being deleted on a buffer to avoid recursive deletion', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago'}),
         iterations = []
 
     // Saving all deleting buffer iterations to check its steps
-    window.RelaDB.registerDeletingBufferListener(
+    DatabaseResolver.resolve().registerDeletingBufferListener(
         (buffer) => iterations.push(buffer)
     )
 
@@ -368,12 +369,12 @@ test('it saves data being deleted on a buffer to avoid recursive deletion', () =
 })
 
 test('it can gets all tables names', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     User.create({name: 'Tiago', table: 'oiapoque'})
     Category.create({name: 'testt'})
 
-    let tables = window.RelaDB.driver.getAllTableNames()
+    let tables = DatabaseResolver.resolve().driver.getAllTableNames()
 
     expect(tables.includes('users')).toStrictEqual(true)
     expect(tables.includes('phones')).toStrictEqual(true)
@@ -383,7 +384,7 @@ test('it can gets all tables names', () => {
 })
 
 test('it allows to disable saving data to storage', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago'})
     
@@ -405,20 +406,20 @@ test('it allows to disable saving data to storage', () => {
 })
 
 test('it allows to globally disable saving data to storage', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago'})
     
     expect(user.fresh().name).toBe('Tiago')
 
-    window.RelaDB.disableSavingData()
+    DatabaseResolver.resolve().disableSavingData()
 
     user.name = 'Tiago Edited'
     user.save()
 
     expect(user.fresh().name).toBe('Tiago')
 
-    window.RelaDB.enableSavingData()
+    DatabaseResolver.resolve().enableSavingData()
 
     user.name = 'Tiago Edited'
     user.save()
@@ -427,7 +428,7 @@ test('it allows to globally disable saving data to storage', () => {
 })
 
 test('it allows to listen to a model update', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let updatedName = ''
 
@@ -444,13 +445,13 @@ test('it allows to listen to a model update', () => {
 })
 
 test('it allows to listen to table updates', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let updatedName = ''
 
     let user = User.create({name: 'Tiago'})
     
-    window.RelaDB.onUpdateTable('users', user => {
+    DatabaseResolver.resolve().onUpdateTable('users', user => {
         updatedName = user.name
     })
 
@@ -461,7 +462,7 @@ test('it allows to listen to table updates', () => {
 })
 
 test('it does not save model special data', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago'})
 
@@ -510,7 +511,7 @@ test('it does not save model special data', () => {
 })
 
 test('it does not save special data for a post-saved model', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = new User({name: 'Tiago'})
 
@@ -569,7 +570,7 @@ test('it does not save special data for a post-saved model', () => {
 })
 
 test('it gets null when a model does not exists', () => {
-    window.RelaDB.driver.clear()
+    DatabaseResolver.resolve().driver.clear()
 
     let user = User.create({name: 'Tiago'})
     user.delete()

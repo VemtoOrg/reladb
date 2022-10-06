@@ -9,4 +9,4 @@ DatabaseResolver.setDatabase(database)
 
 require('../model-tests')
 
-afterAll(() => window.RelaDB.driver.clear())
+afterAll(() => DatabaseResolver.resolve().driver.clear())
