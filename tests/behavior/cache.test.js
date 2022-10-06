@@ -9,8 +9,10 @@ const { default: Category } = require('../models/Category')
 const LocalStorage = require('../../src/Drivers/LocalStorage')
 const { default: Relationship } = require('../models/Relationship')
 
-window.RelaDB = new Database
-window.RelaDB.setDriver(LocalStorage)
+let database = new Database
+database.setDriver(LocalStorage)
+
+DatabaseResolver.setDatabase(database)
 
 afterEach(() => {
     window.RelaDB.stopCaching()

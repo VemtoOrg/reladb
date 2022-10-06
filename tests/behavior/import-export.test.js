@@ -10,8 +10,10 @@ const { default: Field } = require('../models/Field')
 const { default: Foreign } = require('../models/Foreign')
 const { default: Relationship } = require('../models/Relationship')
 
-window.RelaDB = new Database
-window.RelaDB.setDriver(LocalStorage)
+let database = new Database
+database.setDriver(LocalStorage)
+
+DatabaseResolver.setDatabase(database)
 
 afterEach(() => {
     window.RelaDB.stopCaching()

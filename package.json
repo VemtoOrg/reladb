@@ -6,6 +6,7 @@
   "scripts": {
     "test": "jest --runInBand",
     "test:basic": "jest --runInBand --selectProjects behavior unit default",
+    "test:default": "jest --runInBand --selectProjects default",
     "dev": "npm run development",
     "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
     "watch": "npm run development -- --watch",
@@ -65,14 +66,6 @@
         "displayName": "default",
         "testMatch": [
           "<rootDir>/tests/localstorage/*.test.js"
-        ]
-      },
-      {
-        "displayName": "electron",
-        "runner": "jest-electron/runner",
-        "testEnvironment": "jest-electron/environment",
-        "testMatch": [
-          "<rootDir>/tests/electron/*.test.js"
         ]
       }
     ]
