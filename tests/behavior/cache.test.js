@@ -8,20 +8,20 @@ const { default: Comment } = require('../models/Comment')
 const { default: Category } = require('../models/Category')
 const LocalStorage = require('../../src/Drivers/LocalStorage')
 const { default: Relationship } = require('../models/Relationship')
-const DatabaseResolver = require('../../src/DatabaseResolver')
+const Resolver = require('../../src/Resolver')
 
 let database = new Database
 database.setDriver(LocalStorage)
 
-DatabaseResolver.setDatabase(database)
+Resolver.setDatabase(database)
 
 afterEach(() => {
-    DatabaseResolver.resolve().stopCaching()
-    DatabaseResolver.resolve().driver.clear() 
+    Resolver.db().stopCaching()
+    Resolver.db().driver.clear() 
 })
 
 test('it caches an item and all relations', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     for (let index = 0; index < 10; index++) {
         let user = User.create({name: 'Tiago', 'table': 'oiapoque'}),
@@ -31,11 +31,11 @@ test('it caches an item and all relations', () => {
     
     let firstUser = User.find(1)
 
-    DatabaseResolver.resolve().cacheFrom(firstUser)
+    Resolver.db().cacheFrom(firstUser)
 
-    let cachedTables = DatabaseResolver.resolve().cache.tables,
-        cachedItems = DatabaseResolver.resolve().cache.cachedItems,
-        cachedRelationships = DatabaseResolver.resolve().cache.cachedRelationships
+    let cachedTables = Resolver.db().cache.tables,
+        cachedItems = Resolver.db().cache.cachedItems,
+        cachedRelationships = Resolver.db().cache.cachedRelationships
 
     expect(cachedItems[0]).toBe('users:1')
     expect(cachedRelationships[0]).toBe('User:1:photos')
@@ -44,7 +44,7 @@ test('it caches an item and all relations', () => {
     expect(cachedRelationships[3]).toBe('User:1:document')
     expect(cachedRelationships[4]).toBe('User:1:phones')
 
-    expect(DatabaseResolver.resolve().isCaching()).toBe(true)
+    expect(Resolver.db().isCaching()).toBe(true)
 
     expect(typeof cachedTables.users !== 'undefined').toBe(true)
     expect(typeof cachedTables.posts !== 'undefined').toBe(true)
@@ -65,7 +65,7 @@ test('it caches an item and all relations', () => {
 })
 
 test('it avoids caching an item twice', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
 
     let firstUser = User.create({name: 'Tiago', 'table': 'oiapoque'})
@@ -73,19 +73,19 @@ test('it avoids caching an item twice', () => {
     Post.create({name: 'Post', ownerId: firstUser.id}),
     Comment.create({comment: 'Hey!', postId: firstUser.id})
 
-    DatabaseResolver.resolve().cacheFrom(firstUser)
+    Resolver.db().cacheFrom(firstUser)
 
-    let cachedItems = DatabaseResolver.resolve().cache.cachedItems,
-        cachedRelationships = DatabaseResolver.resolve().cache.cachedRelationships
+    let cachedItems = Resolver.db().cache.cachedItems,
+        cachedRelationships = Resolver.db().cache.cachedRelationships
 
     expect(cachedItems.length).toBe(1)
     expect(cachedItems[0]).toBe('users:1')
     expect(cachedRelationships.length).toBe(5)
     expect(cachedRelationships[0]).toBe('User:1:photos')
 
-    expect(DatabaseResolver.resolve().isCaching()).toBe(true)
+    expect(Resolver.db().isCaching()).toBe(true)
 
-    DatabaseResolver.resolve().cacheFrom(firstUser)
+    Resolver.db().cacheFrom(firstUser)
     
     expect(cachedItems.length).toBe(1)
     expect(cachedRelationships.length).toBe(5)
@@ -93,7 +93,7 @@ test('it avoids caching an item twice', () => {
 
 
 test('it caches table data not related with the item', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
 
     let user = User.create({name: 'Tiago', 'table': 'oiapoque'}),
@@ -110,11 +110,11 @@ test('it caches table data not related with the item', () => {
     Category.create({category: 'test'})
     Entity.create({name: 'test entity'})
 
-    DatabaseResolver.resolve().cacheFrom(user)
+    Resolver.db().cacheFrom(user)
 
-    let cachedTables = DatabaseResolver.resolve().cache.tables
+    let cachedTables = Resolver.db().cache.tables
 
-    expect(DatabaseResolver.resolve().isCaching()).toBe(true)
+    expect(Resolver.db().isCaching()).toBe(true)
 
     expect(typeof cachedTables.users !== 'undefined').toBe(true)
     expect(typeof cachedTables.posts !== 'undefined').toBe(true)
@@ -138,46 +138,46 @@ test('it caches table data not related with the item', () => {
 })
 
 test('it can stop caching data', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago', 'table': 'oiapoque'})
     
-    DatabaseResolver.resolve().cacheFrom(user)
+    Resolver.db().cacheFrom(user)
 
-    expect(DatabaseResolver.resolve().isCaching()).toBe(true)
+    expect(Resolver.db().isCaching()).toBe(true)
 
-    expect(typeof DatabaseResolver.resolve().cache.tables.users.item_1 !== 'undefined').toBe(true)
+    expect(typeof Resolver.db().cache.tables.users.item_1 !== 'undefined').toBe(true)
 
-    DatabaseResolver.resolve().stopCaching()
+    Resolver.db().stopCaching()
 
-    expect(DatabaseResolver.resolve().isCaching()).toBe(false)
+    expect(Resolver.db().isCaching()).toBe(false)
 
-    expect(typeof DatabaseResolver.resolve().cache.tables.users === 'undefined').toBe(true)
+    expect(typeof Resolver.db().cache.tables.users === 'undefined').toBe(true)
 })
 
 test('it can save data on cache', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago', 'table': 'oiapoque'}),
             post = Post.create({name: 'Post', ownerId: user.id}),
             comment = Comment.create({comment: 'Hey!', postId: post.id})
     
-    DatabaseResolver.resolve().cacheFrom(user)
+    Resolver.db().cacheFrom(user)
 
     user.name = 'Oiapoque'
     user.save()
 
-    expect(DatabaseResolver.resolve().cache.tables.users.item_1.name).toBe('Oiapoque')
+    expect(Resolver.db().cache.tables.users.item_1.name).toBe('Oiapoque')
 })
 
 test('it can remove data from cache', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago', 'table': 'oiapoque'}),
             post = Post.create({name: 'Post', ownerId: user.id}),
             comment = Comment.create({comment: 'Hey!', postId: post.id})
     
-    DatabaseResolver.resolve().cacheFrom(user)
+    Resolver.db().cacheFrom(user)
 
     // Removing some non-cascade-delete relations
     user.posts.forEach(post => post.delete())
@@ -185,39 +185,39 @@ test('it can remove data from cache', () => {
 
     user.delete()
 
-    expect(typeof DatabaseResolver.resolve().cache.tables.users.item_1 === 'undefined').toBe(true)
+    expect(typeof Resolver.db().cache.tables.users.item_1 === 'undefined').toBe(true)
 })
 
 test('it generates executable commands when manipulating data on cache', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago', 'table': 'oiapoque'})
     
-    DatabaseResolver.resolve().cacheFrom(user)
+    Resolver.db().cacheFrom(user)
 
     user.name = 'Oiapoque'
     user.save()
 
-    expect(DatabaseResolver.resolve().commands.length > 0).toBe(true)
+    expect(Resolver.db().commands.length > 0).toBe(true)
 })
 
 test('it can execute a database command that stores data', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago', 'table': 'oiapoque'})
     
-    DatabaseResolver.resolve().cacheFrom(user)
+    Resolver.db().cacheFrom(user)
 
     // Manipulates the data on the RAM cache storage
     user.name = 'Oiapoque'
     user.save()
 
-    DatabaseResolver.resolve().stopCaching()
+    Resolver.db().stopCaching()
 
-    expect(DatabaseResolver.resolve().commands[0].command === 'set item_1 on users').toBe(true)
+    expect(Resolver.db().commands[0].command === 'set item_1 on users').toBe(true)
 
     // Execute the command to transfer the data from cache to the database storage
-    DatabaseResolver.resolve().commands[0].execute()
+    Resolver.db().commands[0].execute()
 
     // Now gets the data from the database storage
     user = User.find(user.id)
@@ -225,23 +225,23 @@ test('it can execute a database command that stores data', () => {
     expect(user.name).toBe('Oiapoque')
 
     // Check if the command was removed from the commands list
-    expect(DatabaseResolver.resolve().commands[0].command === 'set item_1 on users').toBe(false)
+    expect(Resolver.db().commands[0].command === 'set item_1 on users').toBe(false)
 })
 
 test('it can execute a database command that removes data', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'}),
         userId = user.id
     
-    DatabaseResolver.resolve().cacheFrom(user)
+    Resolver.db().cacheFrom(user)
 
     // Manipulates the data on the RAM cache storage
     user.delete()
 
-    DatabaseResolver.resolve().stopCaching()
+    Resolver.db().stopCaching()
 
-    DatabaseResolver.resolve().commands.forEach(command => command.execute())
+    Resolver.db().commands.forEach(command => command.execute())
 
     // Now gets the data from the database storage
     user = User.find(userId)
@@ -250,12 +250,12 @@ test('it can execute a database command that removes data', () => {
 })
 
 test('it blocks wrong commands', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     
-    let command0 = DatabaseResolver.resolve().dispatchCommand('something'),
-        command1 = DatabaseResolver.resolve().dispatchCommand('settt something on something'),
-        command2 = DatabaseResolver.resolve().dispatchCommand('set item_1 on phones', {})
+    let command0 = Resolver.db().dispatchCommand('something'),
+        command1 = Resolver.db().dispatchCommand('settt something on something'),
+        command2 = Resolver.db().dispatchCommand('set item_1 on phones', {})
 
     expect(() => command0.parseCommand()).toThrow()
     expect(() => command1.parseCommand()).toThrow()
@@ -263,21 +263,21 @@ test('it blocks wrong commands', () => {
 })
 
 test('it fires an event after dispatching a command', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let commands = []
 
-    DatabaseResolver.resolve().onDispatchCommand = command => commands.push(command)
+    Resolver.db().onDispatchCommand = command => commands.push(command)
 
-    let command0 = DatabaseResolver.resolve().dispatchCommand('something'),
-        command1 = DatabaseResolver.resolve().dispatchCommand('other')
+    let command0 = Resolver.db().dispatchCommand('something'),
+        command1 = Resolver.db().dispatchCommand('other')
 
     expect(commands[0].command).toBe(command0.command)
     expect(commands[1].command).toBe(command1.command)
 })
 
 test('it can cache items with recursive relations', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let project = Project.create({name: 'My Project'}),
         userEntity = Entity.create({name: 'User', projectId: project.id})
@@ -294,39 +294,39 @@ test('it can cache items with recursive relations', () => {
     firstRelationship.inverseId = secondRelationship.id
     firstRelationship.save()
 
-    expect(() => DatabaseResolver.resolve().cacheFrom(project)).not.toThrow()
+    expect(() => Resolver.db().cacheFrom(project)).not.toThrow()
 })
 
 test('it marks as not executing after finishing a command', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago', 'table': 'oiapoque'})
     
-    DatabaseResolver.resolve().cacheFrom(user)
+    Resolver.db().cacheFrom(user)
 
     // Manipulates the data on the RAM cache storage
     user.name = 'Oiapoque'
     user.save()
 
-    DatabaseResolver.resolve().stopCaching()
+    Resolver.db().stopCaching()
 
     // Execute the command to transfer the data from cache to the database storage
-    DatabaseResolver.resolve().markAsExecuting(DatabaseResolver.resolve().commands[0])
+    Resolver.db().markAsExecuting(Resolver.db().commands[0])
     
-    expect(DatabaseResolver.resolve().isExecutingCommands()).toBe(true)
+    expect(Resolver.db().isExecutingCommands()).toBe(true)
 
-    DatabaseResolver.resolve().commands[0].execute()
+    Resolver.db().commands[0].execute()
 
-    expect(DatabaseResolver.resolve().isExecutingCommands()).toBe(false)
+    expect(Resolver.db().isExecutingCommands()).toBe(false)
 })
 
 test('it removes unnecessary commands', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago', 'table': 'oiapoque'}),
         post = Post.create({name: 'Post', ownerId: user.id})
     
-    DatabaseResolver.resolve().cacheFrom(user)
+    Resolver.db().cacheFrom(user)
 
     // Manipulate the data to generate some commands
 
@@ -345,15 +345,15 @@ test('it removes unnecessary commands', () => {
     post.name = 'Updated Post 3'
     post.save()
 
-    DatabaseResolver.resolve().stopCaching()
+    Resolver.db().stopCaching()
 
-    let commandsEditingUser = DatabaseResolver.resolve().commands.filter(
+    let commandsEditingUser = Resolver.db().commands.filter(
         command => command.command == 'set item_1 on users'
     )
 
     expect(commandsEditingUser.length).toBe(1)
 
-    let commandsEditingPost = DatabaseResolver.resolve().commands.filter(
+    let commandsEditingPost = Resolver.db().commands.filter(
         command => command.command == 'set item_1 on posts'
     )
 

@@ -3,7 +3,7 @@ const pluralize = require('pluralize')
 const HasOne = require('./Relationships/HasOne')
 const HasMany = require('./Relationships/HasMany')
 const BelongsTo = require('./Relationships/BelongsTo')
-const DatabaseResolver = require('./DatabaseResolver')
+const Resolver = require('./Resolver')
 
 module.exports = class Model {
 
@@ -109,7 +109,7 @@ module.exports = class Model {
             let eventName = `${parentInstance.getItemIdentifier()}:${inverseRelationship.getNameOnModel()}:${eventSuffix}`
             
             let returnedData = eventSuffix === 'deleted' ? item.getItemIdentifierData() : item
-            DatabaseResolver.resolve().executeCustomEventListener(eventName, returnedData)
+            Resolver.db().executeCustomEventListener(eventName, returnedData)
         })
 
     }
@@ -138,7 +138,7 @@ module.exports = class Model {
     }
 
     save() {
-        if(!this.__saveDataToStorage || !DatabaseResolver.resolve().__saveDataToStorage) return
+        if(!this.__saveDataToStorage || !Resolver.db().__saveDataToStorage) return
 
         if(!this.isSaved()) {
             let createdItem = this.constructor.create(this.constructor.removeSpecialData(this))
@@ -150,7 +150,7 @@ module.exports = class Model {
     }
 
     update(data = {}) {
-        if(!this.__saveDataToStorage || !DatabaseResolver.resolve().__saveDataToStorage) return
+        if(!this.__saveDataToStorage || !Resolver.db().__saveDataToStorage) return
 
         if(!this.id) {
             throw new Error('It is not possible to update an object that is not currently saved on database')
@@ -172,7 +172,7 @@ module.exports = class Model {
     }
 
     delete() {
-        if(!this.__saveDataToStorage || !DatabaseResolver.resolve().__saveDataToStorage) return
+        if(!this.__saveDataToStorage || !Resolver.db().__saveDataToStorage) return
         
         if(!this.id) throw new Error('It is not possible to delete an object that is not currently saved on database')
 
@@ -353,19 +353,19 @@ module.exports = class Model {
     }
 
     static initFilters() {
-        if(!DatabaseResolver.resolve().filters[this.table()]) {
-            DatabaseResolver.resolve().filters[this.table()] = []
+        if(!Resolver.db().filters[this.table()]) {
+            Resolver.db().filters[this.table()] = []
         }
     }
 
     static clearFilters() {
         this.initFilters()
-        DatabaseResolver.resolve().filters[this.table()] = []
+        Resolver.db().filters[this.table()] = []
     }
 
     static getFilters() {
         this.initFilters()
-        return DatabaseResolver.resolve().filters[this.table()]
+        return Resolver.db().filters[this.table()]
     }
 
     onUpdate(listener) {
@@ -376,7 +376,7 @@ module.exports = class Model {
     on(name, listener) {
         let completeName = `${this.getItemIdentifier()}:${name}`
         
-        DatabaseResolver.resolve().addCustomEventListener(completeName, listener)
+        Resolver.db().addCustomEventListener(completeName, listener)
 
         return this
     }
@@ -384,7 +384,7 @@ module.exports = class Model {
     off(name) {
         let completeName = `${this.getItemIdentifier()}:${name}`
         
-        DatabaseResolver.resolve().removeCustomEventListener(completeName)
+        Resolver.db().removeCustomEventListener(completeName)
 
         return this
     }

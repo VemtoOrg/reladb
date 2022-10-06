@@ -5,7 +5,7 @@ const { default: Photo } = require("./models/Photo")
 const { default: Order } = require("./models/Order")
 const { default: Person } = require('./models/Person')
 const { default: Category } = require("./models/Category")
-const DatabaseResolver = require('../src/DatabaseResolver')
+const Resolver = require('../src/Resolver')
 
 try {
     jest.useFakeTimers()
@@ -14,7 +14,7 @@ try {
 }
 
 test('it allows to create data', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago', table: 'oiapoque'})
 
@@ -23,7 +23,7 @@ test('it allows to create data', () => {
 })
 
 test('it allows to save data from a model instance', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = new User
     user.name = 'Tiago'
@@ -40,7 +40,7 @@ test('it allows to save data from a model instance', () => {
 })
 
 test('it allows to fill data on a model instance before saving', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = new User
     user.fill({'name': 'Tiago'})
@@ -52,7 +52,7 @@ test('it allows to fill data on a model instance before saving', () => {
 })
 
 test('it adds created data to the table index', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'}),
         secondUser = User.create({name: 'Jessica'})
@@ -64,7 +64,7 @@ test('it adds created data to the table index', () => {
 })
 
 test('it allows to find data', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     User.create({name: 'Tiago', table: 'oiapoque'})
 
@@ -75,7 +75,7 @@ test('it allows to find data', () => {
 })
 
 test('it allows to find the latest added data', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     User.create({name: 'Tiago', table: 'oiapoque'})
     User.create({name: 'Jessica', table: 'oiapoque'})
@@ -88,20 +88,20 @@ test('it allows to find the latest added data', () => {
 })
 
 test('it can return empty data when trying to find nonexistent data', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     expect(User.find(1)).toBe(null)  
 })
 
 test('it fails when trying to find nonexistent data', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     expect(() => User.findOrFail(1))
         .toThrow('Item with identifier 1 not found on table users')  
 })
 
 test('it allows to update data', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'})
 
@@ -115,7 +115,7 @@ test('it allows to update data', () => {
 })
 
 test('it allows to data update itself', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'})
 
@@ -130,7 +130,7 @@ test('it allows to data update itself', () => {
 })
 
 test('it does not allow to update the identifier', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'})
 
@@ -140,7 +140,7 @@ test('it does not allow to update the identifier', () => {
 })
 
 test('it allows to delete data', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'}),
         userId = user.id
@@ -158,7 +158,7 @@ test('it allows to delete data', () => {
 })
 
 test('it allows to get data', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     User.create({name: 'Tiago'})
     User.create({name: 'Jessica'})
@@ -170,7 +170,7 @@ test('it allows to get data', () => {
 })
 
 test('it allows to get ordered data', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     User.create({name: 'Jessica'})
     User.create({name: 'Tiago'})
@@ -190,7 +190,7 @@ test('it allows to get ordered data', () => {
 })
 
 test('it adds the timestamps on create', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago', table: 'oiapoque'})
 
@@ -199,7 +199,7 @@ test('it adds the timestamps on create', () => {
 })
 
 test('it updates timestamps on update', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'})
 
@@ -213,7 +213,7 @@ test('it updates timestamps on update', () => {
 })
 
 test('it allows to count data', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     User.create({name: 'Tiago'})
     User.create({name: 'Jessica'})
@@ -223,7 +223,7 @@ test('it allows to count data', () => {
 })
 
 test('it saves version on table data', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let tableData = User.getQuery().getTableData()
 
@@ -231,7 +231,7 @@ test('it saves version on table data', () => {
 })
 
 test('it allows to call a method on model object', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'})
 
@@ -239,7 +239,7 @@ test('it allows to call a method on model object', () => {
 })
 
 test('it allows to manipulate data before saving using creating method', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago', table: 'oiapoque'})
 
@@ -248,7 +248,7 @@ test('it allows to manipulate data before saving using creating method', () => {
 })
 
 test('it allows to execute code after saving using created method', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago', table: 'oiapoque'})
 
@@ -257,7 +257,7 @@ test('it allows to execute code after saving using created method', () => {
 })
 
 test('it updates the instance data when using the created method', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let order = new Order({date: '2021-01-01'})
     order.save()
@@ -267,7 +267,7 @@ test('it updates the instance data when using the created method', () => {
 })
 
 test('it allows to manipulate data before update using updating method', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago', role: 'User'})
     user.role = 'Admin'
@@ -279,7 +279,7 @@ test('it allows to manipulate data before update using updating method', () => {
 })
 
 test('it allows to execute code after update using updated method', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'})
     user.name = 'Jonas'
@@ -290,7 +290,7 @@ test('it allows to execute code after update using updated method', () => {
 })
 
 test('it allows to execute code before deleting data', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let person = Person.create({name: 'Tiago'})
     
@@ -304,7 +304,7 @@ test('it allows to execute code before deleting data', () => {
 })
 
 test('it allows to execute code after deleting data', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let person = Person.create({name: 'Tiago'})
 
@@ -312,16 +312,16 @@ test('it allows to execute code after deleting data', () => {
 })
 
 test('it allows to hear database global events', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let eventsCount = 0
 
-    DatabaseResolver.resolve().events.creating = () => eventsCount++
-    DatabaseResolver.resolve().events.created = () => eventsCount++
-    DatabaseResolver.resolve().events.updating = () => eventsCount++
-    DatabaseResolver.resolve().events.updated = () => eventsCount++
-    DatabaseResolver.resolve().events.deleting = () => eventsCount++
-    DatabaseResolver.resolve().events.deleted = () => eventsCount++
+    Resolver.db().events.creating = () => eventsCount++
+    Resolver.db().events.created = () => eventsCount++
+    Resolver.db().events.updating = () => eventsCount++
+    Resolver.db().events.updated = () => eventsCount++
+    Resolver.db().events.deleting = () => eventsCount++
+    Resolver.db().events.deleted = () => eventsCount++
     
     let user = User.create({name: 'Tiago'})
     user.name = 'Jonas'
@@ -338,13 +338,13 @@ test('it allows to hear database global events', () => {
  * Call Exceeded Error
  */
 test('it saves data being deleted on a buffer to avoid recursive deletion', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'}),
         iterations = []
 
     // Saving all deleting buffer iterations to check its steps
-    DatabaseResolver.resolve().registerDeletingBufferListener(
+    Resolver.db().registerDeletingBufferListener(
         (buffer) => iterations.push(buffer)
     )
 
@@ -369,12 +369,12 @@ test('it saves data being deleted on a buffer to avoid recursive deletion', () =
 })
 
 test('it can gets all tables names', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     User.create({name: 'Tiago', table: 'oiapoque'})
     Category.create({name: 'testt'})
 
-    let tables = DatabaseResolver.resolve().driver.getAllTableNames()
+    let tables = Resolver.db().driver.getAllTableNames()
 
     expect(tables.includes('users')).toStrictEqual(true)
     expect(tables.includes('phones')).toStrictEqual(true)
@@ -384,7 +384,7 @@ test('it can gets all tables names', () => {
 })
 
 test('it allows to disable saving data to storage', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'})
     
@@ -406,20 +406,20 @@ test('it allows to disable saving data to storage', () => {
 })
 
 test('it allows to globally disable saving data to storage', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'})
     
     expect(user.fresh().name).toBe('Tiago')
 
-    DatabaseResolver.resolve().disableSavingData()
+    Resolver.db().disableSavingData()
 
     user.name = 'Tiago Edited'
     user.save()
 
     expect(user.fresh().name).toBe('Tiago')
 
-    DatabaseResolver.resolve().enableSavingData()
+    Resolver.db().enableSavingData()
 
     user.name = 'Tiago Edited'
     user.save()
@@ -428,7 +428,7 @@ test('it allows to globally disable saving data to storage', () => {
 })
 
 test('it allows to listen to a model update', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let updatedName = ''
 
@@ -445,13 +445,13 @@ test('it allows to listen to a model update', () => {
 })
 
 test('it allows to listen to table updates', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let updatedName = ''
 
     let user = User.create({name: 'Tiago'})
     
-    DatabaseResolver.resolve().onUpdateTable('users', user => {
+    Resolver.db().onUpdateTable('users', user => {
         updatedName = user.name
     })
 
@@ -462,7 +462,7 @@ test('it allows to listen to table updates', () => {
 })
 
 test('it does not save model special data', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'})
 
@@ -511,7 +511,7 @@ test('it does not save model special data', () => {
 })
 
 test('it does not save special data for a post-saved model', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = new User({name: 'Tiago'})
 
@@ -570,7 +570,7 @@ test('it does not save special data for a post-saved model', () => {
 })
 
 test('it gets null when a model does not exists', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'})
     user.delete()

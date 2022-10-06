@@ -1,11 +1,11 @@
 const moment = require('moment')
 const { version } = require('../package.json')
-const DatabaseResolver = require('./DatabaseResolver')
+const Resolver = require('./Resolver')
 
 module.exports = class Query {
 
     constructor(model) {
-        if(!DatabaseResolver.resolve()) throw new Error('The database is undefined. Please define create a database and add to DatabaseResolver')
+        if(!Resolver.db()) throw new Error('The database is undefined. Please define create a database and add to Resolver')
 
         this.model = model
         this.filteredIndex = null
@@ -17,7 +17,7 @@ module.exports = class Query {
     }
 
     create(data = {}) {
-        if(DatabaseResolver.resolve().events.creating) DatabaseResolver.resolve().events.creating()
+        if(Resolver.db().events.creating) Resolver.db().events.creating()
 
         let tableData = this.getTableData(),
             id = ++tableData.lastPrimaryKey,
@@ -42,7 +42,7 @@ module.exports = class Query {
         
         this.addIndexesByItem(item)
 
-        if(DatabaseResolver.resolve().events.creating) DatabaseResolver.resolve().events.created()
+        if(Resolver.db().events.creating) Resolver.db().events.created()
 
         return item
     }
@@ -104,7 +104,7 @@ module.exports = class Query {
     }
 
     update(id, data = {}) {
-        if(DatabaseResolver.resolve().events.updating) DatabaseResolver.resolve().events.updating()
+        if(Resolver.db().events.updating) Resolver.db().events.updating()
 
         let oldItem = this.findOrFail(id)
         this.removeIndexesByItem(oldItem)
@@ -118,9 +118,9 @@ module.exports = class Query {
 
         oldItem = null
 
-        if(DatabaseResolver.resolve().events.updated) DatabaseResolver.resolve().events.updated()
+        if(Resolver.db().events.updated) Resolver.db().events.updated()
 
-        DatabaseResolver.resolve().executeOnUpdateCallbackForTable(this.tableKey(), item)
+        Resolver.db().executeOnUpdateCallbackForTable(this.tableKey(), item)
 
         return true
     }
@@ -130,7 +130,7 @@ module.exports = class Query {
 
         this.addToDeletingBuffer(id)
 
-        if(DatabaseResolver.resolve().events.deleting) DatabaseResolver.resolve().events.deleting()
+        if(Resolver.db().events.deleting) Resolver.db().events.deleting()
 
         let item = this.getItem(id)
         
@@ -147,7 +147,7 @@ module.exports = class Query {
         delete tableData.index[id]
         this.saveTableData(tableData)
 
-        if(DatabaseResolver.resolve().events.deleted) DatabaseResolver.resolve().events.deleted()
+        if(Resolver.db().events.deleted) Resolver.db().events.deleted()
 
         this.removeFromDeletingBuffer(id)
 
@@ -155,7 +155,7 @@ module.exports = class Query {
     }
 
     isAlreadyDeleting(id) {
-        return DatabaseResolver.resolve().isAlreadyDeleting(this.tableKey(), id)
+        return Resolver.db().isAlreadyDeleting(this.tableKey(), id)
     }
 
     isAlreadyDeleted(id) {
@@ -163,11 +163,11 @@ module.exports = class Query {
     }
     
     addToDeletingBuffer(id) {
-        return DatabaseResolver.resolve().addToDeletingBuffer(this.tableKey(), id)
+        return Resolver.db().addToDeletingBuffer(this.tableKey(), id)
     }
 
     removeFromDeletingBuffer(id) {
-        return DatabaseResolver.resolve().removeFromDeletingBuffer(this.tableKey(), id)
+        return Resolver.db().removeFromDeletingBuffer(this.tableKey(), id)
     }
 
     blockFieldsReplacingRelationships(data) {
@@ -424,14 +424,11 @@ module.exports = class Query {
     static basicIndexStructure() {
         return {
             hasMany: {},
-            hasOne: {},
-            belongsTo: {},
-            belongsToMany: {},
         }
     }
 
     dbDriver() {
-        return DatabaseResolver.resolve().driver.setTable(this.model.table())
+        return Resolver.db().driver.setTable(this.model.table())
     }
 
     compare(field, direction = 'asc') {
@@ -454,7 +451,7 @@ module.exports = class Query {
     }
 
     log() {
-        if(DatabaseResolver.resolve().mode === 'development') {
+        if(Resolver.db().mode === 'development') {
             if(!this.lastLogTime) this.lastLogTime = moment()
             
             let difference = moment().diff(this.lastLogTime)

@@ -9,20 +9,20 @@ const { default: Entity } = require('../models/Entity')
 const { default: Field } = require('../models/Field')
 const { default: Foreign } = require('../models/Foreign')
 const { default: Relationship } = require('../models/Relationship')
-const DatabaseResolver = require('../../src/DatabaseResolver')
+const Resolver = require('../../src/Resolver')
 
 let database = new Database
 database.setDriver(LocalStorage)
 
-DatabaseResolver.setDatabase(database)
+Resolver.setDatabase(database)
 
 afterEach(() => {
-    DatabaseResolver.resolve().stopCaching()
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().stopCaching()
+    Resolver.db().driver.clear()
 })
 
 test('it generates data for export', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let firstUser = User.create({name: 'Tiago', 'table': 'oiapoque'})
     
@@ -30,7 +30,7 @@ test('it generates data for export', () => {
     Comment.create({comment: 'Hey!', postId: firstUser.id})
     Document.create({code: 'XTRE-123', userId: firstUser.id})
 
-    let exporter = DatabaseResolver.resolve().exporter.from(firstUser),
+    let exporter = Resolver.db().exporter.from(firstUser),
         data = exporter.getData()
 
     let exportedItems = data.exportedItems,
@@ -49,7 +49,7 @@ test('it generates data for export', () => {
 })
 
 test('it can import the exported data', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let firstUser = User.create({name: 'Tiago', 'table': 'oiapoque'})
     
@@ -57,10 +57,10 @@ test('it can import the exported data', () => {
     Document.create({code: 'XTRE-123', userId: firstUser.id})
     Comment.create({comment: 'Hey!', postId: firstUser.id, authorId: firstUser.id})
 
-    let exporter = DatabaseResolver.resolve().exporter.from(firstUser),
+    let exporter = Resolver.db().exporter.from(firstUser),
         data = exporter.getData()
 
-    let importer = DatabaseResolver.resolve().importer
+    let importer = Resolver.db().importer
 
     importer.fromData(data)
 
@@ -89,7 +89,7 @@ test('it can import the exported data', () => {
 })
 
 test('it can import from json data', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let firstUser = User.create({name: 'Tiago', 'table': 'oiapoque'})
     
@@ -97,10 +97,10 @@ test('it can import from json data', () => {
     Document.create({code: 'XTRE-123', userId: firstUser.id})
     Comment.create({comment: 'Hey!', postId: firstUser.id, authorId: firstUser.id})
 
-    let exporter = DatabaseResolver.resolve().exporter.from(firstUser),
+    let exporter = Resolver.db().exporter.from(firstUser),
         data = exporter.toJson()
 
-    let importer = DatabaseResolver.resolve().importer
+    let importer = Resolver.db().importer
 
     importer.fromJson(data)
 
@@ -129,7 +129,7 @@ test('it can import from json data', () => {
 })
 
 test('it can import complex data', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let project = Project.create({name: 'My Project'}),
         userEntity = Entity.create({name: 'User', projectId: project.id}),
@@ -152,10 +152,10 @@ test('it can import complex data', () => {
         {name: 'userRelation', entityId: userEntity.id}
     )
 
-    let exporter = DatabaseResolver.resolve().exporter.from(project),
+    let exporter = Resolver.db().exporter.from(project),
         data = exporter.getData()
 
-    let importer = DatabaseResolver.resolve().importer
+    let importer = Resolver.db().importer
 
     importer.fromData(data)
 

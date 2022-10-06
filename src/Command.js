@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require('uuid')
-const DatabaseResolver = require('./DatabaseResolver')
+const Resolver = require('./Resolver')
 
 module.exports = class Command {
 
@@ -17,31 +17,31 @@ module.exports = class Command {
 
     execute() {
         try {
-            DatabaseResolver.resolve().markAsExecuting(this)
+            Resolver.db().markAsExecuting(this)
             this.executeParsedCommand()
-            DatabaseResolver.resolve().removeCommand(this)
+            Resolver.db().removeCommand(this)
         } catch (error) {
 
-            if(DatabaseResolver.resolve().mode === 'development') {
+            if(Resolver.db().mode === 'development') {
                 throw error
             }
 
-            DatabaseResolver.resolve().removeCommand(this)
+            Resolver.db().removeCommand(this)
 
         }
     }
 
     executeParsedCommand() {
-        if(this.command === 'clear') return DatabaseResolver.resolve().driver.clear()
+        if(this.command === 'clear') return Resolver.db().driver.clear()
 
         let parsed = this.parseCommand()
 
         if(parsed.type === 'set') {
-            DatabaseResolver.resolve().driver.setTable(parsed.table).set(parsed.key, this.data)
+            Resolver.db().driver.setTable(parsed.table).set(parsed.key, this.data)
         }
 
         if(parsed.type === 'remove') {
-            DatabaseResolver.resolve().driver.setTable(parsed.table).remove(parsed.key)
+            Resolver.db().driver.setTable(parsed.table).remove(parsed.key)
         }
     }
 

@@ -7,10 +7,10 @@ const { default: Entity } = require("./models/Entity")
 const { default: Field } = require("./models/Field")
 const { default: Foreign } = require("./models/Foreign")
 const { default: Project } = require("./models/Project")
-const DatabaseResolver = require("../src/DatabaseResolver")
+const Resolver = require("../src/Resolver")
 
 test('it allows to get parent from belongs to relation', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'}),
         post = Post.create({title: 'Test', ownerId: user.id}),
@@ -20,7 +20,7 @@ test('it allows to get parent from belongs to relation', () => {
 })
 
 test('it does not allow to set a field with the same name as a relationship', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     expect(() => {
         User.create({name: 'Tiago', posts: []})
@@ -28,7 +28,7 @@ test('it does not allow to set a field with the same name as a relationship', ()
 })
 
 test('it adds has many index to parent after creating child data', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'}),
         secondUser = User.create({name: 'Jessica'}),
@@ -46,7 +46,7 @@ test('it adds has many index to parent after creating child data', () => {
 })
 
 test('it changes has many index when changing parent', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'}),
         secondUser = User.create({name: 'Joseh'}),
@@ -71,7 +71,7 @@ test('it changes has many index when changing parent', () => {
 })
 
 test('it removes has many index on parent after removing child data', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'}),
         post = Post.create({title: 'Test', ownerId: user.id}),
@@ -89,7 +89,7 @@ test('it removes has many index on parent after removing child data', () => {
 })
 
 test('it allows to get children from has many relation', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'}),
         secondUser = User.create({name: 'Jonas'}),
@@ -108,7 +108,7 @@ test('it allows to get children from has many relation', () => {
 })
 
 test('it allows to get sorted children from has many relation', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let post = Post.create({title: 'Test'})
         
@@ -124,7 +124,7 @@ test('it allows to get sorted children from has many relation', () => {
 })
 
 test('it allows to adds data with nullable foreign key', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     Post.create({title: 'Test', ownerId: null})
     
@@ -132,7 +132,7 @@ test('it allows to adds data with nullable foreign key', () => {
 })
 
 test('it does not allow to delete a parent if it has children data by default', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'})
 
@@ -143,7 +143,7 @@ test('it does not allow to delete a parent if it has children data by default', 
 })
 
 test('it allows to cascade delete children data', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let post = Post.create({title: 'Test'})
         
@@ -158,7 +158,7 @@ test('it allows to cascade delete children data', () => {
 })
 
 test('it allows to get data through multiple relationships', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'}),
         post = Post.create({title: 'First Post', ownerId: user.id})
@@ -171,7 +171,7 @@ test('it allows to get data through multiple relationships', () => {
 })
 
 test('it allows to get data through recursive relationships', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let parentCategory = Category.create({title: 'Parent Category'}),
     
@@ -186,7 +186,7 @@ test('it allows to get data through recursive relationships', () => {
 })
 
 test('it does not allow to add multiple relations with hasOne rule', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'}),
         document = Document.create({code: 'XTRE-123', userId: user.id})
@@ -203,7 +203,7 @@ test('it does not allow to add multiple relations with hasOne rule', () => {
 })
 
 test('it allows to add another relation after deleting previous with hasOne rule', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'}),
         document = Document.create({code: 'XTRE-123', userId: user.id})
@@ -223,7 +223,7 @@ test('it allows to add another relation after deleting previous with hasOne rule
 })
 
 test('it removes index correctly after deleting from recursive relationship', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let parentDocument = Document.create({code: 'XTRE-123'}),
         childDocument = Document.create({code: 'XTRE-785', parentId: parentDocument.id})
@@ -239,7 +239,7 @@ test('it removes index correctly after deleting from recursive relationship', ()
 })
 
 test('it removes all indexes correctly after removing complex relations', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let project = Project.create({name: 'My Project'}),
         userEntity = Entity.create({name: 'User', projectId: project.id}),
@@ -267,7 +267,7 @@ test('it removes all indexes correctly after removing complex relations', () => 
 })
 
 test('it orders a relation correctly by a numeric field', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let project = Project.create({name: 'My Project'}),
         userEntity = Entity.create({name: 'User', projectId: project.id}),
@@ -301,7 +301,7 @@ test('it orders a relation correctly by a numeric field', () => {
 })
 
 test('it orders a relation correctly by an alphabetical field', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let project = Project.create({name: 'My Project'}),
         userEntity = Entity.create({name: 'User', projectId: project.id}),
@@ -335,7 +335,7 @@ test('it orders a relation correctly by an alphabetical field', () => {
 })
 
 test('it allows to disable getting automatic relations', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'}),
         post = Post.create({title: 'Test', ownerId: user.id})
@@ -356,7 +356,7 @@ test('it allows to disable getting automatic relations', () => {
 })
 
 test('it fires a belongsTo relationship created event', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let listenerOcurrences = 0
 
@@ -377,7 +377,7 @@ test('it fires a belongsTo relationship created event', () => {
 })
 
 test('it receives data from a belongsTo relationship created event', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let createdPost = null
 
@@ -394,7 +394,7 @@ test('it receives data from a belongsTo relationship created event', () => {
 })
 
 test('it fires a belongsTo relationship updated event', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let listenerOcurrences = 0
 
@@ -417,7 +417,7 @@ test('it fires a belongsTo relationship updated event', () => {
 })
 
 test('it receives data from a belongsTo relationship updated event', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let updatedPostTitle = ''
 
@@ -435,7 +435,7 @@ test('it receives data from a belongsTo relationship updated event', () => {
 })
 
 test('it fires a belongsTo relationship deleted event', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let listenerOcurrences = 0
 
@@ -457,7 +457,7 @@ test('it fires a belongsTo relationship deleted event', () => {
 })
 
 test('it receives data from a belongsTo relationship deleted event', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let deletedPostId = null
 
@@ -474,7 +474,7 @@ test('it receives data from a belongsTo relationship deleted event', () => {
 })
 
 test('it can remove an event listener', () => {
-    DatabaseResolver.resolve().driver.clear()
+    Resolver.db().driver.clear()
 
     let listenerOcurrences = 0
 

@@ -1,4 +1,4 @@
-const DatabaseResolver = require("../DatabaseResolver")
+const Resolver = require("../Resolver")
 
 module.exports = class Driver {
     
@@ -8,51 +8,51 @@ module.exports = class Driver {
     }
 
     set(key, data) {
-        if(DatabaseResolver.resolve().isCaching()) return this.setFromCache(key, data)
+        if(Resolver.db().isCaching()) return this.setFromCache(key, data)
         return this.setFromDriver(key, data)
     }
 
     get(key) {
-        if(DatabaseResolver.resolve().isCaching()) return this.getFromCache(key)
+        if(Resolver.db().isCaching()) return this.getFromCache(key)
         return this.getFromDriver(key)
     }
 
     remove(key) {
-        if(DatabaseResolver.resolve().isCaching()) return this.removeFromCache(key)
+        if(Resolver.db().isCaching()) return this.removeFromCache(key)
         return this.removeFromDriver(key)
     }
 
     clear() {
-        if(DatabaseResolver.resolve().isCaching()) return this.clearFromCache()
+        if(Resolver.db().isCaching()) return this.clearFromCache()
         return this.clearFromDriver()
     }
 
     setFromCache(key, data) {
-        DatabaseResolver.resolve().dispatchCommand(`set ${key} on ${this.table}`, data)
+        Resolver.db().dispatchCommand(`set ${key} on ${this.table}`, data)
 
-        if(!DatabaseResolver.resolve().cache.tables[this.table]) {
-            DatabaseResolver.resolve().cache.tables[this.table] = {}
+        if(!Resolver.db().cache.tables[this.table]) {
+            Resolver.db().cache.tables[this.table] = {}
         }
 
-        return DatabaseResolver.resolve().cache.tables[this.table][key] = data
+        return Resolver.db().cache.tables[this.table][key] = data
     }
 
     getFromCache(key) {
-        if(!DatabaseResolver.resolve().cache.tables[this.table]) return null
-        return DatabaseResolver.resolve().cache.tables[this.table][key]
+        if(!Resolver.db().cache.tables[this.table]) return null
+        return Resolver.db().cache.tables[this.table][key]
     }
 
     removeFromCache(key) {
-        DatabaseResolver.resolve().dispatchCommand(`remove ${key} from ${this.table}`)
+        Resolver.db().dispatchCommand(`remove ${key} from ${this.table}`)
 
-        if(!DatabaseResolver.resolve().cache.tables[this.table]) return
+        if(!Resolver.db().cache.tables[this.table]) return
 
-        delete DatabaseResolver.resolve().cache.tables[this.table][key]
+        delete Resolver.db().cache.tables[this.table][key]
     }
 
     clearFromCache() {
-        DatabaseResolver.resolve().dispatchCommand(`clear`)
-        return DatabaseResolver.resolve().clearCache()
+        Resolver.db().dispatchCommand(`clear`)
+        return Resolver.db().clearCache()
     }
     
 }
