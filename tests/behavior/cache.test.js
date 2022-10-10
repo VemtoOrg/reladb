@@ -1,14 +1,14 @@
-const Database = require('../../src/Database')
-const { default: Post } = require('../models/Post')
-const { default: User } = require('../models/User')
-const { default: Field } = require('../models/Field')
-const { default: Entity } = require('../models/Entity')
-const { default: Project } = require('../models/Project')
-const { default: Comment } = require('../models/Comment')
-const { default: Category } = require('../models/Category')
-const LocalStorage = require('../../src/Drivers/LocalStorage')
-const { default: Relationship } = require('../models/Relationship')
-const Resolver = require('../../src/Resolver')
+import Post from '../models/Post.js'
+import User from '../models/User.js'
+import Field from '../models/Field.js'
+import Entity from '../models/Entity.js'
+import Project from '../models/Project.js'
+import Comment from '../models/Comment.js'
+import Database from '../../src/Database.js'
+import Category from '../models/Category.js'
+import Relationship from '../models/Relationship.js'
+import Resolver from '../../src/Resolver.js'
+import LocalStorage from '../../src/Drivers/LocalStorage.js'
 
 let database = new Database
 database.setDriver(LocalStorage)

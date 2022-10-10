@@ -1,13 +1,13 @@
-const { default: Post } = require("./models/Post")
-const { default: User } = require("./models/User")
-const { default: Comment } = require("./models/Comment")
-const { default: Category } = require("./models/Category")
-const { default: Document } = require("./models/Document")
-const { default: Entity } = require("./models/Entity")
-const { default: Field } = require("./models/Field")
-const { default: Foreign } = require("./models/Foreign")
-const { default: Project } = require("./models/Project")
-const Resolver = require("../src/Resolver")
+import Post from "./models/Post.js"
+import User from "./models/User.js"
+import Comment from "./models/Comment.js"
+import Category from "./models/Category.js"
+import Document from "./models/Document.js"
+import Entity from "./models/Entity.js"
+import Field from "./models/Field.js"
+import Foreign from "./models/Foreign.js"
+import Project from "./models/Project.js"
+import Resolver from "../src/Resolver.js"
 
 test('it allows to get parent from belongs to relation', () => {
     Resolver.db().driver.clear()

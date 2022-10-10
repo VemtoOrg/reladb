@@ -1,11 +1,12 @@
-const moment = require('moment')
-const { default: User } = require("./models/User")
-const packageSettings = require('../package.json')
-const { default: Photo } = require("./models/Photo")
-const { default: Order } = require("./models/Order")
-const { default: Person } = require('./models/Person')
-const { default: Category } = require("./models/Category")
-const Resolver = require('../src/Resolver')
+import moment from "moment"
+import User from "./models/User.js"
+import Photo from "./models/Photo.js"
+import Order from "./models/Order.js"
+import Person from "./models/Person.js"
+import Category from "./models/Category.js"
+import Resolver from "../src/Resolver.js"
+import { version } from '../package.json'
+
 
 try {
     jest.useFakeTimers()
@@ -227,7 +228,7 @@ test('it saves version on table data', () => {
 
     let tableData = User.getQuery().getTableData()
 
-    expect(tableData.reladbVersion).toBe(packageSettings.version)
+    expect(tableData.reladbVersion).toBe(version)
 })
 
 test('it allows to call a method on model object', () => {

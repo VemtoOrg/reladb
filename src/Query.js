@@ -1,9 +1,11 @@
 import moment from 'moment'
 import Resolver from './Resolver.js'
 
-import { createRequire } from "module"
-const require = createRequire(import.meta.url)
-const { version } = require('../package.json')
+// import { createRequire } from "module"
+// const require = createRequire(import.meta.url)
+// const { version } = require('../package.json')
+
+import { version } from '../package.json'
 
 export default class Query {
 
@@ -45,7 +47,7 @@ export default class Query {
 
         item = new this.model(data)
         
-        // this.addIndexesByItem(item)
+        this.addIndexesByItem(item)
 
         if(Resolver.db().events.creating) Resolver.db().events.created()
 

@@ -1,12 +1,12 @@
-const Database = require('../../src/Database')
-const Resolver = require('../../src/Resolver')
-const LocalStorage = require('../../src/Drivers/LocalStorage')
+import Database from '../../src/Database.js'
+import Resolver from '../../src/Resolver.js'
+import LocalStorage from '../../src/Drivers/LocalStorage.js'
 
 let database = new Database
 database.setDriver(LocalStorage)
 
 Resolver.setDatabase(database)
 
-require('../relationship-tests')
+import '../relationship-tests'
 
 afterAll(() => Resolver.db().driver.clear())

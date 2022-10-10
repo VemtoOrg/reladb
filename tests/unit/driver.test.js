@@ -1,7 +1,7 @@
-const Database = require('../../src/Database')
-const { default: User } = require('../models/User')
-const LocalStorage = require('../../src/Drivers/LocalStorage')
-const Resolver = require('../../src/Resolver')
+import Database from '../../src/Database.js'
+import User from '../models/User.js'
+import LocalStorage from '../../src/Drivers/LocalStorage.js'
+import Resolver from '../../src/Resolver.js'
 
 let database = new Database
 database.setDriver(LocalStorage)
