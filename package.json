@@ -58,6 +58,18 @@
         "testMatch": [
           "<rootDir>/tests/localstorage/*.test.js"
         ]
+      },
+      {
+        "displayName": "fake",
+        "testMatch": [
+          "<rootDir>/tests/fakestorage/*.test.js"
+        ]
+      },
+      {
+        "displayName": "ram",
+        "testMatch": [
+          "<rootDir>/tests/ramstorage/*.test.js"
+        ]
       }
     ]
   },
