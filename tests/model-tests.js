@@ -5,8 +5,7 @@ import Order from "./models/Order.js"
 import Person from "./models/Person.js"
 import Category from "./models/Category.js"
 import Resolver from "../src/Resolver.js"
-import { version } from '../package.json'
-
+import packageSettings from '../package.json'
 
 try {
     jest.useFakeTimers()
@@ -228,7 +227,7 @@ test('it saves version on table data', () => {
 
     let tableData = User.getQuery().getTableData()
 
-    expect(tableData.reladbVersion).toBe(version)
+    expect(tableData.reladbVersion).toBe(packageSettings.version)
 })
 
 test('it allows to call a method on model object', () => {
