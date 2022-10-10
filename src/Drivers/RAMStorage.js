@@ -1,6 +1,6 @@
 import Driver from './Driver.js'
 
-class FakeStorage extends Driver {
+class RAMStorage extends Driver {
 
     constructor() {
         super()
@@ -19,7 +19,9 @@ class FakeStorage extends Driver {
 
         this.updateTablesNames()
 
-        return this.store[key] = data
+        this.store[key] = data
+
+        return true
     }
 
     getFromDriver(key) {
@@ -69,4 +71,4 @@ class FakeStorage extends Driver {
 
 }
 
-export default new FakeStorage
+export default new RAMStorage
