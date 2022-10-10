@@ -1,8 +1,8 @@
-import Post from "./Post"
-import Phone from "./Phone"
-import Photo from "./Photo"
-import Document from "./Document"
-import Model from "../../src/Model"
+import Post from "./Post.js"
+import Phone from "./Phone.js"
+import Photo from "./Photo.js"
+import Document from "./Document.js"
+import Model from "../../src/Model.js"
 
 export default class User extends Model {
     

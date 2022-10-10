@@ -1,5 +1,5 @@
-import User from "./User";
-import Model from "../../src/Model";
+import User from "./User.js";
+import Model from "../../src/Model.js";
 
 export default class Phone extends Model {
     

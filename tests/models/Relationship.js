@@ -1,5 +1,5 @@
-import Entity from './Entity'
-import Model from '../../src/Model'
+import Entity from './Entity.js'
+import Model from '../../src/Model.js'
 
 export default class Relationship extends Model {
 

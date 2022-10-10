@@ -1,6 +1,6 @@
-import Field from './Field'
-import Entity from './Entity'
-import Model from '../../src/Model'
+import Field from './Field.js'
+import Entity from './Entity.js'
+import Model from '../../src/Model.js'
 
 export default class Foreign extends Model {
 

@@ -1,8 +1,8 @@
-import Field from './Field'
-import Foreign from './Foreign'
-import Project from './Project'
-import Model from '../../src/Model'
-import Relationship from './Relationship'
+import Field from './Field.js'
+import Foreign from './Foreign.js'
+import Project from './Project.js'
+import Model from '../../src/Model.js'
+import Relationship from './Relationship.js'
 
 export default class Entity extends Model {
 

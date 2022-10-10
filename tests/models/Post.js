@@ -1,6 +1,6 @@
-import User from "./User";
-import Comment from "./Comment";
-import Model from "../../src/Model";
+import User from "./User.js";
+import Comment from "./Comment.js";
+import Model from "../../src/Model.js";
 
 export default class Post extends Model {
     

@@ -1,5 +1,5 @@
-import Photo from "./Photo"
-import Model from "../../src/Model"
+import Photo from "./Photo.js"
+import Model from "../../src/Model.js"
 
 export default class Person extends Model {
     

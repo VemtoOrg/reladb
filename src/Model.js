@@ -1,11 +1,11 @@
-const Query = require('./Query')
-const pluralize = require('pluralize')
-const HasOne = require('./Relationships/HasOne')
-const HasMany = require('./Relationships/HasMany')
-const BelongsTo = require('./Relationships/BelongsTo')
-const Resolver = require('./Resolver')
+import Query from './Query.js'
+import pluralize from 'pluralize'
+import HasOne from './Relationships/HasOne.js'
+import HasMany from './Relationships/HasMany.js'
+import BelongsTo from './Relationships/BelongsTo.js'
+import Resolver from './Resolver.js'
 
-module.exports = class Model {
+export default class Model {
 
     constructor(data = {}) {
 
