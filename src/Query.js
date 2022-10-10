@@ -39,11 +39,13 @@ export default class Query {
         tableData.count++
         tableData.index[data.id] = this.indexStructure()
         
+        // TODO: Fix this
+        // Serious performance issue here
         this.saveTableData(tableData)
 
         item = new this.model(data)
         
-        this.addIndexesByItem(item)
+        // this.addIndexesByItem(item)
 
         if(Resolver.db().events.creating) Resolver.db().events.created()
 
