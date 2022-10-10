@@ -1,32 +1,36 @@
 import Driver from './Driver.js'
 
-class FakeStorage extends Driver {
-
+class Store {
     constructor() {
-        super()
-
-        this.storage = {
-            data: {},
-            getItem: (key) => {
-                return this.storage.data[key]
-            },
-            setItem: (key, value) => {
-                this.storage.data[key] = value
-            },
-            removeItem: (key) => {
-                delete this.storage.data[key]
-            },
-            clear: () => {
-                this.storage.data = {}
-            }
-        }
+        this.data = {}
     }
+
+    getItem(key) {
+        return this.data[key]
+    }
+
+    setItem(key, value) {
+        this.data[key] = value
+    }
+
+    removeItem(key) {
+        delete this.data[key]
+    }
+
+    clear() {
+        this.data = {}
+    }
+}
+
+const fakeStorage = new Store()
+
+class FakeStorage extends Driver {
 
     getAllTableNames() {
         let tablesKey = this.getTablesKey(),
-            storedTablesNames = this.storage.getItem(tablesKey)
+            storedTablesNames = fakeStorage.getItem(tablesKey)
 
-        return storedTablesNames ? JSON.parse(storedTablesNames) : []
+        return storedTablesNames ? storedTablesNames : []
     }
 
     setFromDriver(key, data) {
@@ -34,25 +38,25 @@ class FakeStorage extends Driver {
 
         this.updateTablesNames()
 
-        return this.storage.setItem(key, JSON.stringify(data))
+        return fakeStorage.setItem(key, data)
     }
 
     getFromDriver(key) {
         key = this.getCompleteKey(key)
 
-        let data = this.storage.getItem(key)
+        let data = fakeStorage.getItem(key)
 
-        return data ? JSON.parse(data) : null
+        return data ? data : null
     }
 
     removeFromDriver(key) {
         key = this.getCompleteKey(key)
 
-        return this.storage.removeItem(key)
+        return fakeStorage.removeItem(key)
     }
 
     clearFromDriver() {
-        return this.storage.clear()
+        return fakeStorage.clear()
     }
 
     getCompleteKey(key) {
@@ -75,7 +79,7 @@ class FakeStorage extends Driver {
             tablesNames.push(this.table)
         }
 
-        return this.storage.setItem(tablesKey, JSON.stringify(tablesNames))
+        return fakeStorage.setItem(tablesKey, tablesNames)
     }
 
 }

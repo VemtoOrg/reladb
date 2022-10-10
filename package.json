@@ -9,7 +9,7 @@
     "test:basic": "jest --runInBand --selectProjects behavior unit default",
     "test:default": "jest --runInBand --selectProjects default",
     "test:behavior": "jest --runInBand --selectProjects behavior",
-    "perf": "node --experimental-json-modules ./performance/test.js"
+    "perf": "node --experimental-json-modules --no-warnings ./performance/test.js"
   },
   "repository": {
     "type": "git",
