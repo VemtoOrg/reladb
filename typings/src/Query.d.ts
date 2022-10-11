@@ -1,0 +1,61 @@
+export default class Query {
+    static basicIndexStructure(): {
+        hasMany: {};
+    };
+    constructor(model: any);
+    model: any;
+    filteredIndex: any;
+    filters: any[];
+    count(): any;
+    create(data?: {}): any;
+    get(): any;
+    findLatest(): any;
+    find(id?: any): any;
+    findOrFail(id?: any): any;
+    update(id: any, data?: {}): boolean;
+    delete(id: any): boolean;
+    isAlreadyDeleting(id: any): any;
+    isAlreadyDeleted(id: any): boolean;
+    addToDeletingBuffer(id: any): any;
+    removeFromDeletingBuffer(id: any): any;
+    blockFieldsReplacingRelationships(data: any): void;
+    setFilters(filters: any): Query;
+    applyFilters(data: any): any;
+    setFilteredIndex(filteredIndex: any): Query;
+    getFilteredIndex(): any;
+    clearFilteredIndex(): Query;
+    getItem(id: any): any;
+    getItemData(id: any): any;
+    saveItem(id: any, data: any): void;
+    removeItem(id: any): void;
+    checkItemData(item: any, id: any): boolean;
+    getTableData(): any;
+    saveTableData(data: any): boolean;
+    checkForeignKeyConstraints(item: any): void;
+    deleteChildrenByCascadeDelete(item: any): void;
+    addIndexesByItem(item: any): void;
+    removeIndexesByItem(item: any): void;
+    addItemToParentHasManyIndex(relationship: any, item: any): void;
+    removeItemFromParentHasManyIndex(relationship: any, item: any): void;
+    manipulateHasManyIndex(manipulationCallback: any, relationship: any, item: any): void;
+    getItemHasManyIndex(item: any, relationship: any): any;
+    getItemIndex(item: any): any;
+    updateItemIndex(item: any, newIndexData: any): boolean;
+    tableKey(): any;
+    tableItemKey(id: any): string;
+    tableStructure(): {
+        count: number;
+        lastPrimaryKey: number;
+        index: {};
+        additionalIndexes: {};
+        items: any[];
+        relations: any[];
+        reladbVersion: any;
+    };
+    indexStructure(): any;
+    dbDriver(): any;
+    compare(field: any, direction?: string): (a: any, b: any) => number;
+    log(...args: any[]): void;
+    lastLogTime: any;
+}
+//# sourceMappingURL=Query.d.ts.map

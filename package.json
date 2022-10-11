@@ -4,6 +4,7 @@
   "type": "module",
   "description": "A relational database layer on top of LocalStorage",
   "main": "main.js",
+  "typings": "./typings/main.d.ts",
   "scripts": {
     "test": "jest --runInBand",
     "test:basic": "jest --runInBand --selectProjects behavior unit default",

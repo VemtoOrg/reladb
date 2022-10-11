@@ -1,0 +1,51 @@
+export default class Database {
+    events: {};
+    driver: any;
+    filters: any[];
+    deletingBuffer: {};
+    commands: any[];
+    addingCommand: boolean;
+    executingCommandId: any;
+    tableCallbacks: {};
+    __customEventsListeners: {};
+    cache: Cache;
+    onCacheMode: boolean;
+    importer: Importer;
+    exporter: Exporter;
+    settings: {
+        addCommandToQueueOnDispatch: boolean;
+    };
+    __saveDataToStorage: boolean;
+    addCustomEventListener(name: any, listener: any): void;
+    removeCustomEventListener(name: any): void;
+    executeCustomEventListener(name: any, ...data: any[]): void;
+    disableSavingData(): void;
+    enableSavingData(): void;
+    setDriver(driver: any): void;
+    isAlreadyDeleting(table: any, id: any): boolean;
+    addToDeletingBuffer(table: any, id: any): void;
+    removeFromDeletingBuffer(table: any, id: any): void;
+    registerDeletingBufferListener(listenerFunction: any): void;
+    deletingBufferListener: any;
+    cloneProperty(property: any): any;
+    cacheFrom(item: any): void;
+    stopCaching(): void;
+    isCaching(): boolean;
+    dispatchCommand(cmd: any, data?: any): Command;
+    isExecutingCommands(): boolean;
+    canExecuteCommands(): boolean;
+    isAddingCommands(): boolean;
+    markAsExecuting(command: any): void;
+    markAsNotExecuting(): void;
+    addCommand(command: any): void;
+    getSimilarCommands(baseCommand: any): any[];
+    removeCommand(command: any): void;
+    executeNextCommand(): void;
+    onUpdateTable(table: any, callback: any): void;
+    executeOnUpdateCallbackForTable(table: any, data: any): void;
+}
+import Cache from "./Cache.js";
+import Importer from "./Importer.js";
+import Exporter from "./Exporter.js";
+import Command from "./Command.js";
+//# sourceMappingURL=Database.d.ts.map
