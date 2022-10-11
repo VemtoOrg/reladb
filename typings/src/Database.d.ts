@@ -1,6 +1,6 @@
 export default class Database {
     events: {};
-    driver: Driver;
+    driver: any;
     filters: any[];
     deletingBuffer: {};
     commands: any[];
@@ -48,5 +48,4 @@ import Cache from "./Cache.js";
 import Importer from "./Importer.js";
 import Exporter from "./Exporter.js";
 import Command from "./Command.js";
-import Driver from "./Drivers/Driver.js";
 //# sourceMappingURL=Database.d.ts.map

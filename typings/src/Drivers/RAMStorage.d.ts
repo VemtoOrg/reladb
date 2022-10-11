@@ -11,7 +11,6 @@ declare class RAMStorage extends Driver {
     getTablesKey(): string;
     getBaseKey(): string;
     updateTablesNames(): any;
-    feedDatabaseData(data?: {}): boolean;
     getDatabaseData(): any;
 }
 import Driver from "./Driver.js";

@@ -13,12 +13,12 @@ declare namespace _default {
 export default _default;
 import Model from "./src/Model";
 import Query from "./src/Query";
+import HasMany from "./src/Relationships/HasMany";
 import Command from "./src/Command";
 import Resolver from "./src/Resolver";
 import Database from "./src/Database";
-import HasMany from "./src/Relationships/HasMany";
-import RAMStorage from "./src/Drivers/RAMStorage";
 import BelongsTo from "./src/Relationships/BelongsTo";
+import RAMStorage from "./src/Drivers/RAMStorage";
 import LocalStorage from "./src/Drivers/LocalStorage";
 import Relationship from "./src/Relationships/Relationship";
 //# sourceMappingURL=main.d.ts.map
