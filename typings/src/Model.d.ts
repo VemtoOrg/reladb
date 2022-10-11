@@ -38,9 +38,9 @@ export default class Model {
     getTableData(): any;
     clearData(): void;
     relationships(): {};
-    hasOne(model: any, foreignKey: any, localKey: any): HasOne;
-    hasMany(model: any, foreignKey: any, localKey: any): HasMany;
-    belongsTo(model: any, foreignKey: any, ownerKey: any): BelongsTo;
+    hasOne(model: any, foreignKey?: any, localKey?: any): HasOne;
+    hasMany(model: any, foreignKey?: any, localKey?: any): HasMany;
+    belongsTo(model: any, foreignKey?: any, ownerKey?: any): BelongsTo;
     hasRelationshipNamed(name: any): boolean;
     executeRelationship(name: any): any;
     hasBelongsToRelationships(): boolean;
