@@ -59,7 +59,7 @@ export default class Driver {
         return false
     }
 
-    feedDatabaseData() {
+    feedDatabaseData(data = {}) {
         return true
     }
 
