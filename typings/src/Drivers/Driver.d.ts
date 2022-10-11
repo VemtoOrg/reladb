@@ -9,5 +9,8 @@ export default class Driver {
     getFromCache(key: any): any;
     removeFromCache(key: any): void;
     clearFromCache(): any;
+    allowsDataFeeding(): boolean;
+    feedDatabaseData(): boolean;
+    getDatabaseData(): {};
 }
 //# sourceMappingURL=Driver.d.ts.map
