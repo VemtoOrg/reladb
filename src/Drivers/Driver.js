@@ -54,5 +54,17 @@ export default class Driver {
         Resolver.db().dispatchCommand(`clear`)
         return Resolver.db().clearCache()
     }
+
+    allowsDataFeeding() {
+        return false
+    }
+
+    feedDatabaseData() {
+        return true
+    }
+
+    getDatabaseData() {
+        return {}
+    }
     
 }

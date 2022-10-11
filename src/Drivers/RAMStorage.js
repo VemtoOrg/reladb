@@ -69,6 +69,19 @@ class RAMStorage extends Driver {
         return this.store[tablesKey] = tablesNames
     }
 
+    allowsDataFeeding() {
+        return true
+    }
+
+    feedDatabaseData(data = {}) {
+        this.store = JSON.parse(JSON.stringify(data))
+        return true
+    }
+
+    getDatabaseData() {
+        return JSON.parse(JSON.stringify(this.store))
+    }
+
 }
 
 export default new RAMStorage
