@@ -22,7 +22,7 @@ const testPerformance = (name, driver) => {
     let t0 = performance.now()
 
     let person = Person.create({name: 'Tiago'})
-    for (let index = 0; index < 10000; index++) {
+    for (let index = 0; index < 1000; index++) {
         Photo.create({url: index + '.jpg', personId: person.id})
     }
 

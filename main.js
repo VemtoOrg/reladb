@@ -1,21 +1,21 @@
-const Model = require('./src/Model')
-const Query = require('./src/Query')
-const Command = require('./src/Command')
-const Database = require('./src/Database')
-const HasMany = require('./src/Relationships/HasMany')
-const BelongsTo = require('./src/Relationships/BelongsTo')
-const LocalStorage = require('./src/Drivers/LocalStorage')
-const Relationship = require('./src/Relationships/Relationship')
-const ElectronJsonStorage = require('./src/Drivers/ElectronJsonStorage')
+import Model from './src/Model'
+import Query from './src/Query'
+import Command from './src/Command'
+import Database from './src/Database'
+import Resolver from './src/Resolver'
+import HasMany from './src/Relationships/HasMany'
+import BelongsTo from './src/Relationships/BelongsTo'
+import LocalStorage from './src/Drivers/LocalStorage'
+import Relationship from './src/Relationships/Relationship'
 
-module.exports = {
+export default {
     Model,
     Query,
     HasMany,
     Command,
+    Resolver,
     Database,
     BelongsTo,
     LocalStorage,
     Relationship,
-    ElectronJsonStorage,
 }
