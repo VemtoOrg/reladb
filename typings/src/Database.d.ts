@@ -19,6 +19,7 @@ export default class Database {
     addCustomEventListener(name: any, listener: any): void;
     removeCustomEventListener(name: any): void;
     executeCustomEventListener(name: any, ...data: any[]): void;
+    onDataChanged(callback: any): void;
     disableSavingData(): void;
     enableSavingData(): void;
     setDriver(driver: any): void;
