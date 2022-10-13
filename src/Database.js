@@ -16,6 +16,7 @@ export default class Database {
 
         this.tableCallbacks = {}
         this.__customEventsListeners = {}
+        this.__databaseDataChangedEventListener = null
 
         this.cache = new Cache(this)
         this.onCacheMode = false
@@ -42,6 +43,16 @@ export default class Database {
         if(!this.__customEventsListeners[name]) return
         
         this.__customEventsListeners[name](...data)
+    }
+
+    onDataChanged(callback) {
+        this.__databaseDataChangedEventListener = callback
+    }
+
+    executeDataChangedEventListener() {
+        if(!this.__databaseDataChangedEventListener) return
+
+        this.__databaseDataChangedEventListener()
     }
 
     disableSavingData() {

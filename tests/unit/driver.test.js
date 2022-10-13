@@ -85,3 +85,17 @@ test('it can fill all database data', () => {
         expect(User.count()).toBe(1)
     }
 })
+
+test('it can execute a callback when database data is changed', () => {
+    Resolver.db().driver.clear()
+
+    let changed = false
+
+    Resolver.db().onDataChanged(() => {
+        changed = true
+    })
+
+    User.create({name: 'Tiago'})
+
+    expect(changed).toBe(true)
+})

@@ -9,21 +9,33 @@ export default class Driver {
 
     set(key, data) {
         if(Resolver.db().isCaching()) return this.setFromCache(key, data)
+        
+        Resolver.db().executeDataChangedEventListener()
+        
         return this.setFromDriver(key, data)
     }
 
     get(key) {
         if(Resolver.db().isCaching()) return this.getFromCache(key)
+        
+        Resolver.db().executeDataChangedEventListener()
+        
         return this.getFromDriver(key)
     }
 
     remove(key) {
         if(Resolver.db().isCaching()) return this.removeFromCache(key)
+        
+        Resolver.db().executeDataChangedEventListener()
+        
         return this.removeFromDriver(key)
     }
 
     clear() {
         if(Resolver.db().isCaching()) return this.clearFromCache()
+        
+        Resolver.db().executeDataChangedEventListener()
+        
         return this.clearFromDriver()
     }
 
