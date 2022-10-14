@@ -1,4 +1,4 @@
-const Driver = require('./Driver.js')
+import Driver from './Driver.js'
 
 class RAMStorage extends Driver {
 
@@ -90,4 +90,4 @@ class RAMStorage extends Driver {
 
 }
 
-module.exports = new RAMStorage
+export default new RAMStorage

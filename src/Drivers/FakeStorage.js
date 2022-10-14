@@ -1,4 +1,4 @@
-const Driver = require('./Driver.js')
+import Driver from './Driver.js'
 
 class Store {
     constructor() {
@@ -84,4 +84,4 @@ class FakeStorage extends Driver {
 
 }
 
-module.exports = new FakeStorage
+export default new FakeStorage

@@ -1,6 +1,6 @@
 /** @typedef {import('./Database')} Database */
 
-module.exports = class Resolver {
+export default class Resolver {
 
     /** @type Database */
     static database = null

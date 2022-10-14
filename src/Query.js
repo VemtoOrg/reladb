@@ -1,8 +1,8 @@
-const moment = require('moment')
-const Resolver = require('./Resolver.js')
-const packageSettings = require('../package.json')
+import moment from 'moment'
+import Resolver from './Resolver.js'
+import packageSettings from '../package.json'
 
-module.exports = class Query {
+export default class Query {
 
     constructor(model) {
         if(!Resolver.db()) throw new Error('The database is undefined. Please define create a database and add to Resolver')

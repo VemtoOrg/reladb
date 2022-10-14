@@ -1,6 +1,6 @@
-const Resolver = require('../Resolver.js')
+import Resolver from '../Resolver.js'
 
-module.exports = class Driver {
+export default class Driver {
     
     setTable(table) {
         this.table = table

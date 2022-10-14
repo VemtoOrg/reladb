@@ -1,4 +1,4 @@
-const Driver = require('./Driver.js')
+import Driver from './Driver.js'
 
 class LocalStorage extends Driver {
 
@@ -60,4 +60,4 @@ class LocalStorage extends Driver {
 
 }
 
-module.exports = new LocalStorage
+export default new LocalStorage

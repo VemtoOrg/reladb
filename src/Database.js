@@ -1,11 +1,11 @@
-const Cache = require('./Cache.js')
-const Command = require('./Command.js')
-const Exporter = require('./Exporter.js')
-const Importer = require('./Importer.js')
+import Cache from './Cache.js'
+import Command from './Command.js'
+import Exporter from './Exporter.js'
+import Importer from './Importer.js'
 
 /** @typedef {import('./Drivers/Driver')} Driver */
 
-module.exports = class Database {
+export default class Database {
     constructor() {
         
         /** @type Driver */
