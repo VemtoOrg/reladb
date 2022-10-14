@@ -4,69 +4,75 @@ class RAMStorage extends Driver {
 
     constructor() {
         super()
-        this.store = {}
+
+        this.store = this.storeBaseData()
+    }
+
+    storeBaseData() {
+        return {
+            tables: {},
+            tablesNames: []
+        }
     }
 
     getAllTableNames() {
-        let tablesKey = this.getTablesKey(),
-            storedTablesNames = this.store[tablesKey]
-
-        return storedTablesNames ? storedTablesNames : []
+        return this.store.tablesNames ? this.store.tablesNames : []
     }
 
     setFromDriver(key, data) {
-        key = this.getCompleteKey(key)
-
+        key = this.getRealKey(key)
+        
         this.updateTablesNames()
 
-        this.store[key] = data
+        if(!this.store.tables[this.table]) {
+            this.store.tables[this.table] = {}
+        }
+
+        this.store.tables[this.table][key] = data
 
         return true
     }
 
     getFromDriver(key) {
-        key = this.getCompleteKey(key)
+        key = this.getRealKey(key)
 
-        let data = this.store[key]
+        let tableData = this.store.tables[this.table]
 
-        return data ? data : null
+        if(!tableData) return null
+
+        return tableData[key] ? tableData[key] : null
     }
 
     removeFromDriver(key) {
-        key = this.getCompleteKey(key)
+        key = this.getRealKey(key)
 
-        delete this.store[key]
+        if(!this.store.tables[this.table]) return
+
+        delete this.store.tables[this.table][key]
 
         return true
+    }
+
+    getRealKey(key) {
+        if(key === this.table) return '__tableData'
+
+        return key
     }
 
     clearFromDriver() {
-        this.store = {}
+        this.store = this.storeBaseData()
 
         return true
     }
 
-    getCompleteKey(key) {
-        return `${this.getBaseKey()}_${this.table}_${key}`
-    }
-
-    getTablesKey() {
-        return `${this.getBaseKey()}_tables`
-    }
-
-    getBaseKey() {
-        return 'reladb_database'
-    }
-
     updateTablesNames() {
-        let tablesKey = this.getTablesKey(),
-            tablesNames = this.getAllTableNames()
+        let tablesNames = this.store.tablesNames
 
         if(!tablesNames.some(table => table === this.table)) {
             tablesNames.push(this.table)
         }
 
-        return this.store[tablesKey] = tablesNames
+        return this.store.tablesNames = tablesNames
     }
 
     allowsDataFeeding() {
