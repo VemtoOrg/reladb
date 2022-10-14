@@ -1,4 +1,5 @@
-export default class Query {
+export = Query;
+declare class Query {
     static basicIndexStructure(): {
         hasMany: {};
     };
@@ -14,16 +15,16 @@ export default class Query {
     findOrFail(id?: any): any;
     update(id: any, data?: {}): boolean;
     delete(id: any): boolean;
-    isAlreadyDeleting(id: any): any;
+    isAlreadyDeleting(id: any): boolean;
     isAlreadyDeleted(id: any): boolean;
-    addToDeletingBuffer(id: any): any;
-    removeFromDeletingBuffer(id: any): any;
+    addToDeletingBuffer(id: any): void;
+    removeFromDeletingBuffer(id: any): void;
     blockFieldsReplacingRelationships(data: any): void;
-    setFilters(filters: any): Query;
+    setFilters(filters: any): import("./Query.js");
     applyFilters(data: any): any;
-    setFilteredIndex(filteredIndex: any): Query;
+    setFilteredIndex(filteredIndex: any): import("./Query.js");
     getFilteredIndex(): any;
-    clearFilteredIndex(): Query;
+    clearFilteredIndex(): import("./Query.js");
     getItem(id: any): any;
     getItemData(id: any): any;
     saveItem(id: any, data: any): void;
@@ -53,9 +54,10 @@ export default class Query {
         reladbVersion: any;
     };
     indexStructure(): any;
-    dbDriver(): any;
+    dbDriver(): import("./Drivers/Driver.js");
     compare(field: any, direction?: string): (a: any, b: any) => number;
     log(...args: any[]): void;
-    lastLogTime: any;
+    lastLogTime: moment.Moment;
 }
+import moment = require("moment");
 //# sourceMappingURL=Query.d.ts.map

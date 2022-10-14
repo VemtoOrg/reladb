@@ -1,5 +1,5 @@
-declare const _default: FakeStorage;
-export default _default;
+declare const _exports: FakeStorage;
+export = _exports;
 declare class FakeStorage extends Driver {
     getAllTableNames(): any;
     setFromDriver(key: any, data: any): void;
@@ -11,5 +11,5 @@ declare class FakeStorage extends Driver {
     getBaseKey(): string;
     updateTablesNames(): void;
 }
-import Driver from "./Driver.js";
+import Driver = require("./Driver.js");
 //# sourceMappingURL=FakeStorage.d.ts.map

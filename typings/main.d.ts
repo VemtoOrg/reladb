@@ -1,24 +1,12 @@
-declare namespace _default {
-    export { Model };
-    export { Query };
-    export { HasMany };
-    export { Command };
-    export { Resolver };
-    export { Database };
-    export { BelongsTo };
-    export { RAMStorage };
-    export { LocalStorage };
-    export { Relationship };
-}
-export default _default;
-import Model from "./src/Model";
-import Query from "./src/Query";
-import HasMany from "./src/Relationships/HasMany";
-import Command from "./src/Command";
-import Resolver from "./src/Resolver";
-import Database from "./src/Database";
-import BelongsTo from "./src/Relationships/BelongsTo";
-import RAMStorage from "./src/Drivers/RAMStorage";
-import LocalStorage from "./src/Drivers/LocalStorage";
-import Relationship from "./src/Relationships/Relationship";
+import Model = require("./src/Model.js");
+import Query = require("./src/Query.js");
+import HasMany = require("./src/Relationships/HasMany");
+import Command = require("./src/Command.js");
+import Resolver = require("./src/Resolver.js");
+import Database = require("./src/Database.js");
+import BelongsTo = require("./src/Relationships/BelongsTo");
+import RAMStorage = require("./src/Drivers/RAMStorage");
+import LocalStorage = require("./src/Drivers/LocalStorage");
+import Relationship = require("./src/Relationships/Relationship");
+export { Model, Query, HasMany, Command, Resolver, Database, BelongsTo, RAMStorage, LocalStorage, Relationship };
 //# sourceMappingURL=main.d.ts.map

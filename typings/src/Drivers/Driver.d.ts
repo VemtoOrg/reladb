@@ -1,5 +1,6 @@
-export default class Driver {
-    setTable(table: any): Driver;
+export = Driver;
+declare class Driver {
+    setTable(table: any): import("./Driver.js");
     table: any;
     set(key: any, data: any): any;
     get(key: any): any;

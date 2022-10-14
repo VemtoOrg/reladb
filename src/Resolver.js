@@ -1,4 +1,8 @@
+/** @typedef {import('./Database')} Database */
+
 module.exports = class Resolver {
+
+    /** @type Database */
     static database = null
 
     static setDatabase(database) {

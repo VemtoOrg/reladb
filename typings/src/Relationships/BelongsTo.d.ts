@@ -1,14 +1,15 @@
-export default class BelongsTo extends Relationship {
-    atMostOne(): BelongsTo;
+export = BelongsTo;
+declare class BelongsTo extends Relationship {
+    atMostOne(): import("./BelongsTo.js");
     allowsOnlyOne: boolean;
-    setForeignKey(foreignKey: any): BelongsTo;
+    setForeignKey(foreignKey: any): import("./BelongsTo.js");
     foreignKey: any;
-    setOwnerKey(ownerKey: any): BelongsTo;
+    setOwnerKey(ownerKey: any): import("./BelongsTo.js");
     ownerKey: any;
     getParentFromItem(item: any): any;
     execute(item: any): any;
     signature(): string;
     inverse(): any;
 }
-import Relationship from "./Relationship.js";
+import Relationship = require("./Relationship.js");
 //# sourceMappingURL=BelongsTo.d.ts.map

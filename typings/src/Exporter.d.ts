@@ -1,8 +1,9 @@
-export default class Exporter {
+export = Exporter;
+declare class Exporter {
     constructor(database: any);
     database: any;
     cache: Cache;
-    from(item: any): Exporter;
+    from(item: any): import("./Exporter.js");
     getData(): {
         tables: {};
         exportedItems: any[];
@@ -11,5 +12,5 @@ export default class Exporter {
     toJson(): string;
     clear(): void;
 }
-import Cache from "./Cache.js";
+import Cache = require("./Cache.js");
 //# sourceMappingURL=Exporter.d.ts.map

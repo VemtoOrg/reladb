@@ -1,5 +1,5 @@
-declare const _default: LocalStorage;
-export default _default;
+declare const _exports: LocalStorage;
+export = _exports;
 declare class LocalStorage extends Driver {
     getAllTableNames(): any;
     setFromDriver(key: any, data: any): void;
@@ -11,5 +11,5 @@ declare class LocalStorage extends Driver {
     getBaseKey(): string;
     updateTablesNames(): void;
 }
-import Driver from "./Driver.js";
+import Driver = require("./Driver.js");
 //# sourceMappingURL=LocalStorage.d.ts.map

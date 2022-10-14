@@ -1,17 +1,22 @@
-declare const _default: RAMStorage;
-export default _default;
+declare const _exports: RAMStorage;
+export = _exports;
 declare class RAMStorage extends Driver {
-    store: {};
-    getAllTableNames(): any;
+    store: {
+        tables: {};
+        tablesNames: any[];
+    };
+    storeBaseData(): {
+        tables: {};
+        tablesNames: any[];
+    };
+    getAllTableNames(): any[];
     setFromDriver(key: any, data: any): boolean;
     getFromDriver(key: any): any;
     removeFromDriver(key: any): boolean;
+    getRealKey(key: any): any;
     clearFromDriver(): boolean;
-    getCompleteKey(key: any): string;
-    getTablesKey(): string;
-    getBaseKey(): string;
-    updateTablesNames(): any;
+    updateTablesNames(): any[];
     getDatabaseData(): any;
 }
-import Driver from "./Driver.js";
+import Driver = require("./Driver.js");
 //# sourceMappingURL=RAMStorage.d.ts.map

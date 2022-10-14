@@ -1,4 +1,5 @@
-export default class Model {
+export = Model;
+declare class Model {
     static count(): any;
     static create(data?: {}): any;
     static fireRelationshipEvents(item: any, eventSuffix: any): void;
@@ -11,7 +12,25 @@ export default class Model {
     static primaryKey(): string;
     static table(): any;
     static timestamps(): boolean;
-    static orderBy(field: any, direction?: string): typeof Model;
+    static orderBy(field: any, direction?: string): {
+        new (data?: {}): import("./Model.js");
+        count(): any;
+        create(data?: {}): any;
+        fireRelationshipEvents(item: any, eventSuffix: any): void;
+        get(): any;
+        latest(): any;
+        find(id?: any): any;
+        findOrFail(id?: any): any;
+        removeSpecialData(data: any): {};
+        getQuery(): Query;
+        primaryKey(): string;
+        table(): any;
+        timestamps(): boolean;
+        orderBy(field: any, direction?: string): any;
+        initFilters(): void;
+        clearFilters(): void;
+        getFilters(): any;
+    };
     static initFilters(): void;
     static clearFilters(): void;
     static getFilters(): any;
@@ -26,10 +45,10 @@ export default class Model {
     enableAutomaticRelations(): void;
     disableSavingData(): void;
     enableSavingData(): void;
-    fillFromData(data?: {}, disablePrimaryKeyFill?: boolean): Model;
+    fillFromData(data?: {}, disablePrimaryKeyFill?: boolean): import("./Model.js");
     fresh(): any;
-    fill(data: any): Model;
-    save(): boolean | Model;
+    fill(data: any): import("./Model.js");
+    save(): boolean | import("./Model.js");
     update(data?: {}): boolean;
     delete(): boolean;
     getTable(): any;
@@ -52,12 +71,12 @@ export default class Model {
     getRelationship(name: any): any;
     getRelationshipFunction(name: any): any;
     isSaved(): boolean;
-    onUpdate(listener: any): Model;
-    on(name: any, listener: any): Model;
-    off(name: any): Model;
+    onUpdate(listener: any): import("./Model.js");
+    on(name: any, listener: any): import("./Model.js");
+    off(name: any): import("./Model.js");
 }
-import HasOne from "./Relationships/HasOne.js";
-import HasMany from "./Relationships/HasMany.js";
-import BelongsTo from "./Relationships/BelongsTo.js";
-import Query from "./Query.js";
+import HasOne = require("./Relationships/HasOne.js");
+import HasMany = require("./Relationships/HasMany.js");
+import BelongsTo = require("./Relationships/BelongsTo.js");
+import Query = require("./Query.js");
 //# sourceMappingURL=Model.d.ts.map

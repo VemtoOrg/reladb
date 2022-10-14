@@ -1,4 +1,5 @@
-export default class Cache {
+export = Cache;
+declare class Cache {
     constructor(database: any);
     database: any;
     tables: {};

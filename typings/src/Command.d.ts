@@ -1,9 +1,10 @@
-export default class Command {
+export = Command;
+declare class Command {
     constructor(command: any, data?: any, id?: any);
     id: any;
     command: any;
     data: any;
-    updateDataFromCommand(command: any): Command;
+    updateDataFromCommand(command: any): import("./Command.js");
     execute(): void;
     executeParsedCommand(): any;
     parseCommand(): {

@@ -1,4 +1,5 @@
-export default class Relationship {
+export = Relationship;
+declare class Relationship {
     constructor(model: any, localModel: any);
     model: any;
     localModel: any;
@@ -9,9 +10,9 @@ export default class Relationship {
     setFilters(filters: any): void;
     getModelIdentifier(): string;
     getItemModelIdentifier(item: any): string;
-    setNameOnModel(name: any): Relationship;
+    setNameOnModel(name: any): import("./Relationship.js");
     __nameOnModel: any;
     getNameOnModel(): any;
 }
-import Query from "../Query.js";
+import Query = require("../Query.js");
 //# sourceMappingURL=Relationship.d.ts.map

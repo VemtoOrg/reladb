@@ -252,19 +252,19 @@ module.exports = class Model {
         return {}
     }
 
-    hasOne(model, foreignKey, localKey) {
+    hasOne(model, foreignKey = null, localKey = null) {
         return new HasOne(model, this.constructor)
             .setForeignKey(foreignKey)
             .setLocalKey(localKey)
     }
 
-    hasMany(model, foreignKey, localKey) {
+    hasMany(model, foreignKey = null, localKey = null) {
         return new HasMany(model, this.constructor)
             .setForeignKey(foreignKey)
             .setLocalKey(localKey)
     }
 
-    belongsTo(model, foreignKey, ownerKey) {
+    belongsTo(model, foreignKey = null, ownerKey = null) {
         return new BelongsTo(model, this.constructor)
             .setForeignKey(foreignKey)
             .setOwnerKey(ownerKey)

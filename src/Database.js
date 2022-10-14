@@ -3,11 +3,15 @@ const Command = require('./Command.js')
 const Exporter = require('./Exporter.js')
 const Importer = require('./Importer.js')
 
-module.exports = class Database {
+/** @typedef {import('./Drivers/Driver')} Driver */
 
+module.exports = class Database {
     constructor() {
-        this.events = {}
+        
+        /** @type Driver */
         this.driver = null
+
+        this.events = {}
         this.filters = []
         this.deletingBuffer = {}
         this.commands = []

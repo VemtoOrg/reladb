@@ -1,4 +1,5 @@
-export default class HasOne extends HasMany {
+export = HasOne;
+declare class HasOne extends HasMany {
 }
-import HasMany from "./HasMany.js";
+import HasMany = require("./HasMany.js");
 //# sourceMappingURL=HasOne.d.ts.map

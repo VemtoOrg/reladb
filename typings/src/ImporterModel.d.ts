@@ -1,5 +1,6 @@
-export default class ImporterModel extends Model {
+export = ImporterModel;
+declare class ImporterModel extends Model {
     static identifier(): string;
 }
-import Model from "./Model.js";
+import Model = require("./Model.js");
 //# sourceMappingURL=ImporterModel.d.ts.map
