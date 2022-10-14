@@ -1,10 +1,10 @@
 import Photo from "./models/Photo.mjs"
 import Person from "./models/Person.mjs"
 
-import Resolver from "../src/Resolver.js"
-import Database from "../src/Database.js"
-import RAMStorage from "../src/Drivers/RAMStorage.js"
-import FakeStorage from "../src/Drivers/FakeStorage.js"
+import Resolver from "../dist/esm/src/Resolver.js"
+import Database from "../dist/esm/src/Database.js"
+import RAMStorage from "../dist/esm/src/Drivers/RAMStorage.js"
+import FakeStorage from "../dist/esm/src/Drivers/FakeStorage.js"
 
 let database = new Database
 

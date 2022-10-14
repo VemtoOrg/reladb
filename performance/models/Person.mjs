@@ -1,5 +1,5 @@
 import Photo from "./Photo.mjs"
-import Model from "../../src/Model.js"
+import Model from "../../dist/esm/src/Model.js"
 
 export default class Person extends Model {
     
