@@ -1,6 +1,6 @@
-import Cache from './Cache.js';
+const Cache = require('./Cache.js')
 
-export default class Exporter {
+module.exports = class Exporter {
 
     constructor(database) {
         this.database = database

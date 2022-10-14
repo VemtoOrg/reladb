@@ -1,7 +1,6 @@
 {
   "name": "@tiago_silva_pereira/reladb",
   "version": "2.0.0",
-  "type": "module",
   "description": "A relational database layer on top of LocalStorage",
   "main": "main.js",
   "typings": "./typings/main.d.ts",
@@ -10,7 +9,7 @@
     "test:basic": "jest --runInBand --selectProjects behavior unit default",
     "test:default": "jest --runInBand --selectProjects default",
     "test:behavior": "jest --runInBand --selectProjects behavior",
-    "perf": "node --experimental-json-modules --no-warnings ./performance/test.js"
+    "perf": "node --experimental-json-modules --no-warnings ./performance/test.mjs"
   },
   "repository": {
     "type": "git",
@@ -31,6 +30,8 @@
   },
   "homepage": "https://github.com/TiagoSilvaPereira/reladb#readme",
   "devDependencies": {
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.3",
     "@babel/plugin-transform-modules-commonjs": "^7.10.4",
     "jest": "^26.4.2",
     "typescript": "^4.8.4"

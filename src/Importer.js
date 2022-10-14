@@ -1,7 +1,7 @@
-import Query from "./Query.js"
-import ImporterModel from "./ImporterModel.js"
+const Query = require('./Query.js')
+const ImporterModel = require('./ImporterModel.js')
 
-export default class Importer {
+module.exports = class Importer {
 
     constructor(database) {
         this.database = database

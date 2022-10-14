@@ -1,6 +1,6 @@
-import Relationship from './Relationship.js'
+const Relationship = require('./Relationship.js')
 
-export default class BelongsTo extends Relationship {
+module.exports = class BelongsTo extends Relationship {
     
     relationshipType() {
         return 'BelongsTo'

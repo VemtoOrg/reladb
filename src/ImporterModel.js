@@ -1,6 +1,6 @@
-import Model from "./Model.js"
+const Model = require('./Model.js')
 
-export default class ImporterModel extends Model {
+module.exports = class ImporterModel extends Model {
 
     static identifier() {
         return 'ImporterModel'

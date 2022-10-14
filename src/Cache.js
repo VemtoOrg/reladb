@@ -1,4 +1,4 @@
-export default class Cache {
+module.exports = class Cache {
 
     constructor(database) {
         this.database = database

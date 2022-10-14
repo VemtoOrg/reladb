@@ -1,6 +1,6 @@
-import HasMany from './HasMany.js'
+const HasMany = require('./HasMany.js')
 
-export default class HasOne extends HasMany {
+module.exports = class HasOne extends HasMany {
 
     relationshipType() {
         return 'HasOne'

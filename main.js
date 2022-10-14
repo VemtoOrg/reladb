@@ -1,15 +1,15 @@
-import Model from './src/Model'
-import Query from './src/Query'
-import Command from './src/Command'
-import Database from './src/Database'
-import Resolver from './src/Resolver'
-import HasMany from './src/Relationships/HasMany'
-import RAMStorage from './src/Drivers/RAMStorage'
-import BelongsTo from './src/Relationships/BelongsTo'
-import LocalStorage from './src/Drivers/LocalStorage'
-import Relationship from './src/Relationships/Relationship'
+const Model = require('./src/Model.js')
+const Query = require('./src/Query.js')
+const Command = require('./src/Command.js')
+const Database = require('./src/Database.js')
+const Resolver = require('./src/Resolver.js')
+const RAMStorage = require('./src/Drivers/RAMStorage')
+const HasMany = require('./src/Relationships/HasMany')
+const BelongsTo = require('./src/Relationships/BelongsTo')
+const LocalStorage = require('./src/Drivers/LocalStorage')
+const Relationship = require('./src/Relationships/Relationship')
 
-export default {
+module.exports = {
     Model,
     Query,
     HasMany,

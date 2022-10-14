@@ -1,5 +1,5 @@
-import Photo from "../tests/models/Photo.js"
-import Person from "../tests/models/Person.js"
+import Photo from "./models/Photo.mjs"
+import Person from "./models/Person.mjs"
 
 import Resolver from "../src/Resolver.js"
 import Database from "../src/Database.js"

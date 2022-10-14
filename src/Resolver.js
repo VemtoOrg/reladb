@@ -1,4 +1,4 @@
-export default class Resolver {
+module.exports = class Resolver {
     static database = null
 
     static setDatabase(database) {

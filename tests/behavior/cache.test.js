@@ -6,8 +6,8 @@ import Project from '../models/Project.js'
 import Comment from '../models/Comment.js'
 import Database from '../../src/Database.js'
 import Category from '../models/Category.js'
-import Relationship from '../models/Relationship.js'
 import Resolver from '../../src/Resolver.js'
+import Relationship from '../models/Relationship.js'
 import LocalStorage from '../../src/Drivers/LocalStorage.js'
 
 let database = new Database

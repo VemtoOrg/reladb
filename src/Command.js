@@ -1,7 +1,7 @@
-import { v4 as uuidv4 } from 'uuid'
-import Resolver from './Resolver.js'
+const { v4: uuidv4 } = require('uuid')
+const Resolver = require('./Resolver.js')
 
-export default class Command {
+module.exports = class Command {
 
     constructor(command, data = null, id = null) {
         this.id = id || uuidv4()

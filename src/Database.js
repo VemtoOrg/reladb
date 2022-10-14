@@ -1,9 +1,9 @@
-import Cache from './Cache.js'
-import Command from './Command.js'
-import Exporter from './Exporter.js'
-import Importer from './Importer.js'
+const Cache = require('./Cache.js')
+const Command = require('./Command.js')
+const Exporter = require('./Exporter.js')
+const Importer = require('./Importer.js')
 
-export default class Database {
+module.exports = class Database {
 
     constructor() {
         this.events = {}
