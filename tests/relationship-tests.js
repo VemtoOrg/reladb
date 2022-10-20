@@ -492,3 +492,53 @@ test('it can remove an event listener', () => {
     
     expect(listenerOcurrences).toBe(0)
 })
+
+test('it saves has many index ordered ', () => {
+    Resolver.db().driver.clear()
+
+    let user = User.create({name: 'Tiago'}),
+        post = Post.create({title: 'Test'}),
+        secondPost = Post.create({title: 'Test'}),
+        thirdPost = Post.create({title: 'Test'}),
+        fourthPost = Post.create({title: 'Test'})
+
+    let tableData = null
+
+    thirdPost.ownerId = user.id
+    thirdPost.save()
+
+    tableData = User.getQuery().getTableData()
+
+    expect(tableData.index[user.id].hasMany['posts.ownerId'].length).toBe(1)
+    expect(tableData.index[user.id].hasMany['posts.ownerId'][0]).toBe(thirdPost.id)
+
+    secondPost.ownerId = user.id
+    secondPost.save()
+
+    tableData = User.getQuery().getTableData()
+
+    expect(tableData.index[user.id].hasMany['posts.ownerId'].length).toBe(2)
+    expect(tableData.index[user.id].hasMany['posts.ownerId'][0]).toBe(secondPost.id)
+    expect(tableData.index[user.id].hasMany['posts.ownerId'][1]).toBe(thirdPost.id)
+
+    fourthPost.ownerId = user.id
+    fourthPost.save()
+
+    tableData = User.getQuery().getTableData()
+
+    expect(tableData.index[user.id].hasMany['posts.ownerId'].length).toBe(3)
+    expect(tableData.index[user.id].hasMany['posts.ownerId'][0]).toBe(secondPost.id)
+    expect(tableData.index[user.id].hasMany['posts.ownerId'][1]).toBe(thirdPost.id)
+    expect(tableData.index[user.id].hasMany['posts.ownerId'][2]).toBe(fourthPost.id)
+
+    post.ownerId = user.id
+    post.save()
+
+    tableData = User.getQuery().getTableData()
+
+    expect(tableData.index[user.id].hasMany['posts.ownerId'].length).toBe(4)
+    expect(tableData.index[user.id].hasMany['posts.ownerId'][0]).toBe(post.id)
+    expect(tableData.index[user.id].hasMany['posts.ownerId'][1]).toBe(secondPost.id)
+    expect(tableData.index[user.id].hasMany['posts.ownerId'][2]).toBe(thirdPost.id)
+    expect(tableData.index[user.id].hasMany['posts.ownerId'][3]).toBe(fourthPost.id)
+})

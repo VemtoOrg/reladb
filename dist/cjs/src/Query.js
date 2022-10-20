@@ -233,15 +233,13 @@ class Query {
             return;
         this.log('%c Adding to parent has many: ' + relationship.signature(), 'color: orange');
         this.manipulateHasManyIndex(hasManyIndex => {
-            // If the item was already added to the hasMany Index
-            if (hasManyIndex.find(itemPk => itemPk === item.id)) {
-                return [...new Set(hasManyIndex)];
+            if (hasManyIndex.includes(item.id)) {
+                return hasManyIndex;
             }
             if (relationship.allowsOnlyOne && hasManyIndex.length > 0) {
                 throw new Error(`Has One relation doesn't allow more than one relation at same time | ${relationship.signature()}`);
             }
             hasManyIndex.push(item.id);
-            hasManyIndex = [...new Set(hasManyIndex)];
             return hasManyIndex;
         }, relationship, item);
     }
@@ -251,7 +249,6 @@ class Query {
         this.log('Removing from parent has many: ' + relationship.signature());
         this.manipulateHasManyIndex(hasManyIndex => {
             hasManyIndex.splice(hasManyIndex.indexOf(item.id), 1);
-            hasManyIndex = [...new Set(hasManyIndex)];
             return hasManyIndex;
         }, relationship, item);
     }
@@ -264,7 +261,9 @@ class Query {
             return;
         let indexKey = `${item.getTable()}.${relationship.foreignKey}`, hasManyIndex = parentIndex.hasMany[indexKey] || [];
         this.log(`%c Before manipulating has many index: ${indexKey} parent: ${parent.id} item: ${item.id}`, 'color: red', hasManyIndex);
-        parentIndex.hasMany[indexKey] = manipulationCallback(hasManyIndex);
+        let indexData = manipulationCallback(hasManyIndex);
+        indexData = [...new Set(indexData)];
+        parentIndex.hasMany[indexKey] = indexData.sort(function (a, b) { return a - b; });
         this.log(`%c After manipulating has many index: ${indexKey} parent: ${parent.id} item: ${item.id}`, 'color: blue', hasManyIndex);
         parentQuery.updateItemIndex(parent, parentIndex);
     }
