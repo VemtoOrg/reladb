@@ -72,8 +72,8 @@ declare class Model {
     getRelationshipFunction(name: any): any;
     isSaved(): boolean;
     onUpdate(listener: any): import("./Model.js");
-    on(name: any, listener: any): import("./Model.js");
-    off(name: any): import("./Model.js");
+    addListener(name: any, listener: any): import("./Model.js");
+    removeListener(name: any): import("./Model.js");
 }
 import HasOne = require("./Relationships/HasOne.js");
 import HasMany = require("./Relationships/HasMany.js");
