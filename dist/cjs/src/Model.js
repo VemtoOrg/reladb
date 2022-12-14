@@ -290,12 +290,12 @@ class Model {
         this.__onUpdateListener = listener;
         return this;
     }
-    on(name, listener) {
+    addListener(name, listener) {
         let completeName = `${this.getItemIdentifier()}:${name}`;
         Resolver_js_1.default.db().addCustomEventListener(completeName, listener);
         return this;
     }
-    off(name) {
+    removeListener(name) {
         let completeName = `${this.getItemIdentifier()}:${name}`;
         Resolver_js_1.default.db().removeCustomEventListener(completeName);
         return this;

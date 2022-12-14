@@ -373,7 +373,7 @@ export default class Model {
         return this
     }
 
-    on(name, listener) {
+    addListener(name, listener) {
         let completeName = `${this.getItemIdentifier()}:${name}`
         
         Resolver.db().addCustomEventListener(completeName, listener)
@@ -381,7 +381,7 @@ export default class Model {
         return this
     }
 
-    off(name) {
+    removeListener(name) {
         let completeName = `${this.getItemIdentifier()}:${name}`
         
         Resolver.db().removeCustomEventListener(completeName)

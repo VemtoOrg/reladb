@@ -285,12 +285,12 @@ export default class Model {
         this.__onUpdateListener = listener;
         return this;
     }
-    on(name, listener) {
+    addListener(name, listener) {
         let completeName = `${this.getItemIdentifier()}:${name}`;
         Resolver.db().addCustomEventListener(completeName, listener);
         return this;
     }
-    off(name) {
+    removeListener(name) {
         let completeName = `${this.getItemIdentifier()}:${name}`;
         Resolver.db().removeCustomEventListener(completeName);
         return this;

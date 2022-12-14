@@ -53,8 +53,8 @@ export default class Model {
     getRelationshipFunction(name: any): any;
     isSaved(): boolean;
     onUpdate(listener: any): Model;
-    on(name: any, listener: any): Model;
-    off(name: any): Model;
+    addListener(name: any, listener: any): Model;
+    removeListener(name: any): Model;
 }
 import HasOne from "./Relationships/HasOne.js";
 import HasMany from "./Relationships/HasMany.js";

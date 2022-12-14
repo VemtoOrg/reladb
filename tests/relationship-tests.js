@@ -363,11 +363,11 @@ test('it fires a belongsTo relationship created event', () => {
     let firstUser = User.create({name: 'Tiago'}),
         secondUser = User.create({name: 'Tiago'})
 
-    firstUser.on('posts:created', () => {
+    firstUser.addListener('posts:created', () => {
         listenerOcurrences++
     })
 
-    secondUser.on('posts:created', () => {
+    secondUser.addListener('posts:created', () => {
         listenerOcurrences++
     })
 
@@ -383,7 +383,7 @@ test('it receives data from a belongsTo relationship created event', () => {
 
     let user = User.create({name: 'Tiago'})
 
-    user.on('posts:created', post => {
+    user.addListener('posts:created', post => {
         createdPost = post
     })
 
@@ -402,11 +402,11 @@ test('it fires a belongsTo relationship updated event', () => {
         secondUser = User.create({name: 'Tiago'}),
         post = Post.create({title: 'Test', ownerId: secondUser.id})
 
-    firstUser.on('posts:updated', () => {
+    firstUser.addListener('posts:updated', () => {
         listenerOcurrences++
     })
 
-    secondUser.on('posts:updated', () => {
+    secondUser.addListener('posts:updated', () => {
         listenerOcurrences++
     })
 
@@ -424,7 +424,7 @@ test('it receives data from a belongsTo relationship updated event', () => {
     let user = User.create({name: 'Tiago'}),
         post = Post.create({title: 'Test', ownerId: user.id})
 
-    user.on('posts:updated', post => {
+    user.addListener('posts:updated', post => {
         updatedPostTitle = post.title
     })
 
@@ -443,11 +443,11 @@ test('it fires a belongsTo relationship deleted event', () => {
         secondUser = User.create({name: 'Tiago'}),
         post = Post.create({title: 'Test', ownerId: secondUser.id})
 
-    firstUser.on('posts:deleted', () => {
+    firstUser.addListener('posts:deleted', () => {
         listenerOcurrences++
     })
 
-    secondUser.on('posts:deleted', () => {
+    secondUser.addListener('posts:deleted', () => {
         listenerOcurrences++
     })
 
@@ -464,7 +464,7 @@ test('it receives data from a belongsTo relationship deleted event', () => {
     let user = User.create({name: 'Tiago'}),
         post = Post.create({title: 'Test', ownerId: user.id})
 
-    user.on('posts:deleted', postId => {
+    user.addListener('posts:deleted', postId => {
         deletedPostId = postId
     })
 
@@ -480,11 +480,11 @@ test('it can remove an event listener', () => {
 
     let user = User.create({name: 'Tiago'})
 
-    user.on('posts:created', () => {
+    user.addListener('posts:created', () => {
         listenerOcurrences++
     })
 
-    user.off('posts:created', () => {
+    user.removeListener('posts:created', () => {
         listenerOcurrences++
     })
 
