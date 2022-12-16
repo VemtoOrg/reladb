@@ -286,15 +286,24 @@ class Model {
         this.initFilters();
         return Resolver_js_1.default.db().filters[this.table()];
     }
-    onUpdate(listener) {
+    onUpdateListener(listener) {
         this.__onUpdateListener = listener;
         return this;
     }
+    /**
+     *
+     * @param {*} name created, updated, deleted
+     * @param {*} listener
+     * @returns
+     */
     addListener(name, listener) {
         let completeName = `${this.getItemIdentifier()}:${name}`;
         Resolver_js_1.default.db().addCustomEventListener(completeName, listener);
         return this;
     }
+    /**
+     * @param {*} name created, updated, deleted
+     */
     removeListener(name) {
         let completeName = `${this.getItemIdentifier()}:${name}`;
         Resolver_js_1.default.db().removeCustomEventListener(completeName);

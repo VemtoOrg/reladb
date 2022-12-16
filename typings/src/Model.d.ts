@@ -71,7 +71,7 @@ declare class Model {
     getRelationship(name: any): any;
     getRelationshipFunction(name: any): any;
     isSaved(): boolean;
-    onUpdate(listener: any): import("./Model.js");
+    onUpdateListener(listener: any): import("./Model.js");
     addListener(name: any, listener: any): import("./Model.js");
     removeListener(name: any): import("./Model.js");
 }

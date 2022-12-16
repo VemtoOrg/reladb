@@ -368,11 +368,17 @@ export default class Model {
         return Resolver.db().filters[this.table()]
     }
 
-    onUpdate(listener) {
+    onUpdateListener(listener) {
         this.__onUpdateListener = listener
         return this
     }
 
+    /**
+     * 
+     * @param {*} name created, updated, deleted
+     * @param {*} listener 
+     * @returns 
+     */
     addListener(name, listener) {
         let completeName = `${this.getItemIdentifier()}:${name}`
         
@@ -381,6 +387,9 @@ export default class Model {
         return this
     }
 
+    /**
+     * @param {*} name created, updated, deleted
+     */
     removeListener(name) {
         let completeName = `${this.getItemIdentifier()}:${name}`
         

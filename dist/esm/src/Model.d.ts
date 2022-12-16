@@ -52,8 +52,17 @@ export default class Model {
     getRelationship(name: any): any;
     getRelationshipFunction(name: any): any;
     isSaved(): boolean;
-    onUpdate(listener: any): Model;
+    onUpdateListener(listener: any): Model;
+    /**
+     *
+     * @param {*} name created, updated, deleted
+     * @param {*} listener
+     * @returns
+     */
     addListener(name: any, listener: any): Model;
+    /**
+     * @param {*} name created, updated, deleted
+     */
     removeListener(name: any): Model;
 }
 import HasOne from "./Relationships/HasOne.js";

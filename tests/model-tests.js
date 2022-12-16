@@ -434,7 +434,7 @@ test('it allows to listen to a model update', () => {
 
     let user = User.create({name: 'Tiago'})
     
-    user.onUpdate(user => {
+    user.onUpdateListener(user => {
         updatedName = user.name
     })
 
@@ -485,7 +485,7 @@ test('it does not save model special data', () => {
     expect(user.__onUpdateListener).toBeNull()
     expect(user.__returnRelationsAutomatically).toBe(true)
 
-    user.onUpdate(() => true)
+    user.onUpdateListener(() => true)
 
     user.disableSavingData()
     user.disableAutomaticRelations()
@@ -503,7 +503,7 @@ test('it does not save model special data', () => {
 
     user.enableSavingData()
     user.enableAutomaticRelations()
-    user.onUpdate(null)
+    user.onUpdateListener(null)
 
     expect(user.__saveDataToStorage).toBe(true)
     expect(user.__onUpdateListener).toBeNull()
@@ -544,7 +544,7 @@ test('it does not save special data for a post-saved model', () => {
     expect(user.__onUpdateListener).toBeNull()
     expect(user.__returnRelationsAutomatically).toBe(true)
 
-    user.onUpdate(() => true)
+    user.onUpdateListener(() => true)
 
     user.disableSavingData()
     user.disableAutomaticRelations()
@@ -562,7 +562,7 @@ test('it does not save special data for a post-saved model', () => {
 
     user.enableSavingData()
     user.enableAutomaticRelations()
-    user.onUpdate(null)
+    user.onUpdateListener(null)
 
     expect(user.__saveDataToStorage).toBe(true)
     expect(user.__onUpdateListener).toBeNull()
