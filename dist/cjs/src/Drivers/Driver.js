@@ -18,7 +18,6 @@ class Driver {
     get(key) {
         if (Resolver_js_1.default.db().isCaching())
             return this.getFromCache(key);
-        Resolver_js_1.default.db().executeDataChangedEventListener();
         return this.getFromDriver(key);
     }
     remove(key) {

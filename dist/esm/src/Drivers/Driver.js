@@ -13,7 +13,6 @@ export default class Driver {
     get(key) {
         if (Resolver.db().isCaching())
             return this.getFromCache(key);
-        Resolver.db().executeDataChangedEventListener();
         return this.getFromDriver(key);
     }
     remove(key) {

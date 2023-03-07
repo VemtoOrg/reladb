@@ -99,3 +99,19 @@ test('it can execute a callback when database data is changed', () => {
 
     expect(changed).toBe(true)
 })
+
+test('it does not execute a changed callback when database data is get', () => {
+    Resolver.db().driver.clear()
+
+    User.create({name: 'Tiago'})
+
+    let changed = false
+
+    Resolver.db().onDataChanged(() => {
+        changed = true
+    })
+
+    const user = User.find(1)
+
+    expect(changed).toBe(false)
+})
