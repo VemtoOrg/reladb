@@ -9,6 +9,7 @@ export default class Model {
 
     constructor(data = {}) {
 
+        this.__isRelaDBModel = true
         this.__returnRelationsAutomatically = true
         this.__saveDataToStorage = true
 
@@ -192,6 +193,7 @@ export default class Model {
     static removeSpecialData(data) {
         let filteredData = {},
             excludedKeys = [
+                '__isRelaDBModel',
                 '__onUpdateListener',
                 '__saveDataToStorage',
                 '__returnRelationsAutomatically',

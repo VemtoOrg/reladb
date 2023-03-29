@@ -16,6 +16,7 @@ export default class Model {
     static clearFilters(): void;
     static getFilters(): any;
     constructor(data?: {});
+    __isRelaDBModel: boolean;
     __returnRelationsAutomatically: boolean;
     __saveDataToStorage: boolean;
     __onUpdateListener: any;
