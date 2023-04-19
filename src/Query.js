@@ -435,6 +435,8 @@ export default class Query {
         return function(a, b) {
             if(typeof a[field] === 'undefined' || typeof b[field] === 'undefined') return 0
 
+            if(a[field] === null || b[field] === null) return 0
+
             const itemA = typeof a[field] === 'number' ? a[field] : a[field].toString().toUpperCase()
             const itemB = typeof b[field] === 'number' ? b[field] : b[field].toString().toUpperCase()
           
