@@ -6,6 +6,7 @@ import HasMany from './Relationships/HasMany.js'
 import BelongsTo from './Relationships/BelongsTo.js'
 
 import { camelCase, snakeCase } from 'change-case'
+import MorphMany from './Relationships/MorphMany.js'
 
 export default class Model {
 
@@ -311,6 +312,13 @@ export default class Model {
         return new BelongsTo(model, this.constructor)
             .setForeignKey(foreignKey)
             .setOwnerKey(ownerKey)
+    }
+
+    morphMany(model, name, morphKey = null, morphType = null) {
+        return new MorphMany(model, this.constructor)
+            .setName(name)
+            .setMorphKey(morphKey)
+            .setMorphType(morphType)
     }
 
     hasRelationshipNamed(name) {
