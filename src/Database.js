@@ -212,13 +212,21 @@ export default class Database {
         }
     }
     
-    registerModel(model, identifier) {
-        this.__modelsRegistry[identifier] = {
+    registerModel(model, identifier, customTableName = null) {
+        const modelRegister = {
             model: model,
-            identifier: identifier
+            identifier: identifier,
         }
 
         model.setIdentifier(identifier)
+
+        if(customTableName) {
+            model.setCustomTableName(customTableName)
+        }
+
+        modelRegister.table = model.table()
+
+        this.__modelsRegistry[identifier] = modelRegister
     }
 
     getModel(identifier) {

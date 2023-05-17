@@ -13,7 +13,7 @@ export default class BelongsTo extends Relationship {
 
     setForeignKey(foreignKey) {
         if(!foreignKey) {
-            foreignKey = `${this.model.identifier().toLowerCase()}Id`
+            foreignKey = `${this.model.defaultKeyIdentifier().toLowerCase()}Id`
         }
 
         this.foreignKey = foreignKey

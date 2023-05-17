@@ -1,13 +1,16 @@
 import Query from './Query.js'
 import pluralize from 'pluralize'
+import Resolver from './Resolver.js'
 import HasOne from './Relationships/HasOne.js'
 import HasMany from './Relationships/HasMany.js'
 import BelongsTo from './Relationships/BelongsTo.js'
-import Resolver from './Resolver.js'
+
+import { camelCase, snakeCase } from 'change-case'
 
 export default class Model {
 
     static __identifier = null
+    static __customTable = null
 
     constructor(data = {}) {
 
@@ -21,9 +24,7 @@ export default class Model {
 
         this.constructor.initFilters()
 
-        if(!this.constructor.identifier()) {
-            throw new Error('Model identifier() method must return a string. Please register an identifier for this model')
-        }
+        this.checkIdentifier()
 
         this.fillFromData(data)
 
@@ -34,12 +35,34 @@ export default class Model {
 
     }
 
+    checkIdentifier() {
+        try {
+            this.constructor.identifier()
+        } catch(e) {
+            throw e
+        }
+
+        return true
+    }
+
     static identifier() {
+        if(!this.__identifier) {
+            throw new Error('Model identifier() method must return a string. Please register an identifier for this model')
+        }
+
         return this.__identifier
     }
 
     static setIdentifier(identifier) {
         this.__identifier = identifier
+    }
+
+    static setCustomTableName(table) {
+        this.__customTable = table
+    }
+
+    static defaultKeyIdentifier() {
+        return camelCase(this.identifier())
     }
 
     __set(obj, name, value) {
@@ -247,7 +270,15 @@ export default class Model {
     }
 
     static table() {
-        return pluralize(this.identifier()).toLowerCase()
+        if(this.__customTable) return this.__customTable
+
+        return this.defaultTable()
+    }
+
+    static defaultTable() {
+        return pluralize(
+            snakeCase(this.identifier())
+        ).toLowerCase()
     }
 
     static timestamps() {

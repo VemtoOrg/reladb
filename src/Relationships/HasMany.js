@@ -8,7 +8,7 @@ export default class HasMany extends Relationship {
 
     setForeignKey(foreignKey) {
         if(!foreignKey) {
-            foreignKey = `${this.localModel.identifier().toLowerCase()}Id`
+            foreignKey = `${this.localModel.defaultKeyIdentifier().toLowerCase()}Id`
         }
 
         this.foreignKey = foreignKey
