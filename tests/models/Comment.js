@@ -3,10 +3,6 @@ import Post from "./Post.js";
 import Model from "../../src/Model.js";
 
 export default class Comment extends Model {
-    
-    static identifier() {
-        return 'Comment'
-    }
 
     relationships() {
         return {

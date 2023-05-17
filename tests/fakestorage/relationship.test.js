@@ -7,6 +7,8 @@ database.setDriver(FakeStorage)
 
 Resolver.setDatabase(database)
 
+import '../imports/models-registry.js'
+
 import '../relationship-tests'
 
 afterAll(() => Resolver.db().driver.clear())

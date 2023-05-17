@@ -33,6 +33,8 @@ export default class Database {
         }
 
         this.__saveDataToStorage = true
+
+        this.__modelsRegistry = {}
     }
 
     addCustomEventListener(name, listener) {
@@ -210,4 +212,20 @@ export default class Database {
         }
     }
     
+    registerModel(model, identifier) {
+        this.__modelsRegistry[identifier] = {
+            model: model,
+            identifier: identifier
+        }
+
+        model.setIdentifier(identifier)
+    }
+
+    getModel(identifier) {
+        return this.__modelsRegistry[identifier]
+    }
+
+    getIdendifierByModel(model) {
+        return model.identifier()
+    }
 }

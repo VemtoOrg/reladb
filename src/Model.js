@@ -7,6 +7,8 @@ import Resolver from './Resolver.js'
 
 export default class Model {
 
+    static __identifier = null
+
     constructor(data = {}) {
 
         this.__isRelaDBModel = true
@@ -18,9 +20,9 @@ export default class Model {
         this.__customEventsEnabled = false
 
         this.constructor.initFilters()
-        
-        if(!this.constructor.hasOwnProperty('identifier')) {
-            throw new Error('Model does not have an identifier. Please declare a static identifier() method')
+
+        if(!this.constructor.identifier()) {
+            throw new Error('Model identifier() method must return a string. Please register an identifier for this model')
         }
 
         this.fillFromData(data)
@@ -30,6 +32,14 @@ export default class Model {
             get: this.__get
         })
 
+    }
+
+    static identifier() {
+        return this.__identifier
+    }
+
+    static setIdentifier(identifier) {
+        this.__identifier = identifier
     }
 
     __set(obj, name, value) {

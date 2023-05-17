@@ -3,10 +3,6 @@ import Model from '../../src/Model.js'
 
 export default class Relationship extends Model {
 
-    static identifier() {
-        return 'Relationship'
-    }
-
     relationships() {
         return {
             entity: () => this.belongsTo(Entity),

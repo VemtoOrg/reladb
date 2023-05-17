@@ -1,10 +1,6 @@
 import Model from "../../src/Model.js";
 
 export default class Category extends Model {
-    
-    static identifier() {
-        return 'Category'
-    }
 
     relationships() {
         return {

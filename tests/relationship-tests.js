@@ -493,7 +493,7 @@ test('it can remove an event listener', () => {
     expect(listenerOcurrences).toBe(0)
 })
 
-test('it saves has many index ordered ', () => {
+test('it saves has many index ordered', () => {
     Resolver.db().driver.clear()
 
     let user = User.create({name: 'Tiago'}),

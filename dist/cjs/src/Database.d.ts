@@ -19,6 +19,7 @@ export default class Database {
         addCommandToQueueOnDispatch: boolean;
     };
     __saveDataToStorage: boolean;
+    __modelsRegistry: {};
     addCustomEventListener(name: any, listener: any): void;
     removeCustomEventListener(name: any): void;
     executeCustomEventListener(name: any, ...data: any[]): void;
@@ -48,6 +49,9 @@ export default class Database {
     executeNextCommand(): void;
     onUpdateTable(table: any, callback: any): void;
     executeOnUpdateCallbackForTable(table: any, data: any): void;
+    registerModel(model: any, identifier: any): void;
+    getModel(identifier: any): any;
+    getIdendifierByModel(model: any): any;
 }
 export type Driver = typeof import("./Drivers/Driver");
 import Cache from "./Cache.js";

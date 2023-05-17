@@ -2,10 +2,6 @@ import Photo from "./Photo.js"
 import Model from "../../src/Model.js"
 
 export default class Person extends Model {
-    
-    static identifier() {
-        return 'Person'
-    }
 
     relationships() {
         return {

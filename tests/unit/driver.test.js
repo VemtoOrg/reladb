@@ -9,6 +9,8 @@ database.setDriver(LocalStorage)
 
 Resolver.setDatabase(database)
 
+import '../imports/models-registry.js'
+
 afterEach(() => {
     database.setDriver(LocalStorage)
     Resolver.db().stopCaching()

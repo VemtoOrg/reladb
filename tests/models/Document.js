@@ -2,10 +2,6 @@ import User from "./User.js";
 import Model from "../../src/Model.js";
 
 export default class Document extends Model {
-    
-    static identifier() {
-        return 'Document'
-    }
 
     relationships() {
         return {

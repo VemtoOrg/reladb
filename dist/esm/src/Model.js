@@ -5,6 +5,7 @@ import HasMany from './Relationships/HasMany.js';
 import BelongsTo from './Relationships/BelongsTo.js';
 import Resolver from './Resolver.js';
 export default class Model {
+    static __identifier = null;
     constructor(data = {}) {
         this.__isRelaDBModel = true;
         this.__returnRelationsAutomatically = true;
@@ -16,11 +17,20 @@ export default class Model {
         if (!this.constructor.hasOwnProperty('identifier')) {
             throw new Error('Model does not have an identifier. Please declare a static identifier() method');
         }
+        if (!this.constructor.identifier()) {
+            throw new Error('Model identifier() method must return a string. Please register an identifier for this model');
+        }
         this.fillFromData(data);
         return new Proxy(this, {
             set: this.__set,
             get: this.__get
         });
+    }
+    static identifier() {
+        return this.__identifier;
+    }
+    static setIdentifier(identifier) {
+        this.__identifier = identifier;
     }
     __set(obj, name, value) {
         obj[name] = value;

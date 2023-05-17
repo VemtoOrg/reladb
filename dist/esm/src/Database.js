@@ -24,6 +24,7 @@ export default class Database {
             addCommandToQueueOnDispatch: true
         };
         this.__saveDataToStorage = true;
+        this.__modelsRegistry = {};
     }
     addCustomEventListener(name, listener) {
         this.__customEventsListeners[name] = listener;
@@ -160,5 +161,18 @@ export default class Database {
         if (this.tableCallbacks[table]) {
             this.tableCallbacks[table](data);
         }
+    }
+    registerModel(model, identifier) {
+        this.__modelsRegistry[identifier] = {
+            model: model,
+            identifier: identifier
+        };
+        model.setIdentifier(identifier);
+    }
+    getModel(identifier) {
+        return this.__modelsRegistry[identifier];
+    }
+    getIdendifierByModel(model) {
+        return model.identifier();
     }
 }

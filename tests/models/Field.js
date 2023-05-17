@@ -4,10 +4,6 @@ import Model from '../../src/Model.js'
 
 export default class Field extends Model {
 
-    static identifier() {
-        return 'Field'
-    }
-
     relationships() {
         return {
             entity: () => this.belongsTo(Entity),

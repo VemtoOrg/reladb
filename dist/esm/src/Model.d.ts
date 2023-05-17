@@ -1,4 +1,7 @@
 export default class Model {
+    static __identifier: any;
+    static identifier(): any;
+    static setIdentifier(identifier: any): void;
     static count(): any;
     static create(data?: {}): any;
     static fireRelationshipEvents(item: any, eventSuffix: any): void;

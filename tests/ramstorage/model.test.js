@@ -7,6 +7,8 @@ database.setDriver(RAMStorage)
 
 Resolver.setDatabase(database)
 
+import '../imports/models-registry.js'
+
 import '../model-tests'
 
 afterAll(() => Resolver.db().driver.clear())

@@ -6,10 +6,6 @@ import Relationship from './Relationship.js'
 
 export default class Entity extends Model {
 
-    static identifier() {
-        return 'Entity'
-    }
-
     relationships() {
         return {
             project: () => this.belongsTo(Project),
