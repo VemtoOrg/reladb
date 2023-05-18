@@ -372,6 +372,14 @@ export default class Model {
 
         return hasManyRelationships.concat(hasOneRelationships)
     }
+
+    morphManyRelationships() {
+        return this.getRelationshipsByInstanceType(MorphMany)
+    }
+
+    morphToRelationships() {
+        return this.getRelationshipsByInstanceType(MorphTo)
+    }
     
     getRelationshipsByInstanceType(instanceOfClass) {
         let relationships = []

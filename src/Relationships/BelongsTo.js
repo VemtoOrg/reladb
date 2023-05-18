@@ -45,6 +45,10 @@ export default class BelongsTo extends Relationship {
         return `${this.localModel.identifier()}->${type}(${this.model.identifier()}):${this.foreignKey},${this.ownerKey}`
     }
 
+    /**
+     * Gets the inverse relationship for firing events (only works for BelongsTo/HasMany relationships)
+     * @returns {Relationship}
+     */
     inverse() {
         let modelInstance = new (this.model),
             relationships = modelInstance.relationships()

@@ -300,6 +300,15 @@ export default class Query {
                 children.forEach(child => child.delete())
             }
         })
+
+        item.morphManyRelationships().forEach(morphManyRelationship => {
+            if(morphManyRelationship.usesCascadeDelete) {
+                let children = morphManyRelationship.getAllItems(item)
+                children.forEach(child => child.delete())
+            }
+        })
+
+        return true
     }
 
     addIndexesByItem(item) {

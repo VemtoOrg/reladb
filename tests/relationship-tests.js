@@ -583,3 +583,18 @@ test('it allows to get parent from morph to relation', () => {
     expect(tag3.taggable.title).toBe('Document')
     expect(tag4.taggable.title).toBe('Document')
 })
+
+test('it allows to cascade delete morph many children data', () => {
+    Resolver.db().driver.clear()
+
+    let post = Post.create({title: 'Post'})
+        
+    Tag.create({ name: 'Tag1', taggableId: post.id, taggableType: 'Post'})
+    Tag.create({ name: 'Tag2', taggableId: post.id, taggableType: 'Post'})
+
+    expect(Tag.count()).toBe(2)
+
+    post.delete()
+
+    expect(Tag.count()).toBe(0)
+})

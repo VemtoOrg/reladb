@@ -8,7 +8,7 @@ export default class Post extends Model {
     relationships() {
         return {
             owner: () => this.belongsTo(User, 'ownerId'),
-            tags: () => this.morphMany(Tag, 'taggable'),
+            tags: () => this.morphMany(Tag, 'taggable').cascadeDelete(),
             comments: () => this.hasMany(Comment).orderBy('order').cascadeDelete()
         }
     }
