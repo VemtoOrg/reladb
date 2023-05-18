@@ -33,7 +33,9 @@ export default class MorphTo extends Relationship {
         return this
     }
 
-    getParentFromItem(item) {
+    getParentFromItem() {
+        const item = this.getItem()
+        
         if(!item[this.morphKey] || !item[this.morphType]) return null
 
         const morphType = item[this.morphType],
@@ -42,8 +44,8 @@ export default class MorphTo extends Relationship {
         return model.find(item[this.morphKey])
     }
 
-    execute(item) {
-       return this.getParentFromItem(item) 
+    execute() {
+       return this.getParentFromItem() 
     }
 
     signature() {

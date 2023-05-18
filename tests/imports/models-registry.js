@@ -34,5 +34,5 @@ Resolver.onDatabaseReady(() => {
     Resolver.db().registerModel(User, 'User')
     Resolver.db().registerModel(Tag, 'Tag')
     Resolver.db().registerModel(Address, 'Address')
-    Resolver.db().registerModel(AddressUser, 'AddressUser')
+    Resolver.db().registerModel(AddressUser, 'AddressUser', 'address_user')
 })

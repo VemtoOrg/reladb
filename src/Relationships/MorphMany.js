@@ -48,12 +48,13 @@ export default class MorphMany extends Relationship {
         return this
     }
 
-    getAllItems(item) {
-        return this.execute(item)
+    getAllItems() {
+        return this.execute()
     }
 
-    execute(item) {
-        const itemModelIdentifier = item.constructor.identifier()
+    execute() {
+        const item = this.getItem(), 
+            itemModelIdentifier = item.constructor.identifier()
 
         let morphItems = this.getQuery()
             .setFilters(this.filters)

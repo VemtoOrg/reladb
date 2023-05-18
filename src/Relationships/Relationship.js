@@ -39,8 +39,8 @@ export default class Relationship {
         return `${this.localModel.identifier()}:${this.__nameOnModel}`
     }
 
-    getItemModelIdentifier(item) {
-        return `${this.localModel.identifier()}:${item.id}:${this.__nameOnModel}`
+    getItemModelIdentifier() {
+        return `${this.localModel.identifier()}:${this.getItem().id}:${this.__nameOnModel}`
     }
 
     setNameOnModel(name) {

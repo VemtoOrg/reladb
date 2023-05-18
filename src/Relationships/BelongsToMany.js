@@ -48,12 +48,12 @@ export default class BelongsToMany extends Relationship {
         return this
     }
 
-    getAllItems(item) {
-        return this.execute(item)
+    getAllItems() {
+        return this.execute()
     }
 
-    execute(item) {
-        const pivotItems = this.getPivotItems(item)
+    execute() {
+        const pivotItems = this.getPivotItems()
         
         let relatedItems = this.getQuery()
             .setFilters(this.filters)
@@ -63,7 +63,9 @@ export default class BelongsToMany extends Relationship {
         return relatedItems
     }
 
-    getPivotItems(item) {
+    getPivotItems() {
+        const item = this.getItem()
+
         let itemIndex = item.constructor.getQuery().getItemIndex(item)
 
         if(!itemIndex) return []
@@ -80,17 +82,16 @@ export default class BelongsToMany extends Relationship {
         return `${this.localModel.identifier()}->HasMany(${this.model.identifier()}):${this.foreignKey},${this.localKey}`
     }
 
-    attach(item, relatedItem) {
-        const pivotModel = new (this.pivotModel),
-            pivotItem = pivotModel.newInstance()
+    attach(relatedItem) {
+        const pivotItem = new (this.pivotModel)
 
-        pivotItem[this.foreignPivotKey] = item[this.localKey]
+        pivotItem[this.foreignPivotKey] = this.getItem()[this.localModel.primaryKey()]
         pivotItem[this.relatedPivotKey] = relatedItem[this.model.primaryKey()]
 
         return pivotItem.save()
     }
 
-    detach(item, relatedItem) {
+    detach(relatedItem) {
         const pivotItem = this.getPivotItem(item, relatedItem)
 
         if(!pivotItem) return false
@@ -98,8 +99,8 @@ export default class BelongsToMany extends Relationship {
         return pivotItem.delete()
     }
 
-    getPivotItem(item, relatedItem) {
-        const pivotItems = this.getPivotItems(item)
+    getPivotItem(relatedItem) {
+        const pivotItems = this.getPivotItems()
 
         return pivotItems.find(pivotItem => pivotItem[this.relatedPivotKey] == relatedItem[this.model.primaryKey()])
     }

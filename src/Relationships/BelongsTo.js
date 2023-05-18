@@ -31,17 +31,21 @@ export default class BelongsTo extends Relationship {
         return this
     }
 
-    getParentFromItem(item) {
+    getParentFromItem() {
+        const item = this.getItem()
+
         if(!item[this.foreignKey]) return null
+
         return this.getQuery().find(item[this.foreignKey])
     }
 
-    execute(item) {
-       return this.getParentFromItem(item) 
+    execute() {
+       return this.getParentFromItem() 
     }
 
     signature() {
         let type = this.allowsOnlyOne ? 'BelongsTo_One' : 'BelongsTo'
+        
         return `${this.localModel.identifier()}->${type}(${this.model.identifier()}):${this.foreignKey},${this.ownerKey}`
     }
 

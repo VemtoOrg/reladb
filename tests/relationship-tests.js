@@ -646,3 +646,23 @@ test('it allows to get items from belongs to many relation', () => {
 
     expect(address4.users[0].name).toBe('User3')
 })
+
+test('it allows to attach items on belongs to many relation', () => {
+    Resolver.db().driver.clear()
+
+    let user = User.create({name: 'User1'})
+
+    let address1 = Address.create({ street: 'Street1' }),
+        address2 = Address.create({ street: 'Street2' })
+
+    user.relation('addresses').attach(address1)
+    user.relation('addresses').attach(address2)
+
+    expect(user.addresses.length).toBe(2)
+
+    expect(user.addresses[0].street).toBe('Street1')
+    expect(user.addresses[1].street).toBe('Street2')
+
+    expect(address1.users[0].name).toBe('User1')
+    expect(address2.users[0].name).toBe('User1')
+})

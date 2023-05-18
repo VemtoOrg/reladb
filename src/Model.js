@@ -361,7 +361,7 @@ export default class Model {
     }
 
     executeRelationship(name) {
-        return this.getRelationship(name).execute(this)
+        return this.getRelationship(name).execute()
     }
 
     hasBelongsToRelationships() {
@@ -411,6 +411,10 @@ export default class Model {
         })
         
         return relationships
+    }
+
+    relation(name) {
+        return this.getRelationship(name)
     }
 
     getRelationship(name) {

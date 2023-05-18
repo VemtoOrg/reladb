@@ -50,11 +50,11 @@ export default class Cache {
         item.hasManyRelationships().forEach((relationship) => {
             if(this.isCachingRelationship(item, relationship)) return
 
-            this.cachedRelationships.push(relationship.getItemModelIdentifier(item))
+            this.cachedRelationships.push(relationship.getItemModelIdentifier())
             
             this.setupCacheTable(relationship.model.table())
 
-            let relationshipItems = relationship.execute(item)
+            let relationshipItems = relationship.execute()
             
             if(!relationshipItems) return
 
@@ -87,7 +87,7 @@ export default class Cache {
 
     isCachingRelationship(item, relationship) {
         return this.cachedRelationships.some(
-            cached => cached === relationship.getItemModelIdentifier(item)
+            cached => cached === relationship.getItemModelIdentifier()
         )
     }
 

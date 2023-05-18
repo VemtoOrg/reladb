@@ -6,12 +6,12 @@ export default class HasOne extends HasMany {
         return 'HasOne'
     }
 
-    getAllItems(item) {
-        return super.execute(item)
+    getAllItems() {
+        return super.execute()
     }
 
-    execute(item) {
-        return super.execute(item)[0]
+    execute() {
+        return super.execute()[0]
     }
 
     signature() {

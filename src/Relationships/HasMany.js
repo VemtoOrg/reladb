@@ -42,11 +42,13 @@ export default class HasMany extends Relationship {
         return this
     }
 
-    getAllItems(item) {
-        return this.execute(item)
+    getAllItems() {
+        return this.execute()
     }
 
-    execute(item) {
+    execute() {
+        const item = this.getItem()
+        
         let itemIndex = item.constructor.getQuery().getItemIndex(item)
 
         if(!itemIndex) return []
