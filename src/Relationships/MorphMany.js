@@ -8,6 +8,8 @@ export default class MorphMany extends Relationship {
 
     setName(name) {
         this.name = name
+
+        return this
     }
 
     setMorphKey(morphKey) {
@@ -53,15 +55,15 @@ export default class MorphMany extends Relationship {
     execute(item) {
         const itemModelIdentifier = item.constructor.identifier()
 
-        let items = this.getQuery()
+        let morphItems = this.getQuery()
             .setFilters(this.filters)
             .get()
 
-        items = items.filter(item => {
-            return item[this.morphType] === itemModelIdentifier && item[this.morphKey] === item.id
+        morphItems = morphItems.filter(morphItem => {
+            return morphItem[this.morphType] === itemModelIdentifier && morphItem[this.morphKey] === item.id
         })
         
-        return items || []
+        return morphItems || []
     }
 
     signature() {

@@ -3,10 +3,11 @@ import pluralize from 'pluralize'
 import Resolver from './Resolver.js'
 import HasOne from './Relationships/HasOne.js'
 import HasMany from './Relationships/HasMany.js'
-import BelongsTo from './Relationships/BelongsTo.js'
-
+import MorphTo from './Relationships/MorphTo.js'
 import { camelCase, snakeCase } from 'change-case'
 import MorphMany from './Relationships/MorphMany.js'
+import BelongsTo from './Relationships/BelongsTo.js'
+
 
 export default class Model {
 
@@ -316,6 +317,13 @@ export default class Model {
 
     morphMany(model, name, morphKey = null, morphType = null) {
         return new MorphMany(model, this.constructor)
+            .setName(name)
+            .setMorphKey(morphKey)
+            .setMorphType(morphType)
+    }
+
+    morphTo(name, morphKey = null, morphType = null) {
+        return new MorphTo()
             .setName(name)
             .setMorphKey(morphKey)
             .setMorphType(morphType)

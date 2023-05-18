@@ -8,6 +8,7 @@ import Field from "./models/Field.js"
 import Foreign from "./models/Foreign.js"
 import Project from "./models/Project.js"
 import Resolver from "../src/Resolver.js"
+import Tag from "./models/Tag.js"
 
 test('it allows to get parent from belongs to relation', () => {
     Resolver.db().driver.clear()
@@ -541,4 +542,44 @@ test('it saves has many index ordered', () => {
     expect(tableData.index[user.id].hasMany['posts.ownerId'][1]).toBe(secondPost.id)
     expect(tableData.index[user.id].hasMany['posts.ownerId'][2]).toBe(thirdPost.id)
     expect(tableData.index[user.id].hasMany['posts.ownerId'][3]).toBe(fourthPost.id)
+})
+
+test('it allows to get children from morph many relation', () => {
+    Resolver.db().driver.clear()
+
+    let post1 = Post.create({title: 'First Post'}),
+        post2 = Post.create({title: 'Second Post'}),
+        post3 = Post.create({title: 'Third Post'})
+
+    Tag.create({ name: 'Tag1', taggableId: post1.id, taggableType: 'Post'})
+    Tag.create({ name: 'Tag2', taggableId: post1.id, taggableType: 'Post'})
+    Tag.create({ name: 'Tag3', taggableId: post2.id, taggableType: 'Post'})
+
+    expect(post1.tags.length).toBe(2)
+    expect(post2.tags.length).toBe(1)
+    expect(post3.tags.length).toBe(0)
+
+    expect(post1.tags[0].name).toBe('Tag1')
+    expect(post1.tags[1].name).toBe('Tag2')
+    expect(post2.tags[0].name).toBe('Tag3')
+})
+
+test('it allows to get parent from morph to relation', () => {
+    Resolver.db().driver.clear()
+
+    let post = Post.create({title: 'Post'}),
+        document = Document.create({title: 'Document'})
+
+    let tag1 = Tag.create({ name: 'PostTag1', taggableId: post.id, taggableType: 'Post'}),
+        tag2 = Tag.create({ name: 'PostTag2', taggableId: post.id, taggableType: 'Post'}),
+        tag3 = Tag.create({ name: 'DocumentTag1', taggableId: document.id, taggableType: 'Document'}),
+        tag4 = Tag.create({ name: 'DocumentTag2', taggableId: document.id, taggableType: 'Document'})
+
+    expect(post.tags.length).toBe(2)
+    expect(document.tags.length).toBe(2)
+
+    expect(tag1.taggable.title).toBe('Post')
+    expect(tag2.taggable.title).toBe('Post')
+    expect(tag3.taggable.title).toBe('Document')
+    expect(tag4.taggable.title).toBe('Document')
 })

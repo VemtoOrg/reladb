@@ -12,6 +12,7 @@ import Photo from '../models/Photo.js'
 import Post from '../models/Post.js'
 import Project from '../models/Project.js'
 import Relationship from '../models/Relationship.js'
+import Tag from '../models/Tag.js'
 import User from '../models/User.js'
 
 Resolver.onDatabaseReady(() => {
@@ -29,4 +30,5 @@ Resolver.onDatabaseReady(() => {
     Resolver.db().registerModel(Project, 'Project')
     Resolver.db().registerModel(Relationship, 'Relationship')
     Resolver.db().registerModel(User, 'User')
+    Resolver.db().registerModel(Tag, 'Tag')
 })

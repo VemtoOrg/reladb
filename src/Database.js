@@ -230,7 +230,7 @@ export default class Database {
     }
 
     getModel(identifier) {
-        return this.__modelsRegistry[identifier]
+        return this.__modelsRegistry[identifier].model
     }
 
     getIdendifierByModel(model) {
