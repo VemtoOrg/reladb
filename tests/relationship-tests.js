@@ -666,3 +666,86 @@ test('it allows to attach items on belongs to many relation', () => {
     expect(address1.users[0].name).toBe('User1')
     expect(address2.users[0].name).toBe('User1')
 })
+
+test('it allows to attach items on belongs to many relation with extra data', () => {
+    Resolver.db().driver.clear()
+
+    let user = User.create({name: 'User1'}),
+        address = Address.create({ street: 'Street1' })
+
+    const pivot = user.relation('addresses').attach(address, {
+        foo: 'bar'
+    })
+
+    expect(user.addresses.length).toBe(1)
+
+    expect(pivot.foo).toBe('bar')
+    
+    expect(user.addresses[0].street).toBe('Street1')
+})
+
+test('it allows to attach items once on belongs to many relation', () => {
+    Resolver.db().driver.clear()
+
+    let user = User.create({name: 'User1'}),
+        address = Address.create({ street: 'Street1' })
+
+    user.relation('addresses').attachUnique(address)
+    user.relation('addresses').attachUnique(address)
+
+    expect(user.addresses.length).toBe(1)
+
+    user.relation('addresses').attach(address)
+
+    expect(user.addresses.length).toBe(2)
+
+    expect(user.addresses[0].street).toBe('Street1')
+    expect(user.addresses[1].street).toBe('Street1')
+})
+
+test('it allows to detach items on belongs to many relation', () => {
+    Resolver.db().driver.clear()
+
+    let user = User.create({name: 'User1'})
+
+    let address1 = Address.create({ street: 'Street1' }),
+        address2 = Address.create({ street: 'Street2' })
+
+    user.relation('addresses').attach(address1)
+    user.relation('addresses').attach(address2)
+
+    expect(user.addresses.length).toBe(2)
+
+    user.relation('addresses').detach(address1)
+
+    expect(user.addresses.length).toBe(1)
+
+    expect(user.addresses[0].street).toBe('Street2')
+
+    expect(address1.users.length).toBe(0)
+
+    expect(address2.users[0].name).toBe('User1')
+})
+
+test('it allows to detach all ocurrences on belongs to many relation', () => {
+    Resolver.db().driver.clear()
+
+    let user = User.create({name: 'User1'})
+
+    let address = Address.create({ street: 'Street1' })
+
+    user.relation('addresses').attach(address)
+    user.relation('addresses').attach(address)
+    user.relation('addresses').attach(address)
+    user.relation('addresses').attach(address)
+
+    expect(user.addresses.length).toBe(4)
+
+    user.relation('addresses').detach(address)
+
+    expect(user.addresses.length).toBe(3)
+
+    user.relation('addresses').detachAllOcurrences(address)
+
+    expect(user.addresses.length).toBe(0)
+})
