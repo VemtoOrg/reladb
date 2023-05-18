@@ -5,6 +5,9 @@ export default class Relationship {
     constructor(model, localModel) {
         this.model = model
         this.localModel = localModel
+        
+        this.item = null
+
         this.filters = []
 
         this.type = this.relationshipType()
@@ -16,6 +19,16 @@ export default class Relationship {
 
     getQuery() {
         return new Query(this.model)
+    }
+
+    setItem(item) {
+        this.item = item
+
+        return this
+    }
+
+    getItem() {
+        return this.item
     }
 
     setFilters(filters) {

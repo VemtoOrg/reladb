@@ -1,4 +1,6 @@
 import Resolver from '../../src/Resolver.js'
+import Address from '../models/Address.js'
+import AddressUser from '../models/AddressUser.js'
 import Category from '../models/Category.js'
 import Comment from '../models/Comment.js'
 import Document from '../models/Document.js'
@@ -31,4 +33,6 @@ Resolver.onDatabaseReady(() => {
     Resolver.db().registerModel(Relationship, 'Relationship')
     Resolver.db().registerModel(User, 'User')
     Resolver.db().registerModel(Tag, 'Tag')
+    Resolver.db().registerModel(Address, 'Address')
+    Resolver.db().registerModel(AddressUser, 'AddressUser')
 })

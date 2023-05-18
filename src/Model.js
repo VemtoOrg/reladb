@@ -7,6 +7,7 @@ import MorphTo from './Relationships/MorphTo.js'
 import { camelCase, snakeCase } from 'change-case'
 import MorphMany from './Relationships/MorphMany.js'
 import BelongsTo from './Relationships/BelongsTo.js'
+import BelongsToMany from './Relationships/BelongsToMany.js'
 
 
 export default class Model {
@@ -299,24 +300,36 @@ export default class Model {
 
     hasOne(model, foreignKey = null, localKey = null) {
         return new HasOne(model, this.constructor)
+            .setItem(this)
             .setForeignKey(foreignKey)
             .setLocalKey(localKey)
     }
 
     hasMany(model, foreignKey = null, localKey = null) {
         return new HasMany(model, this.constructor)
+            .setItem(this)
             .setForeignKey(foreignKey)
             .setLocalKey(localKey)
     }
 
     belongsTo(model, foreignKey = null, ownerKey = null) {
         return new BelongsTo(model, this.constructor)
+            .setItem(this)
             .setForeignKey(foreignKey)
             .setOwnerKey(ownerKey)
     }
 
+    belongsToMany(model, pivotModel = null, foreignPivotKey = null, relatedPivotKey = null) {
+        return new BelongsToMany(model, this.constructor)
+            .setItem(this)
+            .setPivotModel(pivotModel)
+            .setForeignPivotKey(foreignPivotKey)
+            .setRelatedPivotKey(relatedPivotKey)
+    }
+
     morphMany(model, name, morphKey = null, morphType = null) {
         return new MorphMany(model, this.constructor)
+            .setItem(this)
             .setName(name)
             .setMorphKey(morphKey)
             .setMorphType(morphType)
@@ -324,6 +337,7 @@ export default class Model {
 
     morphTo(name, morphKey = null, morphType = null) {
         return new MorphTo()
+            .setItem(this)
             .setName(name)
             .setMorphKey(morphKey)
             .setMorphType(morphType)
@@ -356,6 +370,10 @@ export default class Model {
 
     belongsToRelationships() {
         return this.getRelationshipsByInstanceType(BelongsTo)
+    }
+
+    belongsToManyRelationships() {
+        return this.getRelationshipsByInstanceType(BelongsToMany)
     }
 
     hasManyRelationships() {

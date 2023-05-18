@@ -1,8 +1,10 @@
 import Post from "./Post.js"
 import Phone from "./Phone.js"
 import Photo from "./Photo.js"
+import Address from "./Address.js"
 import Document from "./Document.js"
 import Model from "../../src/Model.js"
+import AddressUser from "./AddressUser.js"
 
 export default class User extends Model {
 
@@ -12,6 +14,7 @@ export default class User extends Model {
             posts: () => this.hasMany(Post, 'ownerId', 'id'),
             document: () => this.hasOne(Document).cascadeDelete(),
             phones: () => this.hasMany(Phone, 'ownerId', 'id').cascadeDelete(),
+            addresses: () => this.belongsToMany(Address, AddressUser),
         }
     }
 

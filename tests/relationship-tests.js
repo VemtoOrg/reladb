@@ -9,6 +9,8 @@ import Foreign from "./models/Foreign.js"
 import Project from "./models/Project.js"
 import Resolver from "../src/Resolver.js"
 import Tag from "./models/Tag.js"
+import Address from "./models/Address.js"
+import AddressUser from "./models/AddressUser.js"
 
 test('it allows to get parent from belongs to relation', () => {
     Resolver.db().driver.clear()
@@ -597,4 +599,50 @@ test('it allows to cascade delete morph many children data', () => {
     post.delete()
 
     expect(Tag.count()).toBe(0)
+})
+
+test('it allows to get items from belongs to many relation', () => {
+    Resolver.db().driver.clear()
+
+    let user1 = User.create({name: 'User1'}),
+        user2 = User.create({name: 'User2'}),
+        user3 = User.create({name: 'User3'})
+
+    let address1 = Address.create({ street: 'Street1' }),
+        address2 = Address.create({ street: 'Street2' }),
+        address3 = Address.create({ street: 'Street3' }),
+        address4 = Address.create({ street: 'Street4' })
+
+    AddressUser.create({ userId: user1.id, addressId: address1.id })
+    AddressUser.create({ userId: user1.id, addressId: address2.id })
+
+    AddressUser.create({ userId: user2.id, addressId: address1.id })
+    AddressUser.create({ userId: user2.id, addressId: address3.id })
+
+    AddressUser.create({ userId: user3.id, addressId: address4.id })
+
+    expect(user1.addresses.length).toBe(2)
+    expect(user2.addresses.length).toBe(2)
+    expect(user3.addresses.length).toBe(1)
+
+    expect(user1.addresses[0].street).toBe('Street1')
+    expect(user1.addresses[1].street).toBe('Street2')
+
+    expect(user2.addresses[0].street).toBe('Street1')
+    expect(user2.addresses[1].street).toBe('Street3')
+
+    expect(user3.addresses[0].street).toBe('Street4')
+
+    expect(address1.users.length).toBe(2)
+    expect(address2.users.length).toBe(1)
+    expect(address3.users.length).toBe(1)
+
+    expect(address1.users[0].name).toBe('User1')
+    expect(address1.users[1].name).toBe('User2')
+
+    expect(address2.users[0].name).toBe('User1')
+
+    expect(address3.users[0].name).toBe('User2')
+
+    expect(address4.users[0].name).toBe('User3')
 })
