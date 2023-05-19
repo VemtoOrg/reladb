@@ -46,7 +46,6 @@ export default class BelongsToMany extends Relationship {
     }
     getPivotItems() {
         const item = this.getItem();
-        // console.log(item)
         let itemIndex = item.constructor.getQuery().getItemIndex(item);
         if (!itemIndex)
             return [];
