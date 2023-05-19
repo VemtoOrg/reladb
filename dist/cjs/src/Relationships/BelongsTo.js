@@ -14,7 +14,7 @@ class BelongsTo extends Relationship_js_1.default {
     }
     setForeignKey(foreignKey) {
         if (!foreignKey) {
-            foreignKey = `${this.model.identifier().toLowerCase()}Id`;
+            foreignKey = `${this.model.defaultKeyIdentifier().toLowerCase()}Id`;
         }
         this.foreignKey = foreignKey;
         return this;
@@ -26,18 +26,23 @@ class BelongsTo extends Relationship_js_1.default {
         this.ownerKey = ownerKey;
         return this;
     }
-    getParentFromItem(item) {
+    getParentFromItem() {
+        const item = this.getItem();
         if (!item[this.foreignKey])
             return null;
         return this.getQuery().find(item[this.foreignKey]);
     }
-    execute(item) {
-        return this.getParentFromItem(item);
+    execute() {
+        return this.getParentFromItem();
     }
     signature() {
         let type = this.allowsOnlyOne ? 'BelongsTo_One' : 'BelongsTo';
         return `${this.localModel.identifier()}->${type}(${this.model.identifier()}):${this.foreignKey},${this.ownerKey}`;
     }
+    /**
+     * Gets the inverse relationship for firing events (only works for BelongsTo/HasMany relationships)
+     * @returns {Relationship}
+     */
     inverse() {
         let modelInstance = new (this.model), relationships = modelInstance.relationships();
         let inverseRelationshipName = Object.keys(relationships).find(relationshipName => {

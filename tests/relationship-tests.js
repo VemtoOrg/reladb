@@ -22,6 +22,22 @@ test('it allows to get parent from belongs to relation', () => {
     expect(owner.id).toBe(user.id)
 })
 
+test('it does not allow to delete a parent if it has children data by default', () => {
+    Resolver.db().driver.clear()
+
+    let user = User.create({name: 'Tiago'})
+
+    Post.create({title: 'Test', ownerId: user.id})
+
+    expect(() => user.delete())
+        .toThrow('Cannot delete a parent item: a foreign key constraint fails')
+
+    const tableKey = user.constructor.getQuery().tableKey(),
+        isAlreadyDeleting = Resolver.db().isAlreadyDeleting(tableKey, user.id)
+
+    expect(isAlreadyDeleting).toBe(false)
+})
+
 test('it does not allow to set a field with the same name as a relationship', () => {
     Resolver.db().driver.clear()
 
@@ -132,17 +148,6 @@ test('it allows to adds data with nullable foreign key', () => {
     Post.create({title: 'Test', ownerId: null})
     
     expect(Post.count()).toBe(1)
-})
-
-test('it does not allow to delete a parent if it has children data by default', () => {
-    Resolver.db().driver.clear()
-
-    let user = User.create({name: 'Tiago'})
-
-    Post.create({title: 'Test', ownerId: user.id})
-
-    expect(() => user.delete())
-        .toThrow('Cannot delete a parent item: a foreign key constraint fails')
 })
 
 test('it allows to cascade delete children data', () => {
@@ -751,4 +756,47 @@ test('it allows to detach all ocurrences on belongs to many relation', () => {
     user.relation('addresses').detachAllOcurrences(address)
 
     expect(user.addresses.length).toBe(0)
+})
+
+test('it allows to detach all items on belongs to many relation', () => {
+    Resolver.db().driver.clear()
+
+    let user = User.create({name: 'User1'})
+
+    let address1 = Address.create({ street: 'Street1' }),
+        address2 = Address.create({ street: 'Street2' })
+
+    user.relation('addresses').attach(address1)
+    user.relation('addresses').attach(address2)
+
+    expect(user.addresses.length).toBe(2)
+
+    user.relation('addresses').detachAll()
+
+    expect(user.addresses.length).toBe(0)
+
+    expect(address1.users.length).toBe(0)
+
+    expect(address2.users.length).toBe(0)
+})
+
+test('it allows to cascade delete pivot items on belongs to many relation', () => {
+    Resolver.db().driver.clear()
+
+    let user = User.create({name: 'User1'}),
+        user2 = User.create({name: 'User2'})
+
+    let address1 = Address.create({ street: 'Street1' }),
+        address2 = Address.create({ street: 'Street2' })
+
+    user.relation('addresses').attach(address1)
+    user.relation('addresses').attach(address2)
+
+    user2.relation('addresses').attach(address1)
+
+    expect(AddressUser.get().length).toBe(3)
+
+    user.delete()
+
+    expect(AddressUser.get().length).toBe(1)
 })

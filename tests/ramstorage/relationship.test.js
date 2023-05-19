@@ -11,4 +11,9 @@ import '../imports/models-registry.js'
 
 import '../relationship-tests'
 
+afterEach(() => {
+    database.setDriver(RAMStorage)
+    Resolver.db().stopCaching()
+    Resolver.db().driver.clear() 
+})
 afterAll(() => Resolver.db().driver.clear())

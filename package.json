@@ -18,6 +18,7 @@
     "test:behavior": "jest --runInBand --selectProjects behavior",
     "test:ram": "jest --runInBand --selectProjects ram",
     "perf": "node --experimental-json-modules --no-warnings ./performance/test.mjs",
+    "test:manual": "node --experimental-json-modules --no-warnings ./tests/manual/manual.mjs",
     "build": "node prepare-build.js && tsc -p tsconfig-cjs.json && tsc -p tsconfig-esm.json && node fixup.js"
   },
   "repository": {

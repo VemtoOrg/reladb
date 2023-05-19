@@ -14,7 +14,7 @@ export default class User extends Model {
             posts: () => this.hasMany(Post, 'ownerId', 'id'),
             document: () => this.hasOne(Document).cascadeDelete(),
             phones: () => this.hasMany(Phone, 'ownerId', 'id').cascadeDelete(),
-            addresses: () => this.belongsToMany(Address, AddressUser),
+            addresses: () => this.belongsToMany(Address, AddressUser).cascadeDetach(),
         }
     }
 

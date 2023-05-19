@@ -38,9 +38,9 @@ class Cache {
         item.hasManyRelationships().forEach((relationship) => {
             if (this.isCachingRelationship(item, relationship))
                 return;
-            this.cachedRelationships.push(relationship.getItemModelIdentifier(item));
+            this.cachedRelationships.push(relationship.getItemModelIdentifier());
             this.setupCacheTable(relationship.model.table());
-            let relationshipItems = relationship.execute(item);
+            let relationshipItems = relationship.execute();
             if (!relationshipItems)
                 return;
             relationshipItems = Array.isArray(relationshipItems) ? relationshipItems : [relationshipItems];
@@ -64,7 +64,7 @@ class Cache {
         return this.cachedItems.some(cached => cached === item.getItemIdentifier());
     }
     isCachingRelationship(item, relationship) {
-        return this.cachedRelationships.some(cached => cached === relationship.getItemModelIdentifier(item));
+        return this.cachedRelationships.some(cached => cached === relationship.getItemModelIdentifier());
     }
 }
 exports.default = Cache;

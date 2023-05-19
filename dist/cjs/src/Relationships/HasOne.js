@@ -8,11 +8,11 @@ class HasOne extends HasMany_js_1.default {
     relationshipType() {
         return 'HasOne';
     }
-    getAllItems(item) {
-        return super.execute(item);
+    getAllItems() {
+        return super.execute();
     }
-    execute(item) {
-        return super.execute(item)[0];
+    execute() {
+        return super.execute()[0];
     }
     signature() {
         return `${this.localModel.identifier()}->HasMany(${this.model.identifier()}):${this.foreignKey},${this.localKey}`;

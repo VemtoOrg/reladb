@@ -6,8 +6,8 @@ export default class HasMany extends Relationship {
     cascadeDelete(): HasMany;
     usesCascadeDelete: boolean;
     orderBy(field: any, direction?: string): HasMany;
-    getAllItems(item: any): any;
-    execute(item: any): any;
+    getAllItems(): any;
+    execute(): any;
     signature(): string;
 }
 import Relationship from "./Relationship.js";

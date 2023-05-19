@@ -4,8 +4,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 class Resolver {
     static setDatabase(database) {
         this.database = database;
-        if (this.databaseReadyCallback) {
-            this.databaseReadyCallback(database);
+        if (this.databaseReadyCallbacks.length) {
+            this.databaseReadyCallbacks.forEach(callback => callback());
         }
         return this;
     }
@@ -15,10 +15,10 @@ class Resolver {
         throw new Error('No database has been set');
     }
     static onDatabaseReady(callback) {
-        this.databaseReadyCallback = callback;
+        this.databaseReadyCallbacks.push(callback);
     }
 }
 exports.default = Resolver;
 /** @type Database */
 Resolver.database = null;
-Resolver.databaseReadyCallback = null;
+Resolver.databaseReadyCallbacks = [];

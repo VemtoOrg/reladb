@@ -5,7 +5,7 @@ export default class HasMany extends Relationship {
     }
     setForeignKey(foreignKey) {
         if (!foreignKey) {
-            foreignKey = `${this.localModel.identifier().toLowerCase()}Id`;
+            foreignKey = `${this.localModel.defaultKeyIdentifier().toLowerCase()}Id`;
         }
         this.foreignKey = foreignKey;
         return this;
@@ -29,10 +29,11 @@ export default class HasMany extends Relationship {
             }]);
         return this;
     }
-    getAllItems(item) {
-        return this.execute(item);
+    getAllItems() {
+        return this.execute();
     }
-    execute(item) {
+    execute() {
+        const item = this.getItem();
         let itemIndex = item.constructor.getQuery().getItemIndex(item);
         if (!itemIndex)
             return [];

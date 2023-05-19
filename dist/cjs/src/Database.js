@@ -167,15 +167,20 @@ class Database {
             this.tableCallbacks[table](data);
         }
     }
-    registerModel(model, identifier) {
-        this.__modelsRegistry[identifier] = {
+    registerModel(model, identifier, customTableName = null) {
+        const modelRegister = {
             model: model,
-            identifier: identifier
+            identifier: identifier,
         };
         model.setIdentifier(identifier);
+        if (customTableName) {
+            model.setCustomTableName(customTableName);
+        }
+        modelRegister.table = model.table();
+        this.__modelsRegistry[identifier] = modelRegister;
     }
     getModel(identifier) {
-        return this.__modelsRegistry[identifier];
+        return this.__modelsRegistry[identifier].model;
     }
     getIdendifierByModel(model) {
         return model.identifier();

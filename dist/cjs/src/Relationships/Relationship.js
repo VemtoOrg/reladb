@@ -8,6 +8,7 @@ class Relationship {
     constructor(model, localModel) {
         this.model = model;
         this.localModel = localModel;
+        this.item = null;
         this.filters = [];
         this.type = this.relationshipType();
     }
@@ -17,14 +18,21 @@ class Relationship {
     getQuery() {
         return new Query_js_1.default(this.model);
     }
+    setItem(item) {
+        this.item = item;
+        return this;
+    }
+    getItem() {
+        return this.item;
+    }
     setFilters(filters) {
         this.filters = filters;
     }
     getModelIdentifier() {
         return `${this.localModel.identifier()}:${this.__nameOnModel}`;
     }
-    getItemModelIdentifier(item) {
-        return `${this.localModel.identifier()}:${item.id}:${this.__nameOnModel}`;
+    getItemModelIdentifier() {
+        return `${this.localModel.identifier()}:${this.getItem().id}:${this.__nameOnModel}`;
     }
     setNameOnModel(name) {
         this.__nameOnModel = name;

@@ -32,7 +32,7 @@ export default class Query {
     getTableData(): any;
     saveTableData(data: any): boolean;
     checkForeignKeyConstraints(item: any): void;
-    deleteChildrenByCascadeDelete(item: any): void;
+    deleteChildrenByCascadeDelete(item: any): boolean;
     addIndexesByItem(item: any): void;
     removeIndexesByItem(item: any): void;
     addItemToParentHasManyIndex(relationship: any, item: any): void;

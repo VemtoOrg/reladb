@@ -89,24 +89,30 @@ export default class Query {
     delete(id) {
         if (this.isAlreadyDeleting(id) || this.isAlreadyDeleted(id))
             return;
-        this.addToDeletingBuffer(id);
         if (Resolver.db().events.deleting)
             Resolver.db().events.deleting();
         let item = this.getItem(id);
         if (!item)
             return;
         this.checkForeignKeyConstraints(item);
-        this.deleteChildrenByCascadeDelete(item);
-        this.removeIndexesByItem(item);
-        this.removeItem(id);
-        let tableData = this.getTableData();
-        tableData.count--;
-        delete tableData.index[id];
-        this.saveTableData(tableData);
-        if (Resolver.db().events.deleted)
-            Resolver.db().events.deleted();
-        this.removeFromDeletingBuffer(id);
-        return true;
+        try {
+            this.addToDeletingBuffer(id);
+            this.deleteChildrenByCascadeDelete(item);
+            this.removeIndexesByItem(item);
+            this.removeItem(id);
+            let tableData = this.getTableData();
+            tableData.count--;
+            delete tableData.index[id];
+            this.saveTableData(tableData);
+            if (Resolver.db().events.deleted)
+                Resolver.db().events.deleted();
+            this.removeFromDeletingBuffer(id);
+            return true;
+        }
+        catch (error) {
+            this.removeFromDeletingBuffer(id);
+            throw error;
+        }
     }
     isAlreadyDeleting(id) {
         return Resolver.db().isAlreadyDeleting(this.tableKey(), id);
@@ -212,10 +218,23 @@ export default class Query {
         // It deletes has one relations too, as HasOne extends HasMany
         item.hasManyRelationships().forEach(hasManyRelationship => {
             if (hasManyRelationship.usesCascadeDelete) {
-                let children = hasManyRelationship.getAllItems(item);
+                let children = hasManyRelationship.getAllItems();
                 children.forEach(child => child.delete());
             }
         });
+        item.morphManyRelationships().forEach(morphManyRelationship => {
+            if (morphManyRelationship.usesCascadeDelete) {
+                let children = morphManyRelationship.getAllItems();
+                children.forEach(child => child.delete());
+            }
+        });
+        item.belongsToManyRelationships().forEach(belongsToManyRelationship => {
+            if (belongsToManyRelationship.usesCascadeDetach) {
+                let children = belongsToManyRelationship.getPivotItems();
+                children.forEach(child => child.delete());
+            }
+        });
+        return true;
     }
     addIndexesByItem(item) {
         item.belongsToRelationships().forEach(belongsToRelationship => this.addItemToParentHasManyIndex(belongsToRelationship, item));

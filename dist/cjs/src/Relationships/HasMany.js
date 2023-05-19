@@ -10,7 +10,7 @@ class HasMany extends Relationship_js_1.default {
     }
     setForeignKey(foreignKey) {
         if (!foreignKey) {
-            foreignKey = `${this.localModel.identifier().toLowerCase()}Id`;
+            foreignKey = `${this.localModel.defaultKeyIdentifier().toLowerCase()}Id`;
         }
         this.foreignKey = foreignKey;
         return this;
@@ -34,10 +34,11 @@ class HasMany extends Relationship_js_1.default {
             }]);
         return this;
     }
-    getAllItems(item) {
-        return this.execute(item);
+    getAllItems() {
+        return this.execute();
     }
-    execute(item) {
+    execute() {
+        const item = this.getItem();
         let itemIndex = item.constructor.getQuery().getItemIndex(item);
         if (!itemIndex)
             return [];

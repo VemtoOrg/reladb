@@ -1,7 +1,10 @@
 export default class Model {
     static __identifier: any;
+    static __customTable: any;
     static identifier(): any;
     static setIdentifier(identifier: any): void;
+    static setCustomTableName(table: any): void;
+    static defaultKeyIdentifier(): string;
     static count(): any;
     static create(data?: {}): any;
     static fireRelationshipEvents(item: any, eventSuffix: any): void;
@@ -13,6 +16,7 @@ export default class Model {
     static getQuery(): Query;
     static primaryKey(): string;
     static table(): any;
+    static defaultTable(): any;
     static timestamps(): boolean;
     static orderBy(field: any, direction?: string): typeof Model;
     static initFilters(): void;
@@ -24,6 +28,7 @@ export default class Model {
     __saveDataToStorage: boolean;
     __onUpdateListener: any;
     __customEventsEnabled: boolean;
+    checkIdentifier(): boolean;
     __set(obj: any, name: any, value: any): boolean;
     __get(obj: any, name: any): any;
     disableAutomaticRelations(): void;
@@ -45,14 +50,21 @@ export default class Model {
     hasOne(model: any, foreignKey?: any, localKey?: any): HasOne;
     hasMany(model: any, foreignKey?: any, localKey?: any): HasMany;
     belongsTo(model: any, foreignKey?: any, ownerKey?: any): BelongsTo;
+    belongsToMany(model: any, pivotModel?: any, foreignPivotKey?: any, relatedPivotKey?: any): BelongsToMany;
+    morphMany(model: any, name: any, morphKey?: any, morphType?: any): MorphMany;
+    morphTo(name: any, morphKey?: any, morphType?: any): MorphTo;
     hasRelationshipNamed(name: any): boolean;
     executeRelationship(name: any): any;
     hasBelongsToRelationships(): boolean;
     belongsToRelationships(): any[];
+    belongsToManyRelationships(): any[];
     hasManyRelationships(): any[];
     hasOneRelationships(): any[];
     hasSomethingRelationships(): any[];
+    morphManyRelationships(): any[];
+    morphToRelationships(): any[];
     getRelationshipsByInstanceType(instanceOfClass: any): any[];
+    relation(name: any): any;
     getRelationship(name: any): any;
     getRelationshipFunction(name: any): any;
     isSaved(): boolean;
@@ -72,4 +84,7 @@ export default class Model {
 import HasOne from "./Relationships/HasOne.js";
 import HasMany from "./Relationships/HasMany.js";
 import BelongsTo from "./Relationships/BelongsTo.js";
+import BelongsToMany from "./Relationships/BelongsToMany.js";
+import MorphMany from "./Relationships/MorphMany.js";
+import MorphTo from "./Relationships/MorphTo.js";
 import Query from "./Query.js";

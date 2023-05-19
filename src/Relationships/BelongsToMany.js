@@ -32,8 +32,8 @@ export default class BelongsToMany extends Relationship {
         return this
     }
 
-    cascadeDelete() {
-        this.usesCascadeDelete = true
+    cascadeDetach() {
+        this.usesCascadeDetach = true
 
         return this
     }
@@ -112,6 +112,14 @@ export default class BelongsToMany extends Relationship {
 
         return pivotItems.filter(pivotItem => pivotItem[this.relatedPivotKey] == relatedItem[this.model.primaryKey()])
             .map(pivotItem => pivotItem.delete())
+    }
+
+    detachAll() {
+        const pivotItems = this.getPivotItems()
+
+        if(!pivotItems.length) return false
+
+        return pivotItems.map(pivotItem => pivotItem.delete())
     }
 
     detach(relatedItem) {

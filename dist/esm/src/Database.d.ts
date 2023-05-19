@@ -49,7 +49,7 @@ export default class Database {
     executeNextCommand(): void;
     onUpdateTable(table: any, callback: any): void;
     executeOnUpdateCallbackForTable(table: any, data: any): void;
-    registerModel(model: any, identifier: any): void;
+    registerModel(model: any, identifier: any, customTableName?: any): void;
     getModel(identifier: any): any;
     getIdendifierByModel(model: any): any;
 }

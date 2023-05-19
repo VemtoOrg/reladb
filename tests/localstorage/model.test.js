@@ -11,4 +11,9 @@ import '../imports/models-registry.js'
 
 import '../model-tests'
 
+afterEach(() => {
+    database.setDriver(LocalStorage)
+    Resolver.db().stopCaching()
+    Resolver.db().driver.clear() 
+})
 afterAll(() => Resolver.db().driver.clear())

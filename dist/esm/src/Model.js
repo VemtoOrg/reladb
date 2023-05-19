@@ -1,11 +1,16 @@
 import Query from './Query.js';
 import pluralize from 'pluralize';
+import Resolver from './Resolver.js';
 import HasOne from './Relationships/HasOne.js';
 import HasMany from './Relationships/HasMany.js';
+import MorphTo from './Relationships/MorphTo.js';
+import { camelCase, snakeCase } from 'change-case';
+import MorphMany from './Relationships/MorphMany.js';
 import BelongsTo from './Relationships/BelongsTo.js';
-import Resolver from './Resolver.js';
+import BelongsToMany from './Relationships/BelongsToMany.js';
 export default class Model {
     static __identifier = null;
+    static __customTable = null;
     constructor(data = {}) {
         this.__isRelaDBModel = true;
         this.__returnRelationsAutomatically = true;
@@ -14,23 +19,36 @@ export default class Model {
         this.__onUpdateListener = null;
         this.__customEventsEnabled = false;
         this.constructor.initFilters();
-        if (!this.constructor.hasOwnProperty('identifier')) {
-            throw new Error('Model does not have an identifier. Please declare a static identifier() method');
-        }
-        if (!this.constructor.identifier()) {
-            throw new Error('Model identifier() method must return a string. Please register an identifier for this model');
-        }
+        this.checkIdentifier();
         this.fillFromData(data);
         return new Proxy(this, {
             set: this.__set,
             get: this.__get
         });
     }
+    checkIdentifier() {
+        try {
+            this.constructor.identifier();
+        }
+        catch (e) {
+            throw e;
+        }
+        return true;
+    }
     static identifier() {
+        if (!this.__identifier) {
+            throw new Error('Model identifier() method must return a string. Please register an identifier for this model');
+        }
         return this.__identifier;
     }
     static setIdentifier(identifier) {
         this.__identifier = identifier;
+    }
+    static setCustomTableName(table) {
+        this.__customTable = table;
+    }
+    static defaultKeyIdentifier() {
+        return camelCase(this.identifier());
     }
     __set(obj, name, value) {
         obj[name] = value;
@@ -189,7 +207,12 @@ export default class Model {
             .getTableData();
     }
     static table() {
-        return pluralize(this.identifier()).toLowerCase();
+        if (this.__customTable)
+            return this.__customTable;
+        return this.defaultTable();
+    }
+    static defaultTable() {
+        return pluralize(snakeCase(this.identifier())).toLowerCase();
     }
     static timestamps() {
         return true;
@@ -204,18 +227,42 @@ export default class Model {
     }
     hasOne(model, foreignKey = null, localKey = null) {
         return new HasOne(model, this.constructor)
+            .setItem(this)
             .setForeignKey(foreignKey)
             .setLocalKey(localKey);
     }
     hasMany(model, foreignKey = null, localKey = null) {
         return new HasMany(model, this.constructor)
+            .setItem(this)
             .setForeignKey(foreignKey)
             .setLocalKey(localKey);
     }
     belongsTo(model, foreignKey = null, ownerKey = null) {
         return new BelongsTo(model, this.constructor)
+            .setItem(this)
             .setForeignKey(foreignKey)
             .setOwnerKey(ownerKey);
+    }
+    belongsToMany(model, pivotModel = null, foreignPivotKey = null, relatedPivotKey = null) {
+        return new BelongsToMany(model, this.constructor)
+            .setItem(this)
+            .setPivotModel(pivotModel)
+            .setForeignPivotKey(foreignPivotKey)
+            .setRelatedPivotKey(relatedPivotKey);
+    }
+    morphMany(model, name, morphKey = null, morphType = null) {
+        return new MorphMany(model, this.constructor)
+            .setItem(this)
+            .setName(name)
+            .setMorphKey(morphKey)
+            .setMorphType(morphType);
+    }
+    morphTo(name, morphKey = null, morphType = null) {
+        return new MorphTo()
+            .setItem(this)
+            .setName(name)
+            .setMorphKey(morphKey)
+            .setMorphType(morphType);
     }
     hasRelationshipNamed(name) {
         /** As we are calling a method here, it has some special properties, like constructor.
@@ -233,13 +280,16 @@ export default class Model {
         return typeof this.getRelationshipFunction(name) === 'function';
     }
     executeRelationship(name) {
-        return this.getRelationship(name).execute(this);
+        return this.getRelationship(name).execute();
     }
     hasBelongsToRelationships() {
         return this.belongsToRelationships().length > 0;
     }
     belongsToRelationships() {
         return this.getRelationshipsByInstanceType(BelongsTo);
+    }
+    belongsToManyRelationships() {
+        return this.getRelationshipsByInstanceType(BelongsToMany);
     }
     hasManyRelationships() {
         return this.getRelationshipsByInstanceType(HasMany);
@@ -251,6 +301,12 @@ export default class Model {
         let hasManyRelationships = this.hasManyRelationships(), hasOneRelationships = this.hasOneRelationships();
         return hasManyRelationships.concat(hasOneRelationships);
     }
+    morphManyRelationships() {
+        return this.getRelationshipsByInstanceType(MorphMany);
+    }
+    morphToRelationships() {
+        return this.getRelationshipsByInstanceType(MorphTo);
+    }
     getRelationshipsByInstanceType(instanceOfClass) {
         let relationships = [];
         Object.keys(this.relationships()).forEach(relationshipName => {
@@ -261,6 +317,9 @@ export default class Model {
             }
         });
         return relationships;
+    }
+    relation(name) {
+        return this.getRelationship(name);
     }
     getRelationship(name) {
         return this.getRelationshipFunction(name)();

@@ -5,10 +5,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const Query_js_1 = __importDefault(require("./Query.js"));
 const pluralize_1 = __importDefault(require("pluralize"));
+const Resolver_js_1 = __importDefault(require("./Resolver.js"));
 const HasOne_js_1 = __importDefault(require("./Relationships/HasOne.js"));
 const HasMany_js_1 = __importDefault(require("./Relationships/HasMany.js"));
+const MorphTo_js_1 = __importDefault(require("./Relationships/MorphTo.js"));
+const change_case_1 = require("change-case");
+const MorphMany_js_1 = __importDefault(require("./Relationships/MorphMany.js"));
 const BelongsTo_js_1 = __importDefault(require("./Relationships/BelongsTo.js"));
-const Resolver_js_1 = __importDefault(require("./Resolver.js"));
+const BelongsToMany_js_1 = __importDefault(require("./Relationships/BelongsToMany.js"));
 class Model {
     constructor(data = {}) {
         this.__isRelaDBModel = true;
@@ -18,23 +22,36 @@ class Model {
         this.__onUpdateListener = null;
         this.__customEventsEnabled = false;
         this.constructor.initFilters();
-        if (!this.constructor.hasOwnProperty('identifier')) {
-            throw new Error('Model does not have an identifier. Please declare a static identifier() method');
-        }
-        if (!this.constructor.identifier()) {
-            throw new Error('Model identifier() method must return a string. Please register an identifier for this model');
-        }
+        this.checkIdentifier();
         this.fillFromData(data);
         return new Proxy(this, {
             set: this.__set,
             get: this.__get
         });
     }
+    checkIdentifier() {
+        try {
+            this.constructor.identifier();
+        }
+        catch (e) {
+            throw e;
+        }
+        return true;
+    }
     static identifier() {
+        if (!this.__identifier) {
+            throw new Error('Model identifier() method must return a string. Please register an identifier for this model');
+        }
         return this.__identifier;
     }
     static setIdentifier(identifier) {
         this.__identifier = identifier;
+    }
+    static setCustomTableName(table) {
+        this.__customTable = table;
+    }
+    static defaultKeyIdentifier() {
+        return (0, change_case_1.camelCase)(this.identifier());
     }
     __set(obj, name, value) {
         obj[name] = value;
@@ -193,7 +210,12 @@ class Model {
             .getTableData();
     }
     static table() {
-        return (0, pluralize_1.default)(this.identifier()).toLowerCase();
+        if (this.__customTable)
+            return this.__customTable;
+        return this.defaultTable();
+    }
+    static defaultTable() {
+        return (0, pluralize_1.default)((0, change_case_1.snakeCase)(this.identifier())).toLowerCase();
     }
     static timestamps() {
         return true;
@@ -208,18 +230,42 @@ class Model {
     }
     hasOne(model, foreignKey = null, localKey = null) {
         return new HasOne_js_1.default(model, this.constructor)
+            .setItem(this)
             .setForeignKey(foreignKey)
             .setLocalKey(localKey);
     }
     hasMany(model, foreignKey = null, localKey = null) {
         return new HasMany_js_1.default(model, this.constructor)
+            .setItem(this)
             .setForeignKey(foreignKey)
             .setLocalKey(localKey);
     }
     belongsTo(model, foreignKey = null, ownerKey = null) {
         return new BelongsTo_js_1.default(model, this.constructor)
+            .setItem(this)
             .setForeignKey(foreignKey)
             .setOwnerKey(ownerKey);
+    }
+    belongsToMany(model, pivotModel = null, foreignPivotKey = null, relatedPivotKey = null) {
+        return new BelongsToMany_js_1.default(model, this.constructor)
+            .setItem(this)
+            .setPivotModel(pivotModel)
+            .setForeignPivotKey(foreignPivotKey)
+            .setRelatedPivotKey(relatedPivotKey);
+    }
+    morphMany(model, name, morphKey = null, morphType = null) {
+        return new MorphMany_js_1.default(model, this.constructor)
+            .setItem(this)
+            .setName(name)
+            .setMorphKey(morphKey)
+            .setMorphType(morphType);
+    }
+    morphTo(name, morphKey = null, morphType = null) {
+        return new MorphTo_js_1.default()
+            .setItem(this)
+            .setName(name)
+            .setMorphKey(morphKey)
+            .setMorphType(morphType);
     }
     hasRelationshipNamed(name) {
         /** As we are calling a method here, it has some special properties, like constructor.
@@ -237,13 +283,16 @@ class Model {
         return typeof this.getRelationshipFunction(name) === 'function';
     }
     executeRelationship(name) {
-        return this.getRelationship(name).execute(this);
+        return this.getRelationship(name).execute();
     }
     hasBelongsToRelationships() {
         return this.belongsToRelationships().length > 0;
     }
     belongsToRelationships() {
         return this.getRelationshipsByInstanceType(BelongsTo_js_1.default);
+    }
+    belongsToManyRelationships() {
+        return this.getRelationshipsByInstanceType(BelongsToMany_js_1.default);
     }
     hasManyRelationships() {
         return this.getRelationshipsByInstanceType(HasMany_js_1.default);
@@ -255,6 +304,12 @@ class Model {
         let hasManyRelationships = this.hasManyRelationships(), hasOneRelationships = this.hasOneRelationships();
         return hasManyRelationships.concat(hasOneRelationships);
     }
+    morphManyRelationships() {
+        return this.getRelationshipsByInstanceType(MorphMany_js_1.default);
+    }
+    morphToRelationships() {
+        return this.getRelationshipsByInstanceType(MorphTo_js_1.default);
+    }
     getRelationshipsByInstanceType(instanceOfClass) {
         let relationships = [];
         Object.keys(this.relationships()).forEach(relationshipName => {
@@ -265,6 +320,9 @@ class Model {
             }
         });
         return relationships;
+    }
+    relation(name) {
+        return this.getRelationship(name);
     }
     getRelationship(name) {
         return this.getRelationshipFunction(name)();
@@ -323,3 +381,4 @@ class Model {
 }
 exports.default = Model;
 Model.__identifier = null;
+Model.__customTable = null;
