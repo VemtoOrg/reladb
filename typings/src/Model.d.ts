@@ -60,12 +60,18 @@ declare class Model {
     hasOne(model: any, foreignKey?: any, localKey?: any): HasOne;
     hasMany(model: any, foreignKey?: any, localKey?: any): HasMany;
     belongsTo(model: any, foreignKey?: any, ownerKey?: any): BelongsTo;
+    belongsToMany(model: any, pivotModel?: any, foreignPivotKey?: any, relatedPivotKey?: any);
+    morphMany(model, name, morphKey?: any, morphType?: any);
+    morphTo(name, morphKey?: any, morphType?: any);
     hasRelationshipNamed(name: any): boolean;
     executeRelationship(name: any): any;
     hasBelongsToRelationships(): boolean;
     belongsToRelationships(): any[];
+    belongsToManyRelationships(): any[];
     hasManyRelationships(): any[];
     hasOneRelationships(): any[];
+    morphManyRelationships(): any[];
+    morphToRelationships(): any[];
     hasSomethingRelationships(): any[];
     getRelationshipsByInstanceType(instanceOfClass: any): any[];
     getRelationship(name: any): any;
