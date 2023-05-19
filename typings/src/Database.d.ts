@@ -48,6 +48,9 @@ declare class Database {
     executeNextCommand(): void;
     onUpdateTable(table: any, callback: any): void;
     executeOnUpdateCallbackForTable(table: any, data: any): void;
+    registerModel(model, identifier: string, customTableName?: string): void;
+    getModel(identifier: string): any;
+    getIdentifierByModel(model: any): string;
 }
 declare namespace Database {
     export { Driver };
