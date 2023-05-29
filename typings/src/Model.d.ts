@@ -74,6 +74,7 @@ declare class Model {
     morphToRelationships(): any[];
     hasSomethingRelationships(): any[];
     getRelationshipsByInstanceType(instanceOfClass: any): any[];
+    relation(name: string): any;
     getRelationship(name: any): any;
     getRelationshipFunction(name: any): any;
     isSaved(): boolean;
