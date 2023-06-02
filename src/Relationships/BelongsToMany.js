@@ -94,6 +94,10 @@ export default class BelongsToMany extends Relationship {
         pivotItem[this.foreignPivotKey] = this.getItem()[this.localModel.primaryKey()]
         pivotItem[this.relatedPivotKey] = relatedItem[this.model.primaryKey()]
 
+        if(!pivotItem[this.foreignPivotKey]) throw new Error(`Cannot attach ${this.model.identifier()} to ${this.localModel.identifier()} because ${this.localModel.identifier()} is not saved yet.`)
+
+        if(!pivotItem[this.relatedPivotKey]) throw new Error(`Cannot attach ${this.model.identifier()} to ${this.localModel.identifier()} because ${this.model.identifier()} is not saved yet.`)
+
         if(extraData) {
             Object.keys(extraData).forEach(key => {
                 pivotItem[key] = extraData[key]
