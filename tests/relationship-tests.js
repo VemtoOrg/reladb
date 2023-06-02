@@ -800,3 +800,13 @@ test('it allows to cascade delete pivot items on belongs to many relation', () =
 
     expect(AddressUser.get().length).toBe(1)
 })
+
+test('it throws an exception when trying to attach an unsaved model', () => {
+    Resolver.db().driver.clear()
+
+    let user = User.create({name: 'User1'}),
+        address = new Address
+
+        expect(() => user.relation('addresses').attach(address))
+        .toThrow('Cannot attach Address to User because Address is not saved yet.')
+})
