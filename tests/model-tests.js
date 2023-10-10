@@ -579,3 +579,22 @@ test('it gets null when a model does not exists', () => {
     
     expect(tableData).toBeNull()
 })
+
+test('it can check if a model has unsaved data', () => {
+    Resolver.db().driver.clear()
+
+    let user = User.create({name: 'Tiago', table: 'oiapoque'})
+
+    expect(user.id).toBe(1)
+    expect(user.name).toBe('Tiago')
+
+    expect(user.hasUnsavedData()).toBe(false)
+
+    user.name = 'Tiago Edited'
+
+    expect(user.hasUnsavedData()).toBe(true)
+
+    user.save()
+
+    expect(user.hasUnsavedData()).toBe(false)
+})

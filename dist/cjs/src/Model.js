@@ -333,6 +333,12 @@ class Model {
     isSaved() {
         return !!this[this.constructor.primaryKey()];
     }
+    hasUnsavedData() {
+        const freshInstance = this.fresh();
+        if (!freshInstance)
+            return true;
+        return JSON.stringify(this) !== JSON.stringify(freshInstance);
+    }
     static orderBy(field, direction = 'asc') {
         this.clearFilters();
         this.getFilters().push({

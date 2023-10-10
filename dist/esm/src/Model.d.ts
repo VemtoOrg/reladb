@@ -68,6 +68,7 @@ export default class Model {
     getRelationship(name: any): any;
     getRelationshipFunction(name: any): any;
     isSaved(): boolean;
+    hasUnsavedData(): boolean;
     onUpdateListener(listener: any): Model;
     /**
      *
