@@ -84,6 +84,8 @@ class Model {
         return this;
     }
     fresh() {
+        if (!this.isSaved())
+            return null;
         return new Query_js_1.default(this.constructor)
             .findOrFail(this.id);
     }

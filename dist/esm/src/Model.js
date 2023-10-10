@@ -81,6 +81,8 @@ export default class Model {
         return this;
     }
     fresh() {
+        if (!this.isSaved())
+            return null;
         return new Query(this.constructor)
             .findOrFail(this.id);
     }
