@@ -598,3 +598,22 @@ test('it can check if a model has unsaved data', () => {
 
     expect(user.hasUnsavedData()).toBe(false)
 })
+
+test('it can check if a model has unsaved data if the model is not saved', () => {
+    Resolver.db().driver.clear()
+
+    let user = new User({name: 'Tiago', table: 'oiapoque'})
+
+    expect(typeof user.id).toBe('undefined')
+    expect(user.name).toBe('Tiago')
+
+    expect(user.hasUnsavedData()).toBe(true)
+
+    user.name = 'Tiago Edited'
+
+    expect(user.hasUnsavedData()).toBe(true)
+
+    user.save()
+
+    expect(user.hasUnsavedData()).toBe(false)
+})
