@@ -6,6 +6,7 @@ import Person from "./models/Person.js"
 import Category from "./models/Category.js"
 import Resolver from "../src/Resolver.js"
 import packageSettings from '../package.json'
+import Document from "./models/Document.js"
 
 try {
     jest.useFakeTimers()
@@ -616,4 +617,28 @@ test('it can check if a model has unsaved data if the model is not saved', () =>
     user.save()
 
     expect(user.hasUnsavedData()).toBe(false)
+})
+
+test('it does not lose data when an error occurs during index manipulation', () => {
+    Resolver.db().driver.clear()
+
+    let user = User.create({name: 'Tiago'}),
+        document = Document.create({code: 'XTRE-123', userId: user.id}),
+        document2 = null,
+        errorOccurred = false
+    
+    expect(user.document.id).toBe(document.id)
+
+    try {
+        document2 = Document.create({code: 'XTRE-785', userId: user.id})
+    } catch (error) {
+        errorOccurred = true
+    }
+
+    expect(errorOccurred).toBe(true)
+    expect(document2).toBe(null)
+
+    let tableData = User.getQuery().getTableData()
+
+    expect(tableData.index[user.id].hasMany['documents.userId'].includes(document.id)).toBe(true)
 })
