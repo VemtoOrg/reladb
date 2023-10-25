@@ -63,5 +63,8 @@ class Driver {
     getDatabaseData() {
         return {};
     }
+    storeBaseData() {
+        return {};
+    }
 }
 exports.default = Driver;

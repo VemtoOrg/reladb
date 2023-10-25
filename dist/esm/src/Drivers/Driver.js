@@ -58,4 +58,7 @@ export default class Driver {
     getDatabaseData() {
         return {};
     }
+    storeBaseData() {
+        return {};
+    }
 }

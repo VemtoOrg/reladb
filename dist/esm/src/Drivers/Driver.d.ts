@@ -12,4 +12,5 @@ export default class Driver {
     allowsDataFeeding(): boolean;
     feedDatabaseData(data?: {}): boolean;
     getDatabaseData(): {};
+    storeBaseData(): {};
 }
