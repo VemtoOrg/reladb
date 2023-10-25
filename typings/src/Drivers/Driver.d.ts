@@ -13,5 +13,6 @@ declare class Driver {
     allowsDataFeeding(): boolean;
     feedDatabaseData(data?: {}): boolean;
     getDatabaseData(): {};
+    storeBaseData(): any;
 }
 //# sourceMappingURL=Driver.d.ts.map
