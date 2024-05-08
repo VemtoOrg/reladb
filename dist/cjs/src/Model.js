@@ -149,6 +149,8 @@ class Model {
         if (!this.id) {
             throw new Error('It is not possible to update an object that is not currently saved on database');
         }
+        if (this.constructor.beforeUpdate)
+            data = this.constructor.beforeUpdate(data, this.fresh());
         if (this.constructor.updating)
             data = this.constructor.updating(data, this.fresh());
         this.fillFromData(data, true);

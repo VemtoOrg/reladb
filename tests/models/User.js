@@ -27,6 +27,11 @@ export default class User extends Model {
         Phone.create({phone: '99999-9999', ownerId: user.id})
     }
 
+    static beforeUpdate(data) {
+        data.age = 25
+        return data
+    }
+
     static updating(data, oldData) {
         if(data.role != oldData.role) {
             data.role = data.role + ' Changed'

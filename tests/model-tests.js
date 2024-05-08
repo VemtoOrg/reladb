@@ -267,6 +267,19 @@ test('it updates the instance data when using the created method', () => {
     expect(order.foo).toBe('bar')
 })
 
+test('it allows to manipulate data before update using beforeUpdate method', () => {
+    Resolver.db().driver.clear()
+
+    let user = User.create({name: 'Tiago', 'role': 'User', age: 30})
+
+    user.role = 'Admin'
+    user.save()
+
+    expect(user.fresh().role).toBe('Admin Changed')
+    expect(user.fresh().email).toBe('my_edited@email.com')
+    expect(user.fresh().age).toBe(25)
+})
+
 test('it allows to manipulate data before update using updating method', () => {
     Resolver.db().driver.clear()
 
