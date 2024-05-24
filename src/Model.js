@@ -123,7 +123,7 @@ export default class Model {
 
     static create(data = {}) {
         data = JSON.parse(JSON.stringify(data))
-        
+
         if(this.creating) data = this.creating(data)
         
         let item = new Query(this).create(data)
@@ -152,7 +152,7 @@ export default class Model {
             let returnedData = eventSuffix === 'deleted' ? item.getItemIdentifierData() : item
             Resolver.db().executeCustomEventListener(eventName, returnedData)
 
-            const defaultEventName = `relationships:changed`
+            const defaultEventName = `${parentInstance.getItemIdentifier()}:relationships:changed`
             Resolver.db().executeCustomEventListener(defaultEventName, returnedData)
         })
 
