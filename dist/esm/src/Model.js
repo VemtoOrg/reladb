@@ -90,6 +90,7 @@ export default class Model {
         return new Query(this).count();
     }
     static create(data = {}) {
+        data = JSON.parse(JSON.stringify(data));
         if (this.creating)
             data = this.creating(data);
         let item = new Query(this).create(data);
@@ -110,6 +111,8 @@ export default class Model {
             let eventName = `${parentInstance.getItemIdentifier()}:${inverseRelationship.getNameOnModel()}:${eventSuffix}`;
             let returnedData = eventSuffix === 'deleted' ? item.getItemIdentifierData() : item;
             Resolver.db().executeCustomEventListener(eventName, returnedData);
+            const defaultEventName = `relationships:changed`;
+            Resolver.db().executeCustomEventListener(defaultEventName, returnedData);
         });
     }
     static get() {
@@ -146,6 +149,7 @@ export default class Model {
         if (!this.id) {
             throw new Error('It is not possible to update an object that is not currently saved on database');
         }
+        data = JSON.parse(JSON.stringify(data));
         if (this.constructor.beforeUpdate)
             data = this.constructor.beforeUpdate(data, this.fresh());
         if (this.constructor.updating)
