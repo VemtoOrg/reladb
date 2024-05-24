@@ -655,3 +655,16 @@ test('it does not lose data when an error occurs during index manipulation', () 
 
     expect(tableData.index[user.id].hasMany['documents.userId'].includes(document.id)).toBe(true)
 })
+
+// test('it reloads every model instance when implicity updates are enabled', () => {
+//     Resolver.db().driver.clear()
+//     // Resolver.db().enableImplicitUpdates()
+
+//     const user = User.create({name: 'Tiago'}),
+//         user2 = User.find(user.id)
+
+//     user.name = 'Tiago Edited'
+//     user.save()
+
+//     expect(user2.name).toBe('Tiago Edited')
+// })
