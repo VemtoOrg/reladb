@@ -114,7 +114,7 @@ class Model {
             let eventName = `${parentInstance.getItemIdentifier()}:${inverseRelationship.getNameOnModel()}:${eventSuffix}`;
             let returnedData = eventSuffix === 'deleted' ? item.getItemIdentifierData() : item;
             Resolver_js_1.default.db().executeCustomEventListener(eventName, returnedData);
-            const defaultEventName = `relationships:changed`;
+            const defaultEventName = `${parentInstance.getItemIdentifier()}:relationships:changed`;
             Resolver_js_1.default.db().executeCustomEventListener(defaultEventName, returnedData);
         });
     }
