@@ -152,8 +152,11 @@ export default class Model {
             let returnedData = eventSuffix === 'deleted' ? item.getItemIdentifierData() : item
             Resolver.db().executeCustomEventListener(eventName, returnedData)
 
-            const defaultEventName = `${parentInstance.getItemIdentifier()}:relationships:changed`
-            Resolver.db().executeCustomEventListener(defaultEventName, returnedData)
+            let generalEventName = `${parentInstance.getItemIdentifier()}:${inverseRelationship.getNameOnModel()}:changed`
+            Resolver.db().executeCustomEventListener(generalEventName, returnedData)
+
+            const allRelationshipsEventName = `${parentInstance.getItemIdentifier()}:relationships:changed`
+            Resolver.db().executeCustomEventListener(allRelationshipsEventName, returnedData)
         })
 
     }

@@ -404,7 +404,8 @@ test('it receives data from a belongsTo relationship created event', () => {
 test('it fires a belongsTo relationship updated event', () => {
     Resolver.db().driver.clear()
 
-    let listenerOcurrences = 0
+    let listenerOcurrences = 0,
+        changesOcurrences = 0
 
     let firstUser = User.create({name: 'Tiago'}),
         secondUser = User.create({name: 'Tiago'}),
@@ -415,6 +416,53 @@ test('it fires a belongsTo relationship updated event', () => {
     })
 
     secondUser.addListener('posts:updated', () => {
+        listenerOcurrences++
+    })
+
+    secondUser.addListener('posts:changed', () => {
+        changesOcurrences++
+    })
+
+    secondUser.addListener('relationships:changed', () => {
+        changesOcurrences++
+    })
+
+    post.title = 'Updated Title'
+    post.save()
+    
+    expect(listenerOcurrences).toBe(1)
+    expect(changesOcurrences).toBe(2)
+})
+
+test('it fires events when a relationship was changed', () => {
+    Resolver.db().driver.clear()
+
+    let listenerOcurrences = 0
+
+    let firstUser = User.create({name: 'Tiago'}),
+        secondUser = User.create({name: 'Tiago'}),
+        post = Post.create({title: 'Test', ownerId: secondUser.id})
+
+    secondUser.addListener('posts:changed', () => {
+        listenerOcurrences++
+    })
+
+    post.title = 'Updated Title'
+    post.save()
+    
+    expect(listenerOcurrences).toBe(1)
+})
+
+test('it fires events when any relationship was changed', () => {
+    Resolver.db().driver.clear()
+
+    let listenerOcurrences = 0
+
+    let firstUser = User.create({name: 'Tiago'}),
+        secondUser = User.create({name: 'Tiago'}),
+        post = Post.create({title: 'Test', ownerId: secondUser.id})
+
+    secondUser.addListener('relationships:changed', () => {
         listenerOcurrences++
     })
 
