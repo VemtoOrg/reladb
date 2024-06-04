@@ -19,7 +19,7 @@ export default class Database {
         this.executingCommandId = null
 
         this.tableCallbacks = {}
-        this.__customEventsListeners = {}
+        this.__customEventsListeners = []
         this.__databaseDataChangedEventListener = null
 
         this.cache = new Cache(this)
@@ -38,17 +38,30 @@ export default class Database {
     }
 
     addCustomEventListener(name, listener) {
-        this.__customEventsListeners[name] = listener
+        this.__customEventsListeners.push({
+            name: name,
+            listener: listener
+        })
+    }
+
+    clearAllCustomEventListeners() {
+        this.__customEventsListeners = []
+    }
+
+    removeCustomEventListenersContaining(name) {
+        this.__customEventsListeners = this.__customEventsListeners.filter(event => !event.name.includes(name))
     }
 
     removeCustomEventListener(name) {
-        delete this.__customEventsListeners[name]
+        this.__customEventsListeners = this.__customEventsListeners.filter(event => event.name !== name)
     }
 
     executeCustomEventListener(name, ...data) {
-        if(!this.__customEventsListeners[name]) return
-        
-        this.__customEventsListeners[name](...data)
+        this.__customEventsListeners.forEach(event => {
+            if(event.name === name) {
+                event.listener(...data)
+            }
+        })
     }
 
     onDataChanged(callback) {

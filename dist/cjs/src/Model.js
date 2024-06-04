@@ -394,6 +394,11 @@ class Model {
         Resolver_js_1.default.db().removeCustomEventListener(completeName);
         return this;
     }
+    clearListeners() {
+        let completeName = `${this.getItemIdentifier()}:`;
+        Resolver_js_1.default.db().removeCustomEventListenersContaining(completeName);
+        return this;
+    }
 }
 exports.default = Model;
 Model.__identifier = null;

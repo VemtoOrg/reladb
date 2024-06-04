@@ -81,6 +81,7 @@ export default class Model {
      * @param {*} name created, updated, deleted
      */
     removeListener(name: any): Model;
+    clearListeners(): Model;
 }
 import HasOne from "./Relationships/HasOne.js";
 import HasMany from "./Relationships/HasMany.js";

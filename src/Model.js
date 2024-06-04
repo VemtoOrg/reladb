@@ -508,4 +508,12 @@ export default class Model {
 
         return this
     }
+
+    clearListeners() {
+        let completeName = `${this.getItemIdentifier()}:`
+        
+        Resolver.db().removeCustomEventListenersContaining(completeName)
+
+        return this
+    }
 }

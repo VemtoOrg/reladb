@@ -540,9 +540,33 @@ test('it can remove an event listener', () => {
         listenerOcurrences++
     })
 
-    user.removeListener('posts:created', () => {
+    user.removeListener('posts:created')
+
+    Post.create({title: 'Test', ownerId: user.id})
+    
+    expect(listenerOcurrences).toBe(0)
+})
+
+test('it can clear all event listeners', () => {
+    Resolver.db().driver.clear()
+
+    let listenerOcurrences = 0
+
+    let user = User.create({name: 'Tiago'})
+
+    user.addListener('posts:created', () => {
         listenerOcurrences++
     })
+
+    user.addListener('posts:changed', () => {
+        listenerOcurrences++
+    })
+
+    user.addListener('relationships:changed', () => {
+        listenerOcurrences++
+    })
+
+    user.clearListeners()
 
     Post.create({title: 'Test', ownerId: user.id})
     

@@ -9,7 +9,7 @@ export default class Database {
     addingCommand: boolean;
     executingCommandId: any;
     tableCallbacks: {};
-    __customEventsListeners: {};
+    __customEventsListeners: any[];
     __databaseDataChangedEventListener: any;
     cache: Cache;
     onCacheMode: boolean;
@@ -21,6 +21,8 @@ export default class Database {
     __saveDataToStorage: boolean;
     __modelsRegistry: {};
     addCustomEventListener(name: any, listener: any): void;
+    clearAllCustomEventListeners(): void;
+    removeCustomEventListenersContaining(name: any): void;
     removeCustomEventListener(name: any): void;
     executeCustomEventListener(name: any, ...data: any[]): void;
     onDataChanged(callback: any): void;
