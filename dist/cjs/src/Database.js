@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const Cache_js_1 = __importDefault(require("./Cache.js"));
 const Command_js_1 = __importDefault(require("./Command.js"));
+const uuid_1 = require("uuid");
 const Exporter_js_1 = __importDefault(require("./Exporter.js"));
 const Importer_js_1 = __importDefault(require("./Importer.js"));
 /** @typedef {import('./Drivers/Driver')} Driver */
@@ -32,18 +33,24 @@ class Database {
         this.__modelsRegistry = {};
     }
     addCustomEventListener(name, listener) {
+        const listenerId = (0, uuid_1.v4)();
         this.__customEventsListeners.push({
+            id: listenerId,
             name: name,
             listener: listener
         });
+        return listenerId;
     }
     clearAllCustomEventListeners() {
         this.__customEventsListeners = [];
     }
+    removeCustomEventListenerById(id) {
+        this.__customEventsListeners = this.__customEventsListeners.filter(event => event.id !== id);
+    }
     removeCustomEventListenersContaining(name) {
         this.__customEventsListeners = this.__customEventsListeners.filter(event => !event.name.includes(name));
     }
-    removeCustomEventListener(name) {
+    removeCustomEventListenersByName(name) {
         this.__customEventsListeners = this.__customEventsListeners.filter(event => event.name !== name);
     }
     executeCustomEventListener(name, ...data) {

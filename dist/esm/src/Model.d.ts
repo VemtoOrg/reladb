@@ -76,11 +76,12 @@ export default class Model {
      * @param {*} listener
      * @returns
      */
-    addListener(name: any, listener: any): Model;
+    addListener(name: any, listener: any): any;
+    removeListener(id: any): Model;
     /**
-     * @param {*} name created, updated, deleted
+     * @param {*} name
      */
-    removeListener(name: any): Model;
+    removeListenersByName(name: any): Model;
     clearListeners(): Model;
 }
 import HasOne from "./Relationships/HasOne.js";

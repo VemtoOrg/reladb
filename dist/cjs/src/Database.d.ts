@@ -20,10 +20,11 @@ export default class Database {
     };
     __saveDataToStorage: boolean;
     __modelsRegistry: {};
-    addCustomEventListener(name: any, listener: any): void;
+    addCustomEventListener(name: any, listener: any): any;
     clearAllCustomEventListeners(): void;
+    removeCustomEventListenerById(id: any): void;
     removeCustomEventListenersContaining(name: any): void;
-    removeCustomEventListener(name: any): void;
+    removeCustomEventListenersByName(name: any): void;
     executeCustomEventListener(name: any, ...data: any[]): void;
     onDataChanged(callback: any): void;
     executeDataChangedEventListener(): void;

@@ -540,7 +540,11 @@ test('it can remove an event listener', () => {
         listenerOcurrences++
     })
 
-    user.removeListener('posts:created')
+    user.addListener('posts:created', () => {
+        listenerOcurrences++
+    })
+
+    user.removeListenersByName('posts:created')
 
     Post.create({title: 'Test', ownerId: user.id})
     
@@ -571,6 +575,32 @@ test('it can clear all event listeners', () => {
     Post.create({title: 'Test', ownerId: user.id})
     
     expect(listenerOcurrences).toBe(0)
+})
+
+test('it can remove an specific event listener', () => {
+    Resolver.db().driver.clear()
+
+    let listenerOcurrences = 0
+
+    let user = User.create({name: 'Tiago'})
+
+    const listener_1_ID = user.addListener('posts:created', () => {
+        listenerOcurrences++
+    })
+
+    const listener_2_ID = user.addListener('posts:created', () => {
+        listenerOcurrences++
+    })
+
+    const listener_3_ID = user.addListener('posts:created', () => {
+        listenerOcurrences++
+    })
+
+    user.removeListener(listener_1_ID)
+
+    Post.create({title: 'Test', ownerId: user.id})
+    
+    expect(listenerOcurrences).toBe(2)
 })
 
 test('it saves has many index ordered', () => {

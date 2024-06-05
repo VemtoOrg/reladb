@@ -493,18 +493,24 @@ export default class Model {
     addListener(name, listener) {
         let completeName = `${this.getItemIdentifier()}:${name}`
         
-        Resolver.db().addCustomEventListener(completeName, listener)
+        const listenerId = Resolver.db().addCustomEventListener(completeName, listener)
+
+        return listenerId
+    }
+
+    removeListener(id) {
+        Resolver.db().removeCustomEventListenerById(id)
 
         return this
     }
 
     /**
-     * @param {*} name created, updated, deleted
+     * @param {*} name
      */
-    removeListener(name) {
+    removeListenersByName(name) {
         let completeName = `${this.getItemIdentifier()}:${name}`
         
-        Resolver.db().removeCustomEventListener(completeName)
+        Resolver.db().removeCustomEventListenersByName(completeName)
 
         return this
     }

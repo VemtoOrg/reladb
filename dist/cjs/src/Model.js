@@ -383,15 +383,19 @@ class Model {
      */
     addListener(name, listener) {
         let completeName = `${this.getItemIdentifier()}:${name}`;
-        Resolver_js_1.default.db().addCustomEventListener(completeName, listener);
+        const listenerId = Resolver_js_1.default.db().addCustomEventListener(completeName, listener);
+        return listenerId;
+    }
+    removeListener(id) {
+        Resolver_js_1.default.db().removeCustomEventListenerById(id);
         return this;
     }
     /**
-     * @param {*} name created, updated, deleted
+     * @param {*} name
      */
-    removeListener(name) {
+    removeListenersByName(name) {
         let completeName = `${this.getItemIdentifier()}:${name}`;
-        Resolver_js_1.default.db().removeCustomEventListener(completeName);
+        Resolver_js_1.default.db().removeCustomEventListenersByName(completeName);
         return this;
     }
     clearListeners() {

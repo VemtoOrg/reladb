@@ -1,5 +1,6 @@
 import Cache from './Cache.js';
 import Command from './Command.js';
+import { v4 as uuidv4 } from 'uuid';
 import Exporter from './Exporter.js';
 import Importer from './Importer.js';
 /** @typedef {import('./Drivers/Driver')} Driver */
@@ -27,18 +28,24 @@ export default class Database {
         this.__modelsRegistry = {};
     }
     addCustomEventListener(name, listener) {
+        const listenerId = uuidv4();
         this.__customEventsListeners.push({
+            id: listenerId,
             name: name,
             listener: listener
         });
+        return listenerId;
     }
     clearAllCustomEventListeners() {
         this.__customEventsListeners = [];
     }
+    removeCustomEventListenerById(id) {
+        this.__customEventsListeners = this.__customEventsListeners.filter(event => event.id !== id);
+    }
     removeCustomEventListenersContaining(name) {
         this.__customEventsListeners = this.__customEventsListeners.filter(event => !event.name.includes(name));
     }
-    removeCustomEventListener(name) {
+    removeCustomEventListenersByName(name) {
         this.__customEventsListeners = this.__customEventsListeners.filter(event => event.name !== name);
     }
     executeCustomEventListener(name, ...data) {
