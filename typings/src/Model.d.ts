@@ -46,6 +46,7 @@ declare class Model {
     disableSavingData(): void;
     enableSavingData(): void;
     fillFromData(data?: {}, disablePrimaryKeyFill?: boolean): import("./Model.js");
+    refresh(): import("./Model.js");
     fresh(): any;
     fill(data: any): import("./Model.js");
     save(): boolean | import("./Model.js");
