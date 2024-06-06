@@ -776,6 +776,20 @@ test('it can clear listeners from a model instance', () => {
     expect(listenerOcurrences).toBe(0)
 })
 
+test('it can refresh a model instance', () => {
+    Resolver.db().driver.clear()
+
+    let user = User.create({name: 'Tiago'}),
+        sameUser = User.find(user.id)
+
+    user.name = 'Tiago Edited'
+    user.save()
+
+    sameUser.refresh()
+
+    expect(sameUser.name).toBe('Tiago Edited')
+})
+
 // test('it reloads every model instance when implicity updates are enabled', () => {
 //     Resolver.db().driver.clear()
 //     // Resolver.db().enableImplicitUpdates()

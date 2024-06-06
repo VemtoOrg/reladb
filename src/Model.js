@@ -98,6 +98,19 @@ export default class Model {
         this.__saveDataToStorage = true
     }
 
+    refresh() {
+        let freshData = this.fresh()
+
+        if(!freshData) return
+
+        freshData = JSON.parse(JSON.stringify(freshData))
+        freshData = this.constructor.removeSpecialData(freshData)
+
+        this.fillFromData(freshData, true)
+
+        return this
+    }
+
     fillFromData(data = {}, disablePrimaryKeyFill = false) {
         let keys = Object.keys(data)
         
