@@ -656,6 +656,126 @@ test('it does not lose data when an error occurs during index manipulation', () 
     expect(tableData.index[user.id].hasMany['documents.userId'].includes(document.id)).toBe(true)
 })
 
+test('it can listen to a global event when data is updated', () => {
+    Resolver.db().driver.clear()
+
+    let listenerOcurrences = 0
+
+    let user = User.create({name: 'Tiago'}),
+        user2 = User.create({name: 'Jessica'})
+
+    user.addListener('updated', () => {
+        listenerOcurrences++
+    })
+
+    user2.addListener('updated', () => {
+        listenerOcurrences++
+    })
+
+    // Edit only the first user
+    user.name = 'Tiago Edited'
+    user.save()
+    
+    expect(listenerOcurrences).toBe(1)
+})
+
+test('it can listen to a global event when data is deleted', () => {
+    Resolver.db().driver.clear()
+
+    let listenerOcurrences = 0
+
+    let user = User.create({name: 'Tiago'}),
+        user2 = User.create({name: 'Jessica'})
+
+    user.addListener('deleted', () => {
+        listenerOcurrences++
+    })
+
+    user2.addListener('deleted', () => {
+        listenerOcurrences++
+    })
+
+    // Delete only the first user
+    user.delete()
+    
+    expect(listenerOcurrences).toBe(1)
+})
+
+test('it can remove an updated listener from a model instance', () => {
+    Resolver.db().driver.clear()
+
+    let listenerOcurrences = 0
+
+    let user = User.create({name: 'Tiago'})
+
+    let listener = () => {
+        listenerOcurrences++
+    }
+
+    let listenerId = user.addListener('updated', listener)
+
+    user.name = 'Tiago Edited'
+    user.save()
+    
+    expect(listenerOcurrences).toBe(1)
+
+    user.removeListener(listenerId)
+
+    user.name = 'Tiago Edited 2'
+    user.save()
+    
+    expect(listenerOcurrences).toBe(1)
+})
+
+test('it can remove a deleted listener from a model instance', () => {
+    Resolver.db().driver.clear()
+
+    let listenerOcurrences = 0
+
+    let user = User.create({name: 'Tiago'})
+
+    let listener = () => {
+        listenerOcurrences++
+    }
+
+    let listenerId = user.addListener('deleted', listener)
+
+    user.delete()
+    
+    expect(listenerOcurrences).toBe(1)
+
+    user.removeListener(listenerId)
+
+    user.delete()
+    
+    expect(listenerOcurrences).toBe(1)
+})
+
+test('it can clear listeners from a model instance', () => {
+    Resolver.db().driver.clear()
+
+    let listenerOcurrences = 0
+
+    let user = User.create({name: 'Tiago'})
+
+    user.addListener('updated', () => {
+        listenerOcurrences++
+    })
+
+    user.addListener('deleted', () => {
+        listenerOcurrences++
+    })
+
+    user.clearListeners()
+
+    user.name = 'Tiago Edited'
+    user.save()
+
+    user.delete()
+    
+    expect(listenerOcurrences).toBe(0)
+})
+
 // test('it reloads every model instance when implicity updates are enabled', () => {
 //     Resolver.db().driver.clear()
 //     // Resolver.db().enableImplicitUpdates()
