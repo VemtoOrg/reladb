@@ -79,7 +79,7 @@ declare class Model {
     getRelationshipFunction(name: any): any;
     isSaved(): boolean;
     onUpdateListener(listener: any): import("./Model.js");
-    addListener(name: any, listener: any): import("./Model.js");
+    addListener(name: any, listener: any): string;
     removeListener(name: any): import("./Model.js");
 }
 import HasOne = require("./Relationships/HasOne.js");
