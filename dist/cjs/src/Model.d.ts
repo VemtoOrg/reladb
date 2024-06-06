@@ -7,7 +7,8 @@ export default class Model {
     static defaultKeyIdentifier(): string;
     static count(): any;
     static create(data?: {}): any;
-    static fireRelationshipEvents(item: any, eventSuffix: any): void;
+    static fireGlobalEvents(item: any, eventSuffix: any): void;
+    static fireRelationshipsEvents(item: any, eventSuffix: any): void;
     static get(): any;
     static latest(): any;
     static find(id?: any): any;
@@ -35,6 +36,7 @@ export default class Model {
     enableAutomaticRelations(): void;
     disableSavingData(): void;
     enableSavingData(): void;
+    refresh(): Model;
     fillFromData(data?: {}, disablePrimaryKeyFill?: boolean): Model;
     fresh(): any;
     fill(data: any): Model;

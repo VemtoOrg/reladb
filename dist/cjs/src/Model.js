@@ -75,6 +75,15 @@ class Model {
     enableSavingData() {
         this.__saveDataToStorage = true;
     }
+    refresh() {
+        let freshData = this.fresh();
+        if (!freshData)
+            return;
+        freshData = JSON.parse(JSON.stringify(freshData));
+        freshData = this.constructor.removeSpecialData(freshData);
+        this.fillFromData(freshData, true);
+        return this;
+    }
     fillFromData(data = {}, disablePrimaryKeyFill = false) {
         let keys = Object.keys(data);
         if (disablePrimaryKeyFill) {
@@ -99,10 +108,20 @@ class Model {
         let item = new Query_js_1.default(this).create(data);
         if (this.created)
             this.created(item);
-        this.fireRelationshipEvents(item, 'created');
+        this.fireGlobalEvents(item, 'created');
         return item;
     }
-    static fireRelationshipEvents(item, eventSuffix) {
+    static fireGlobalEvents(item, eventSuffix) {
+        // We don't fire the created event because we can't listen to it before the item is created
+        if (eventSuffix !== 'created') {
+            let eventName = `${item.getItemIdentifier()}:${eventSuffix}`;
+            Resolver_js_1.default.db().executeCustomEventListener(eventName, item);
+            let generalEventName = `${item.getItemIdentifier()}:changed`;
+            Resolver_js_1.default.db().executeCustomEventListener(generalEventName, item);
+        }
+        this.fireRelationshipsEvents(item, eventSuffix);
+    }
+    static fireRelationshipsEvents(item, eventSuffix) {
         let belongsToRelationships = item.belongsToRelationships();
         belongsToRelationships.forEach(relationship => {
             let inverseRelationship = relationship.inverse();
@@ -166,7 +185,7 @@ class Model {
             this.__onUpdateListener(this);
         if (this.constructor.updated)
             this.constructor.updated(this);
-        this.constructor.fireRelationshipEvents(this, 'updated');
+        this.constructor.fireGlobalEvents(this, 'updated');
         return wasUpdated;
     }
     delete() {
@@ -179,7 +198,7 @@ class Model {
         new Query_js_1.default(this.constructor).delete(this.id);
         if (this.constructor.deleted)
             this.constructor.deleted(this.id);
-        this.constructor.fireRelationshipEvents(this, 'deleted');
+        this.constructor.fireGlobalEvents(this, 'deleted');
         this.clearData();
         return true;
     }
