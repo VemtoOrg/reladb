@@ -2,6 +2,10 @@
 
 A hybrid relational/object database layer agnostic to the storage engine.
 
+This database layer was created to be used with Vemto, a Desktop Laravel code generation application, and you can read more details about its creation here:
+
+[Why did I create my own database?](https://tiagosilvapereira3.medium.com/why-did-i-create-my-own-database-85efbb2a8bc8)
+
 ## Overview
 
 RelaDB is a JavaScript library that provides an elegant ORM-like interface for working with data while remaining storage engine agnostic. It supports relational data modeling with convenient methods for defining and working with relationships between models.
