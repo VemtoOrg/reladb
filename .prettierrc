@@ -1,0 +1,15 @@
+{
+    "semi": false,
+    "printWidth": 120,
+    "tabWidth": 4,
+    "overrides": [
+        {
+            "files": ["src/**/*.js", "tests/**/*.js"],
+            "options": {
+                "semi": false,
+                "printWidth": 120,
+                "tabWidth": 4
+            }
+        }
+    ]
+}
