@@ -1,7 +1,7 @@
 {
   "name": "@tiago_silva_pereira/reladb",
   "version": "2.0.9",
-  "description": "A relational database layer on top of LocalStorage",
+  "description": "A hybrid relational/object database layer agnostic to the storage engine.",
   "main": "dist/cjs/main.js",
   "module": "dist/esm/main.js",
   "exports": {
