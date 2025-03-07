@@ -31,6 +31,82 @@ export default class User extends Model {
 }
 ```
 
+### Registering Models
+
+Models must be registered with RelaDB to be properly recognized by the system:
+
+```javascript
+import Resolver from '@tiago_silva_pereira/reladb/src/Resolver.js'
+import User from './models/User.js'
+import Post from './models/Post.js'
+import Document from './models/Document.js'
+
+// Register models when the database is ready
+Resolver.onDatabaseReady(() => {
+    // Register a model with its class name
+    Resolver.db().registerModel(User, 'User')
+    
+    // Register a model with custom table name
+    Resolver.db().registerModel(Post, 'Post', 'blog_posts')
+    
+    Resolver.db().registerModel(Document, 'Document')
+    // Register other models...
+})
+```
+
+### Configuring Storage Drivers
+
+RelaDB is designed to be storage-agnostic. You can choose between different storage drivers or create your own:
+
+```javascript
+import Resolver from '@tiago_silva_pereira/reladb/src/Resolver.js'
+import RAMStorage from '@tiago_silva_pereira/reladb/src/Drivers/RAMStorage.js'
+// import LocalStorage from '@tiago_silva_pereira/reladb/src/Drivers/LocalStorage.js'
+// import IndexedDBStorage from '@tiago_silva_pereira/reladb/src/Drivers/IndexedDBStorage.js'
+
+// Configure the database with the RAM storage driver
+Resolver.setDB({
+    driver: RAMStorage
+})
+
+// For persistent storage in a browser environment:
+// Resolver.setDB({ driver: LocalStorage })
+// Resolver.setDB({ driver: IndexedDBStorage })
+
+// Custom configuration example:
+// Resolver.setDB({
+//     driver: CustomStorage,
+//     config: { 
+//         url: 'https://api.example.com/data',
+//         apiKey: 'your-api-key'
+//     }
+// })
+```
+
+#### Creating Custom Storage Driver
+
+You can create your own storage driver by extending the base Driver class:
+
+```javascript
+import Driver from '@tiago_silva_pereira/reladb/src/Drivers/Driver.js'
+
+class CustomStorage extends Driver {
+    constructor(config = {}) {
+        super()
+        this.config = config
+    }
+    
+    // Implement required driver methods
+    setFromDriver(key, data) { /* Implementation */ }
+    getFromDriver(key) { /* Implementation */ }
+    removeFromDriver(key) { /* Implementation */ }
+    clearFromDriver() { /* Implementation */ }
+    getAllTableNames() { /* Implementation */ }
+}
+
+export default new CustomStorage()
+```
+
 ### Creating and Retrieving Data
 
 ```javascript
