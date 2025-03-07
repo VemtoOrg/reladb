@@ -42,6 +42,7 @@
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.10.4",
     "jest": "^26.4.2",
+    "prettier": "3.5.3",
     "tsc": "^2.0.4",
     "typescript": "^4.8.4"
   },
