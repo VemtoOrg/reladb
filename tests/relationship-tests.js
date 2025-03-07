@@ -12,25 +12,24 @@ import Tag from "./models/Tag.js"
 import Address from "./models/Address.js"
 import AddressUser from "./models/AddressUser.js"
 
-test('it allows to get parent from belongs to relation', () => {
+test("it allows to get parent from belongs to relation", () => {
     Resolver.db().driver.clear()
 
-    let user = User.create({name: 'Tiago'}),
-        post = Post.create({title: 'Test', ownerId: user.id}),
+    let user = User.create({ name: "Tiago" }),
+        post = Post.create({ title: "Test", ownerId: user.id }),
         owner = post.owner
-    
+
     expect(owner.id).toBe(user.id)
 })
 
-test('it does not allow to delete a parent if it has children data by default', () => {
+test("it does not allow to delete a parent if it has children data by default", () => {
     Resolver.db().driver.clear()
 
-    let user = User.create({name: 'Tiago'})
+    let user = User.create({ name: "Tiago" })
 
-    Post.create({title: 'Test', ownerId: user.id})
+    Post.create({ title: "Test", ownerId: user.id })
 
-    expect(() => user.delete())
-        .toThrow('Cannot delete a parent item: a foreign key constraint fails')
+    expect(() => user.delete()).toThrow("Cannot delete a parent item: a foreign key constraint fails")
 
     const tableKey = user.constructor.getQuery().tableKey(),
         isAlreadyDeleting = Resolver.db().isAlreadyDeleting(tableKey, user.id)
@@ -38,84 +37,83 @@ test('it does not allow to delete a parent if it has children data by default', 
     expect(isAlreadyDeleting).toBe(false)
 })
 
-test('it does not allow to set a field with the same name as a relationship', () => {
+test("it does not allow to set a field with the same name as a relationship", () => {
     Resolver.db().driver.clear()
 
     expect(() => {
-        User.create({name: 'Tiago', posts: []})
-    }).toThrow('It is not possible to set the field posts because there is already a relationship with the same name')
+        User.create({ name: "Tiago", posts: [] })
+    }).toThrow("It is not possible to set the field posts because there is already a relationship with the same name")
 })
 
-test('it adds has many index to parent after creating child data', () => {
+test("it adds has many index to parent after creating child data", () => {
     Resolver.db().driver.clear()
 
-    let user = User.create({name: 'Tiago'}),
-        secondUser = User.create({name: 'Jessica'}),
-        post = Post.create({title: 'Test', ownerId: user.id}),
-        secondPost = Post.create({title: 'Test', ownerId: secondUser.id})
+    let user = User.create({ name: "Tiago" }),
+        secondUser = User.create({ name: "Jessica" }),
+        post = Post.create({ title: "Test", ownerId: user.id }),
+        secondPost = Post.create({ title: "Test", ownerId: secondUser.id })
 
     let tableData = User.getQuery().getTableData()
 
     // The index is based on table name
-    expect(tableData.index[user.id].hasMany['posts.ownerId'].includes(post.id)).toBe(true)
-    expect(tableData.index[user.id].hasMany['posts.ownerId'].includes(secondPost.id)).toBe(false)
+    expect(tableData.index[user.id].hasMany["posts.ownerId"].includes(post.id)).toBe(true)
+    expect(tableData.index[user.id].hasMany["posts.ownerId"].includes(secondPost.id)).toBe(false)
 
-    expect(tableData.index[secondUser.id].hasMany['posts.ownerId'].includes(post.id)).toBe(false)
-    expect(tableData.index[secondUser.id].hasMany['posts.ownerId'].includes(secondPost.id)).toBe(true)
+    expect(tableData.index[secondUser.id].hasMany["posts.ownerId"].includes(post.id)).toBe(false)
+    expect(tableData.index[secondUser.id].hasMany["posts.ownerId"].includes(secondPost.id)).toBe(true)
 })
 
-test('it changes has many index when changing parent', () => {
+test("it changes has many index when changing parent", () => {
     Resolver.db().driver.clear()
 
-    let user = User.create({name: 'Tiago'}),
-        secondUser = User.create({name: 'Joseh'}),
-        post = Post.create({title: 'Test', ownerId: user.id})
+    let user = User.create({ name: "Tiago" }),
+        secondUser = User.create({ name: "Joseh" }),
+        post = Post.create({ title: "Test", ownerId: user.id })
 
     let tableData = User.getQuery().getTableData()
 
     expect(post.owner.id).toBe(user.id)
-    expect(tableData.index[user.id].hasMany['posts.ownerId'].includes(post.id)).toBe(true)
-    expect(!! tableData.index[secondUser.id].hasMany['posts.ownerId']).toBe(false)
-    
+    expect(tableData.index[user.id].hasMany["posts.ownerId"].includes(post.id)).toBe(true)
+    expect(!!tableData.index[secondUser.id].hasMany["posts.ownerId"]).toBe(false)
+
     post.update({
-        ownerId: secondUser.id
+        ownerId: secondUser.id,
     })
 
     // Refresh table data
     tableData = User.getQuery().getTableData()
 
     expect(post.owner.id).toBe(secondUser.id)
-    expect(tableData.index[user.id].hasMany['posts.ownerId'].includes(post.id)).toBe(false)
-    expect(tableData.index[secondUser.id].hasMany['posts.ownerId'].includes(post.id)).toBe(true)
+    expect(tableData.index[user.id].hasMany["posts.ownerId"].includes(post.id)).toBe(false)
+    expect(tableData.index[secondUser.id].hasMany["posts.ownerId"].includes(post.id)).toBe(true)
 })
 
-test('it removes has many index on parent after removing child data', () => {
+test("it removes has many index on parent after removing child data", () => {
     Resolver.db().driver.clear()
 
-    let user = User.create({name: 'Tiago'}),
-        post = Post.create({title: 'Test', ownerId: user.id}),
+    let user = User.create({ name: "Tiago" }),
+        post = Post.create({ title: "Test", ownerId: user.id }),
         postId = post.id
 
     let tableData = User.getQuery().getTableData()
 
-    expect(tableData.index[user.id].hasMany['posts.ownerId'].includes(postId)).toBe(true)
+    expect(tableData.index[user.id].hasMany["posts.ownerId"].includes(postId)).toBe(true)
 
     post.delete()
 
     tableData = User.getQuery().getTableData()
 
-    expect(tableData.index[user.id].hasMany['posts.ownerId'].includes(postId)).toBe(false)
+    expect(tableData.index[user.id].hasMany["posts.ownerId"].includes(postId)).toBe(false)
 })
 
-test('it allows to get children from has many relation', () => {
+test("it allows to get children from has many relation", () => {
     Resolver.db().driver.clear()
 
-    let user = User.create({name: 'Tiago'}),
-        secondUser = User.create({name: 'Jonas'}),
-
-        post = Post.create({title: 'Test', ownerId: user.id}),
-        secondPost = Post.create({title: 'Test 2', ownerId: user.id}),
-        thirdPost = Post.create({title: 'Test 3', ownerId: secondUser.id})
+    let user = User.create({ name: "Tiago" }),
+        secondUser = User.create({ name: "Jonas" }),
+        post = Post.create({ title: "Test", ownerId: user.id }),
+        secondPost = Post.create({ title: "Test 2", ownerId: user.id }),
+        thirdPost = Post.create({ title: "Test 3", ownerId: secondUser.id })
 
     expect(user.posts.length).toBe(2)
     expect(secondUser.posts.length).toBe(1)
@@ -126,37 +124,37 @@ test('it allows to get children from has many relation', () => {
     expect(secondUser.posts[0].id).toBe(thirdPost.id)
 })
 
-test('it allows to get sorted children from has many relation', () => {
+test("it allows to get sorted children from has many relation", () => {
     Resolver.db().driver.clear()
 
-    let post = Post.create({title: 'Test'})
-        
-    Comment.create({body: 'Comment 1', postId: post.id, order: 3})
-    Comment.create({body: 'Comment 2', postId: post.id, order: 1})
-    Comment.create({body: 'Comment 3', postId: post.id, order: 4})
-    Comment.create({body: 'Comment 4', postId: post.id, order: 2})
+    let post = Post.create({ title: "Test" })
 
-    expect(post.comments[0].body).toBe('Comment 2')
-    expect(post.comments[1].body).toBe('Comment 4')
-    expect(post.comments[2].body).toBe('Comment 1')
-    expect(post.comments[3].body).toBe('Comment 3')
+    Comment.create({ body: "Comment 1", postId: post.id, order: 3 })
+    Comment.create({ body: "Comment 2", postId: post.id, order: 1 })
+    Comment.create({ body: "Comment 3", postId: post.id, order: 4 })
+    Comment.create({ body: "Comment 4", postId: post.id, order: 2 })
+
+    expect(post.comments[0].body).toBe("Comment 2")
+    expect(post.comments[1].body).toBe("Comment 4")
+    expect(post.comments[2].body).toBe("Comment 1")
+    expect(post.comments[3].body).toBe("Comment 3")
 })
 
-test('it allows to adds data with nullable foreign key', () => {
+test("it allows to adds data with nullable foreign key", () => {
     Resolver.db().driver.clear()
 
-    Post.create({title: 'Test', ownerId: null})
-    
+    Post.create({ title: "Test", ownerId: null })
+
     expect(Post.count()).toBe(1)
 })
 
-test('it allows to cascade delete children data', () => {
+test("it allows to cascade delete children data", () => {
     Resolver.db().driver.clear()
 
-    let post = Post.create({title: 'Test'})
-        
-    Comment.create({body: 'First comment', postId: post.id})
-    Comment.create({body: 'Second comment', postId: post.id})
+    let post = Post.create({ title: "Test" })
+
+    Comment.create({ body: "First comment", postId: post.id })
+    Comment.create({ body: "Second comment", postId: post.id })
 
     expect(Comment.count()).toBe(2)
 
@@ -165,26 +163,25 @@ test('it allows to cascade delete children data', () => {
     expect(Comment.count()).toBe(0)
 })
 
-test('it allows to get data through multiple relationships', () => {
+test("it allows to get data through multiple relationships", () => {
     Resolver.db().driver.clear()
 
-    let user = User.create({name: 'Tiago'}),
-        post = Post.create({title: 'First Post', ownerId: user.id})
-        
-    Comment.create({body: 'First Comment', postId: post.id})
-    Comment.create({body: 'Second Comment', postId: post.id})
+    let user = User.create({ name: "Tiago" }),
+        post = Post.create({ title: "First Post", ownerId: user.id })
 
-    expect(user.posts[0].comments[0].body).toBe('First Comment')
-    expect(user.posts[0].comments[1].body).toBe('Second Comment')
+    Comment.create({ body: "First Comment", postId: post.id })
+    Comment.create({ body: "Second Comment", postId: post.id })
+
+    expect(user.posts[0].comments[0].body).toBe("First Comment")
+    expect(user.posts[0].comments[1].body).toBe("Second Comment")
 })
 
-test('it allows to get data through recursive relationships', () => {
+test("it allows to get data through recursive relationships", () => {
     Resolver.db().driver.clear()
 
-    let parentCategory = Category.create({title: 'Parent Category'}),
-    
-        firstChild = Category.create({title: 'Child Category 01', parentId: parentCategory.id}),
-        secondChild = Category.create({title: 'Child Category 02', parentId: parentCategory.id})
+    let parentCategory = Category.create({ title: "Parent Category" }),
+        firstChild = Category.create({ title: "Child Category 01", parentId: parentCategory.id }),
+        secondChild = Category.create({ title: "Child Category 02", parentId: parentCategory.id })
 
     expect(firstChild.parent.id).toBe(parentCategory.id)
     expect(secondChild.parent.id).toBe(parentCategory.id)
@@ -193,104 +190,108 @@ test('it allows to get data through recursive relationships', () => {
     expect(parentCategory.children[1].id).toBe(secondChild.id)
 })
 
-test('it does not allow to add multiple relations with hasOne rule', () => {
+test("it does not allow to add multiple relations with hasOne rule", () => {
     Resolver.db().driver.clear()
 
-    let user = User.create({name: 'Tiago'}),
-        document = Document.create({code: 'XTRE-123', userId: user.id})
-    
+    let user = User.create({ name: "Tiago" }),
+        document = Document.create({ code: "XTRE-123", userId: user.id })
+
     expect(user.document.id).toBe(document.id)
 
     expect(() => {
-        Document.create({code: 'XTRE-785', userId: user.id})
-    }).toThrow('Has One relation doesn\'t allow more than one relation at same time')
+        Document.create({ code: "XTRE-785", userId: user.id })
+    }).toThrow("Has One relation doesn't allow more than one relation at same time")
 
     let tableData = User.getQuery().getTableData()
 
-    expect(tableData.index[user.id].hasMany['documents.userId'].includes(document.id)).toBe(true)
+    expect(tableData.index[user.id].hasMany["documents.userId"].includes(document.id)).toBe(true)
 })
 
-test('it allows to add another relation after deleting previous with hasOne rule', () => {
+test("it allows to add another relation after deleting previous with hasOne rule", () => {
     Resolver.db().driver.clear()
 
-    let user = User.create({name: 'Tiago'}),
-        document = Document.create({code: 'XTRE-123', userId: user.id})
-    
+    let user = User.create({ name: "Tiago" }),
+        document = Document.create({ code: "XTRE-123", userId: user.id })
+
     expect(user.document.id).toBe(document.id)
 
     user.document.delete()
 
-    let newDocument = Document.create({code: 'XTRE-785', userId: user.id})
+    let newDocument = Document.create({ code: "XTRE-785", userId: user.id })
 
     expect(user.document.id).toBe(newDocument.id)
 
     let tableData = User.getQuery().getTableData()
 
-    expect(tableData.index[user.id].hasMany['documents.userId'].includes(document.id)).toBe(false)
-    expect(tableData.index[user.id].hasMany['documents.userId'].includes(newDocument.id)).toBe(true)
+    expect(tableData.index[user.id].hasMany["documents.userId"].includes(document.id)).toBe(false)
+    expect(tableData.index[user.id].hasMany["documents.userId"].includes(newDocument.id)).toBe(true)
 })
 
-test('it removes index correctly after deleting from recursive relationship', () => {
+test("it removes index correctly after deleting from recursive relationship", () => {
     Resolver.db().driver.clear()
 
-    let parentDocument = Document.create({code: 'XTRE-123'}),
-        childDocument = Document.create({code: 'XTRE-785', parentId: parentDocument.id})
-    
+    let parentDocument = Document.create({ code: "XTRE-123" }),
+        childDocument = Document.create({ code: "XTRE-785", parentId: parentDocument.id })
+
     expect(parentDocument.child.id).toBe(childDocument.id)
     expect(childDocument.parent.id).toBe(parentDocument.id)
 
     childDocument.delete()
 
     let tableData = Document.getQuery().getTableData()
-    
-    expect(tableData.index[parentDocument.id].hasMany['documents.parentId'].includes(childDocument.id)).toBe(false)
+
+    expect(tableData.index[parentDocument.id].hasMany["documents.parentId"].includes(childDocument.id)).toBe(false)
 })
 
-test('it removes all indexes correctly after removing complex relations', () => {
+test("it removes all indexes correctly after removing complex relations", () => {
     Resolver.db().driver.clear()
 
-    let project = Project.create({name: 'My Project'}),
-        userEntity = Entity.create({name: 'User', projectId: project.id}),
-        userIdField = Field.create({name: 'id', entityId: userEntity.id}),
-        userLogFkField = Field.create({name: 'log_id', entityId: userEntity.id}),
-        logEntity = Entity.create({name: 'Log', projectId: project.id}),
-        logIdField = Field.create({name: 'id', entityId: logEntity.id}),
-        foreign = Foreign.create({fieldId: userLogFkField.id, relatedFieldId: logIdField.id, relatedEntityId: logEntity.id})
+    let project = Project.create({ name: "My Project" }),
+        userEntity = Entity.create({ name: "User", projectId: project.id }),
+        userIdField = Field.create({ name: "id", entityId: userEntity.id }),
+        userLogFkField = Field.create({ name: "log_id", entityId: userEntity.id }),
+        logEntity = Entity.create({ name: "Log", projectId: project.id }),
+        logIdField = Field.create({ name: "id", entityId: logEntity.id }),
+        foreign = Foreign.create({
+            fieldId: userLogFkField.id,
+            relatedFieldId: logIdField.id,
+            relatedEntityId: logEntity.id,
+        })
 
     expect(foreign.field.id).toBe(userLogFkField.id)
     expect(foreign.relatedField.id).toBe(logIdField.id)
     expect(foreign.relatedEntity.id).toBe(logEntity.id)
-    
+
     let fieldsTableData = Field.getQuery().getTableData()
-    
-    expect(fieldsTableData.index[userLogFkField.id].hasMany['foreigns.fieldId'].includes(foreign.id)).toBe(true)
-    expect(fieldsTableData.index[logIdField.id].hasMany['foreigns.relatedFieldId'].includes(foreign.id)).toBe(true)
+
+    expect(fieldsTableData.index[userLogFkField.id].hasMany["foreigns.fieldId"].includes(foreign.id)).toBe(true)
+    expect(fieldsTableData.index[logIdField.id].hasMany["foreigns.relatedFieldId"].includes(foreign.id)).toBe(true)
 
     logEntity.delete()
 
     fieldsTableData = Field.getQuery().getTableData()
 
-    expect(fieldsTableData.index[userLogFkField.id].hasMany['foreigns.fieldId'].includes(foreign.id)).toBe(false)
-    expect(typeof fieldsTableData.index[logIdField.id] === 'undefined').toBe(true)
+    expect(fieldsTableData.index[userLogFkField.id].hasMany["foreigns.fieldId"].includes(foreign.id)).toBe(false)
+    expect(typeof fieldsTableData.index[logIdField.id] === "undefined").toBe(true)
 })
 
-test('it orders a relation correctly by a numeric field', () => {
+test("it orders a relation correctly by a numeric field", () => {
     Resolver.db().driver.clear()
 
-    let project = Project.create({name: 'My Project'}),
-        userEntity = Entity.create({name: 'User', projectId: project.id}),
-        field0 = Field.create({name: 'field0', order: 0, entityId: userEntity.id}),
-        field7 = Field.create({name: 'field7', order: 7, entityId: userEntity.id}),
-        field1 = Field.create({name: 'field1', order: 1, entityId: userEntity.id}),
-        field2 = Field.create({name: 'field2', order: 2, entityId: userEntity.id}),
-        field4 = Field.create({name: 'field4', order: 4, entityId: userEntity.id}),
-        field8 = Field.create({name: 'field8', order: 8, entityId: userEntity.id}),
-        field5 = Field.create({name: 'field5', order: 5, entityId: userEntity.id}),
-        field6 = Field.create({name: 'field6', order: 6, entityId: userEntity.id}),
-        field9 = Field.create({name: 'field9', order: 9, entityId: userEntity.id}),
-        field3 = Field.create({name: 'field3', order: 3, entityId: userEntity.id}),
-        field10 = Field.create({name: 'field10', order: 10, entityId: userEntity.id}),
-        field11 = Field.create({name: 'field11', order: 11, entityId: userEntity.id})
+    let project = Project.create({ name: "My Project" }),
+        userEntity = Entity.create({ name: "User", projectId: project.id }),
+        field0 = Field.create({ name: "field0", order: 0, entityId: userEntity.id }),
+        field7 = Field.create({ name: "field7", order: 7, entityId: userEntity.id }),
+        field1 = Field.create({ name: "field1", order: 1, entityId: userEntity.id }),
+        field2 = Field.create({ name: "field2", order: 2, entityId: userEntity.id }),
+        field4 = Field.create({ name: "field4", order: 4, entityId: userEntity.id }),
+        field8 = Field.create({ name: "field8", order: 8, entityId: userEntity.id }),
+        field5 = Field.create({ name: "field5", order: 5, entityId: userEntity.id }),
+        field6 = Field.create({ name: "field6", order: 6, entityId: userEntity.id }),
+        field9 = Field.create({ name: "field9", order: 9, entityId: userEntity.id }),
+        field3 = Field.create({ name: "field3", order: 3, entityId: userEntity.id }),
+        field10 = Field.create({ name: "field10", order: 10, entityId: userEntity.id }),
+        field11 = Field.create({ name: "field11", order: 11, entityId: userEntity.id })
 
     let fields = userEntity.fresh().fields
 
@@ -308,23 +309,23 @@ test('it orders a relation correctly by a numeric field', () => {
     expect(fields[11].id).toBe(field11.id)
 })
 
-test('it orders a relation correctly by an alphabetical field', () => {
+test("it orders a relation correctly by an alphabetical field", () => {
     Resolver.db().driver.clear()
 
-    let project = Project.create({name: 'My Project'}),
-        userEntity = Entity.create({name: 'User', projectId: project.id}),
-        field2 = Field.create({name: 'field2', order: 'c', entityId: userEntity.id}),
-        field3 = Field.create({name: 'field3', order: 'd', entityId: userEntity.id}),
-        field0 = Field.create({name: 'field0', order: 'a', entityId: userEntity.id}),
-        field6 = Field.create({name: 'field6', order: 'g', entityId: userEntity.id}),
-        field7 = Field.create({name: 'field7', order: 'h', entityId: userEntity.id}),
-        field1 = Field.create({name: 'field1', order: 'b', entityId: userEntity.id}),
-        field4 = Field.create({name: 'field4', order: 'e', entityId: userEntity.id}),
-        field9 = Field.create({name: 'field9', order: 'j', entityId: userEntity.id}),
-        field5 = Field.create({name: 'field5', order: 'f', entityId: userEntity.id}),
-        field8 = Field.create({name: 'field8', order: 'i', entityId: userEntity.id}),
-        field10 = Field.create({name: 'field10', order: 'k', entityId: userEntity.id}),
-        field11 = Field.create({name: 'field11', order: 'l', entityId: userEntity.id})
+    let project = Project.create({ name: "My Project" }),
+        userEntity = Entity.create({ name: "User", projectId: project.id }),
+        field2 = Field.create({ name: "field2", order: "c", entityId: userEntity.id }),
+        field3 = Field.create({ name: "field3", order: "d", entityId: userEntity.id }),
+        field0 = Field.create({ name: "field0", order: "a", entityId: userEntity.id }),
+        field6 = Field.create({ name: "field6", order: "g", entityId: userEntity.id }),
+        field7 = Field.create({ name: "field7", order: "h", entityId: userEntity.id }),
+        field1 = Field.create({ name: "field1", order: "b", entityId: userEntity.id }),
+        field4 = Field.create({ name: "field4", order: "e", entityId: userEntity.id }),
+        field9 = Field.create({ name: "field9", order: "j", entityId: userEntity.id }),
+        field5 = Field.create({ name: "field5", order: "f", entityId: userEntity.id }),
+        field8 = Field.create({ name: "field8", order: "i", entityId: userEntity.id }),
+        field10 = Field.create({ name: "field10", order: "k", entityId: userEntity.id }),
+        field11 = Field.create({ name: "field11", order: "l", entityId: userEntity.id })
 
     let fields = userEntity.fresh().fields
 
@@ -342,275 +343,275 @@ test('it orders a relation correctly by an alphabetical field', () => {
     expect(fields[11].id).toBe(field11.id)
 })
 
-test('it allows to disable getting automatic relations', () => {
+test("it allows to disable getting automatic relations", () => {
     Resolver.db().driver.clear()
 
-    let user = User.create({name: 'Tiago'}),
-        post = Post.create({title: 'Test', ownerId: user.id})
-    
+    let user = User.create({ name: "Tiago" }),
+        post = Post.create({ title: "Test", ownerId: user.id })
+
     expect(post.owner.id).toBe(user.id)
 
     post.disableAutomaticRelations()
 
-    expect(typeof post.owner === 'undefined').toBe(true)
+    expect(typeof post.owner === "undefined").toBe(true)
 
-    post.owner = 'something'
+    post.owner = "something"
 
-    expect(post.owner).toBe('something')
+    expect(post.owner).toBe("something")
 
     post.enableAutomaticRelations()
 
     expect(post.owner.id).toBe(user.id)
 })
 
-test('it fires a belongsTo relationship created event', () => {
+test("it fires a belongsTo relationship created event", () => {
     Resolver.db().driver.clear()
 
     let listenerOcurrences = 0
 
-    let firstUser = User.create({name: 'Tiago'}),
-        secondUser = User.create({name: 'Tiago'})
+    let firstUser = User.create({ name: "Tiago" }),
+        secondUser = User.create({ name: "Tiago" })
 
-    firstUser.addListener('posts:created', () => {
+    firstUser.addListener("posts:created", () => {
         listenerOcurrences++
     })
 
-    secondUser.addListener('posts:created', () => {
+    secondUser.addListener("posts:created", () => {
         listenerOcurrences++
     })
 
-    Post.create({title: 'Test', ownerId: secondUser.id})
-    
+    Post.create({ title: "Test", ownerId: secondUser.id })
+
     expect(listenerOcurrences).toBe(1)
 })
 
-test('it receives data from a belongsTo relationship created event', () => {
+test("it receives data from a belongsTo relationship created event", () => {
     Resolver.db().driver.clear()
 
     let createdPost = null
 
-    let user = User.create({name: 'Tiago'})
+    let user = User.create({ name: "Tiago" })
 
-    user.addListener('posts:created', post => {
+    user.addListener("posts:created", (post) => {
         createdPost = post
     })
 
-    Post.create({title: 'Test', ownerId: user.id})
-    
+    Post.create({ title: "Test", ownerId: user.id })
+
     expect(createdPost.id).toBe(1)
     expect(createdPost.ownerId).toBe(user.id)
 })
 
-test('it fires a belongsTo relationship updated event', () => {
+test("it fires a belongsTo relationship updated event", () => {
     Resolver.db().driver.clear()
 
     let listenerOcurrences = 0,
         changesOcurrences = 0
 
-    let firstUser = User.create({name: 'Tiago'}),
-        secondUser = User.create({name: 'Tiago'}),
-        post = Post.create({title: 'Test', ownerId: secondUser.id})
+    let firstUser = User.create({ name: "Tiago" }),
+        secondUser = User.create({ name: "Tiago" }),
+        post = Post.create({ title: "Test", ownerId: secondUser.id })
 
-    firstUser.addListener('posts:updated', () => {
+    firstUser.addListener("posts:updated", () => {
         listenerOcurrences++
     })
 
-    secondUser.addListener('posts:updated', () => {
+    secondUser.addListener("posts:updated", () => {
         listenerOcurrences++
     })
 
-    secondUser.addListener('posts:changed', () => {
+    secondUser.addListener("posts:changed", () => {
         changesOcurrences++
     })
 
-    secondUser.addListener('relationships:changed', () => {
+    secondUser.addListener("relationships:changed", () => {
         changesOcurrences++
     })
 
-    post.title = 'Updated Title'
+    post.title = "Updated Title"
     post.save()
-    
+
     expect(listenerOcurrences).toBe(1)
     expect(changesOcurrences).toBe(2)
 })
 
-test('it fires events when a relationship was changed', () => {
+test("it fires events when a relationship was changed", () => {
     Resolver.db().driver.clear()
 
     let listenerOcurrences = 0
 
-    let firstUser = User.create({name: 'Tiago'}),
-        secondUser = User.create({name: 'Tiago'}),
-        post = Post.create({title: 'Test', ownerId: secondUser.id})
+    let firstUser = User.create({ name: "Tiago" }),
+        secondUser = User.create({ name: "Tiago" }),
+        post = Post.create({ title: "Test", ownerId: secondUser.id })
 
-    secondUser.addListener('posts:changed', () => {
+    secondUser.addListener("posts:changed", () => {
         listenerOcurrences++
     })
 
-    post.title = 'Updated Title'
+    post.title = "Updated Title"
     post.save()
-    
+
     expect(listenerOcurrences).toBe(1)
 })
 
-test('it fires events when any relationship was changed', () => {
+test("it fires events when any relationship was changed", () => {
     Resolver.db().driver.clear()
 
     let listenerOcurrences = 0
 
-    let firstUser = User.create({name: 'Tiago'}),
-        secondUser = User.create({name: 'Tiago'}),
-        post = Post.create({title: 'Test', ownerId: secondUser.id})
+    let firstUser = User.create({ name: "Tiago" }),
+        secondUser = User.create({ name: "Tiago" }),
+        post = Post.create({ title: "Test", ownerId: secondUser.id })
 
-    secondUser.addListener('relationships:changed', () => {
+    secondUser.addListener("relationships:changed", () => {
         listenerOcurrences++
     })
 
-    post.title = 'Updated Title'
+    post.title = "Updated Title"
     post.save()
-    
+
     expect(listenerOcurrences).toBe(1)
 })
 
-test('it receives data from a belongsTo relationship updated event', () => {
+test("it receives data from a belongsTo relationship updated event", () => {
     Resolver.db().driver.clear()
 
-    let updatedPostTitle = ''
+    let updatedPostTitle = ""
 
-    let user = User.create({name: 'Tiago'}),
-        post = Post.create({title: 'Test', ownerId: user.id})
+    let user = User.create({ name: "Tiago" }),
+        post = Post.create({ title: "Test", ownerId: user.id })
 
-    user.addListener('posts:updated', post => {
+    user.addListener("posts:updated", (post) => {
         updatedPostTitle = post.title
     })
 
-    post.title = 'Updated Title'
+    post.title = "Updated Title"
     post.save()
-    
-    expect(updatedPostTitle).toBe('Updated Title')
+
+    expect(updatedPostTitle).toBe("Updated Title")
 })
 
-test('it fires a belongsTo relationship deleted event', () => {
+test("it fires a belongsTo relationship deleted event", () => {
     Resolver.db().driver.clear()
 
     let listenerOcurrences = 0
 
-    let firstUser = User.create({name: 'Tiago'}),
-        secondUser = User.create({name: 'Tiago'}),
-        post = Post.create({title: 'Test', ownerId: secondUser.id})
+    let firstUser = User.create({ name: "Tiago" }),
+        secondUser = User.create({ name: "Tiago" }),
+        post = Post.create({ title: "Test", ownerId: secondUser.id })
 
-    firstUser.addListener('posts:deleted', () => {
+    firstUser.addListener("posts:deleted", () => {
         listenerOcurrences++
     })
 
-    secondUser.addListener('posts:deleted', () => {
+    secondUser.addListener("posts:deleted", () => {
         listenerOcurrences++
     })
 
     post.delete()
-    
+
     expect(listenerOcurrences).toBe(1)
 })
 
-test('it receives data from a belongsTo relationship deleted event', () => {
+test("it receives data from a belongsTo relationship deleted event", () => {
     Resolver.db().driver.clear()
 
     let deletedPostId = null
 
-    let user = User.create({name: 'Tiago'}),
-        post = Post.create({title: 'Test', ownerId: user.id})
+    let user = User.create({ name: "Tiago" }),
+        post = Post.create({ title: "Test", ownerId: user.id })
 
-    user.addListener('posts:deleted', postId => {
+    user.addListener("posts:deleted", (postId) => {
         deletedPostId = postId
     })
 
     post.delete()
-    
+
     expect(deletedPostId).toBe(1)
 })
 
-test('it can remove an event listener', () => {
+test("it can remove an event listener", () => {
     Resolver.db().driver.clear()
 
     let listenerOcurrences = 0
 
-    let user = User.create({name: 'Tiago'})
+    let user = User.create({ name: "Tiago" })
 
-    user.addListener('posts:created', () => {
+    user.addListener("posts:created", () => {
         listenerOcurrences++
     })
 
-    user.addListener('posts:created', () => {
+    user.addListener("posts:created", () => {
         listenerOcurrences++
     })
 
-    user.removeListenersByName('posts:created')
+    user.removeListenersByName("posts:created")
 
-    Post.create({title: 'Test', ownerId: user.id})
-    
+    Post.create({ title: "Test", ownerId: user.id })
+
     expect(listenerOcurrences).toBe(0)
 })
 
-test('it can clear all event listeners', () => {
+test("it can clear all event listeners", () => {
     Resolver.db().driver.clear()
 
     let listenerOcurrences = 0
 
-    let user = User.create({name: 'Tiago'})
+    let user = User.create({ name: "Tiago" })
 
-    user.addListener('posts:created', () => {
+    user.addListener("posts:created", () => {
         listenerOcurrences++
     })
 
-    user.addListener('posts:changed', () => {
+    user.addListener("posts:changed", () => {
         listenerOcurrences++
     })
 
-    user.addListener('relationships:changed', () => {
+    user.addListener("relationships:changed", () => {
         listenerOcurrences++
     })
 
     user.clearListeners()
 
-    Post.create({title: 'Test', ownerId: user.id})
-    
+    Post.create({ title: "Test", ownerId: user.id })
+
     expect(listenerOcurrences).toBe(0)
 })
 
-test('it can remove an specific event listener', () => {
+test("it can remove an specific event listener", () => {
     Resolver.db().driver.clear()
 
     let listenerOcurrences = 0
 
-    let user = User.create({name: 'Tiago'})
+    let user = User.create({ name: "Tiago" })
 
-    const listener_1_ID = user.addListener('posts:created', () => {
+    const listener_1_ID = user.addListener("posts:created", () => {
         listenerOcurrences++
     })
 
-    const listener_2_ID = user.addListener('posts:created', () => {
+    const listener_2_ID = user.addListener("posts:created", () => {
         listenerOcurrences++
     })
 
-    const listener_3_ID = user.addListener('posts:created', () => {
+    const listener_3_ID = user.addListener("posts:created", () => {
         listenerOcurrences++
     })
 
     user.removeListener(listener_1_ID)
 
-    Post.create({title: 'Test', ownerId: user.id})
-    
+    Post.create({ title: "Test", ownerId: user.id })
+
     expect(listenerOcurrences).toBe(2)
 })
 
-test('it saves has many index ordered', () => {
+test("it saves has many index ordered", () => {
     Resolver.db().driver.clear()
 
-    let user = User.create({name: 'Tiago'}),
-        post = Post.create({title: 'Test'}),
-        secondPost = Post.create({title: 'Test'}),
-        thirdPost = Post.create({title: 'Test'}),
-        fourthPost = Post.create({title: 'Test'})
+    let user = User.create({ name: "Tiago" }),
+        post = Post.create({ title: "Test" }),
+        secondPost = Post.create({ title: "Test" }),
+        thirdPost = Post.create({ title: "Test" }),
+        fourthPost = Post.create({ title: "Test" })
 
     let tableData = null
 
@@ -619,87 +620,87 @@ test('it saves has many index ordered', () => {
 
     tableData = User.getQuery().getTableData()
 
-    expect(tableData.index[user.id].hasMany['posts.ownerId'].length).toBe(1)
-    expect(tableData.index[user.id].hasMany['posts.ownerId'][0]).toBe(thirdPost.id)
+    expect(tableData.index[user.id].hasMany["posts.ownerId"].length).toBe(1)
+    expect(tableData.index[user.id].hasMany["posts.ownerId"][0]).toBe(thirdPost.id)
 
     secondPost.ownerId = user.id
     secondPost.save()
 
     tableData = User.getQuery().getTableData()
 
-    expect(tableData.index[user.id].hasMany['posts.ownerId'].length).toBe(2)
-    expect(tableData.index[user.id].hasMany['posts.ownerId'][0]).toBe(secondPost.id)
-    expect(tableData.index[user.id].hasMany['posts.ownerId'][1]).toBe(thirdPost.id)
+    expect(tableData.index[user.id].hasMany["posts.ownerId"].length).toBe(2)
+    expect(tableData.index[user.id].hasMany["posts.ownerId"][0]).toBe(secondPost.id)
+    expect(tableData.index[user.id].hasMany["posts.ownerId"][1]).toBe(thirdPost.id)
 
     fourthPost.ownerId = user.id
     fourthPost.save()
 
     tableData = User.getQuery().getTableData()
 
-    expect(tableData.index[user.id].hasMany['posts.ownerId'].length).toBe(3)
-    expect(tableData.index[user.id].hasMany['posts.ownerId'][0]).toBe(secondPost.id)
-    expect(tableData.index[user.id].hasMany['posts.ownerId'][1]).toBe(thirdPost.id)
-    expect(tableData.index[user.id].hasMany['posts.ownerId'][2]).toBe(fourthPost.id)
+    expect(tableData.index[user.id].hasMany["posts.ownerId"].length).toBe(3)
+    expect(tableData.index[user.id].hasMany["posts.ownerId"][0]).toBe(secondPost.id)
+    expect(tableData.index[user.id].hasMany["posts.ownerId"][1]).toBe(thirdPost.id)
+    expect(tableData.index[user.id].hasMany["posts.ownerId"][2]).toBe(fourthPost.id)
 
     post.ownerId = user.id
     post.save()
 
     tableData = User.getQuery().getTableData()
 
-    expect(tableData.index[user.id].hasMany['posts.ownerId'].length).toBe(4)
-    expect(tableData.index[user.id].hasMany['posts.ownerId'][0]).toBe(post.id)
-    expect(tableData.index[user.id].hasMany['posts.ownerId'][1]).toBe(secondPost.id)
-    expect(tableData.index[user.id].hasMany['posts.ownerId'][2]).toBe(thirdPost.id)
-    expect(tableData.index[user.id].hasMany['posts.ownerId'][3]).toBe(fourthPost.id)
+    expect(tableData.index[user.id].hasMany["posts.ownerId"].length).toBe(4)
+    expect(tableData.index[user.id].hasMany["posts.ownerId"][0]).toBe(post.id)
+    expect(tableData.index[user.id].hasMany["posts.ownerId"][1]).toBe(secondPost.id)
+    expect(tableData.index[user.id].hasMany["posts.ownerId"][2]).toBe(thirdPost.id)
+    expect(tableData.index[user.id].hasMany["posts.ownerId"][3]).toBe(fourthPost.id)
 })
 
-test('it allows to get children from morph many relation', () => {
+test("it allows to get children from morph many relation", () => {
     Resolver.db().driver.clear()
 
-    let post1 = Post.create({title: 'First Post'}),
-        post2 = Post.create({title: 'Second Post'}),
-        post3 = Post.create({title: 'Third Post'})
+    let post1 = Post.create({ title: "First Post" }),
+        post2 = Post.create({ title: "Second Post" }),
+        post3 = Post.create({ title: "Third Post" })
 
-    Tag.create({ name: 'Tag1', taggableId: post1.id, taggableType: 'Post'})
-    Tag.create({ name: 'Tag2', taggableId: post1.id, taggableType: 'Post'})
-    Tag.create({ name: 'Tag3', taggableId: post2.id, taggableType: 'Post'})
+    Tag.create({ name: "Tag1", taggableId: post1.id, taggableType: "Post" })
+    Tag.create({ name: "Tag2", taggableId: post1.id, taggableType: "Post" })
+    Tag.create({ name: "Tag3", taggableId: post2.id, taggableType: "Post" })
 
     expect(post1.tags.length).toBe(2)
     expect(post2.tags.length).toBe(1)
     expect(post3.tags.length).toBe(0)
 
-    expect(post1.tags[0].name).toBe('Tag1')
-    expect(post1.tags[1].name).toBe('Tag2')
-    expect(post2.tags[0].name).toBe('Tag3')
+    expect(post1.tags[0].name).toBe("Tag1")
+    expect(post1.tags[1].name).toBe("Tag2")
+    expect(post2.tags[0].name).toBe("Tag3")
 })
 
-test('it allows to get parent from morph to relation', () => {
+test("it allows to get parent from morph to relation", () => {
     Resolver.db().driver.clear()
 
-    let post = Post.create({title: 'Post'}),
-        document = Document.create({title: 'Document'})
+    let post = Post.create({ title: "Post" }),
+        document = Document.create({ title: "Document" })
 
-    let tag1 = Tag.create({ name: 'PostTag1', taggableId: post.id, taggableType: 'Post'}),
-        tag2 = Tag.create({ name: 'PostTag2', taggableId: post.id, taggableType: 'Post'}),
-        tag3 = Tag.create({ name: 'DocumentTag1', taggableId: document.id, taggableType: 'Document'}),
-        tag4 = Tag.create({ name: 'DocumentTag2', taggableId: document.id, taggableType: 'Document'})
+    let tag1 = Tag.create({ name: "PostTag1", taggableId: post.id, taggableType: "Post" }),
+        tag2 = Tag.create({ name: "PostTag2", taggableId: post.id, taggableType: "Post" }),
+        tag3 = Tag.create({ name: "DocumentTag1", taggableId: document.id, taggableType: "Document" }),
+        tag4 = Tag.create({ name: "DocumentTag2", taggableId: document.id, taggableType: "Document" })
 
     expect(post.tags.length).toBe(2)
     expect(document.tags.length).toBe(2)
 
-    expect(tag1.taggable.title).toBe('Post')
-    expect(tag2.taggable.title).toBe('Post')
-    expect(tag3.taggable.title).toBe('Document')
-    expect(tag4.taggable.title).toBe('Document')
+    expect(tag1.taggable.title).toBe("Post")
+    expect(tag2.taggable.title).toBe("Post")
+    expect(tag3.taggable.title).toBe("Document")
+    expect(tag4.taggable.title).toBe("Document")
 })
 
-test('it allows to cascade delete morph many children data', () => {
+test("it allows to cascade delete morph many children data", () => {
     Resolver.db().driver.clear()
 
-    let post = Post.create({title: 'Post'})
-        
-    Tag.create({ name: 'Tag1', taggableId: post.id, taggableType: 'Post'})
-    Tag.create({ name: 'Tag2', taggableId: post.id, taggableType: 'Post'})
+    let post = Post.create({ title: "Post" })
+
+    Tag.create({ name: "Tag1", taggableId: post.id, taggableType: "Post" })
+    Tag.create({ name: "Tag2", taggableId: post.id, taggableType: "Post" })
 
     expect(Tag.count()).toBe(2)
 
@@ -708,17 +709,17 @@ test('it allows to cascade delete morph many children data', () => {
     expect(Tag.count()).toBe(0)
 })
 
-test('it allows to get items from belongs to many relation', () => {
+test("it allows to get items from belongs to many relation", () => {
     Resolver.db().driver.clear()
 
-    let user1 = User.create({name: 'User1'}),
-        user2 = User.create({name: 'User2'}),
-        user3 = User.create({name: 'User3'})
+    let user1 = User.create({ name: "User1" }),
+        user2 = User.create({ name: "User2" }),
+        user3 = User.create({ name: "User3" })
 
-    let address1 = Address.create({ street: 'Street1' }),
-        address2 = Address.create({ street: 'Street2' }),
-        address3 = Address.create({ street: 'Street3' }),
-        address4 = Address.create({ street: 'Street4' })
+    let address1 = Address.create({ street: "Street1" }),
+        address2 = Address.create({ street: "Street2" }),
+        address3 = Address.create({ street: "Street3" }),
+        address4 = Address.create({ street: "Street4" })
 
     AddressUser.create({ userId: user1.id, addressId: address1.id })
     AddressUser.create({ userId: user1.id, addressId: address2.id })
@@ -732,148 +733,148 @@ test('it allows to get items from belongs to many relation', () => {
     expect(user2.addresses.length).toBe(2)
     expect(user3.addresses.length).toBe(1)
 
-    expect(user1.addresses[0].street).toBe('Street1')
-    expect(user1.addresses[1].street).toBe('Street2')
+    expect(user1.addresses[0].street).toBe("Street1")
+    expect(user1.addresses[1].street).toBe("Street2")
 
-    expect(user2.addresses[0].street).toBe('Street1')
-    expect(user2.addresses[1].street).toBe('Street3')
+    expect(user2.addresses[0].street).toBe("Street1")
+    expect(user2.addresses[1].street).toBe("Street3")
 
-    expect(user3.addresses[0].street).toBe('Street4')
+    expect(user3.addresses[0].street).toBe("Street4")
 
     expect(address1.users.length).toBe(2)
     expect(address2.users.length).toBe(1)
     expect(address3.users.length).toBe(1)
 
-    expect(address1.users[0].name).toBe('User1')
-    expect(address1.users[1].name).toBe('User2')
+    expect(address1.users[0].name).toBe("User1")
+    expect(address1.users[1].name).toBe("User2")
 
-    expect(address2.users[0].name).toBe('User1')
+    expect(address2.users[0].name).toBe("User1")
 
-    expect(address3.users[0].name).toBe('User2')
+    expect(address3.users[0].name).toBe("User2")
 
-    expect(address4.users[0].name).toBe('User3')
+    expect(address4.users[0].name).toBe("User3")
 })
 
-test('it allows to attach items on belongs to many relation', () => {
+test("it allows to attach items on belongs to many relation", () => {
     Resolver.db().driver.clear()
 
-    let user = User.create({name: 'User1'})
+    let user = User.create({ name: "User1" })
 
-    let address1 = Address.create({ street: 'Street1' }),
-        address2 = Address.create({ street: 'Street2' })
+    let address1 = Address.create({ street: "Street1" }),
+        address2 = Address.create({ street: "Street2" })
 
-    user.relation('addresses').attach(address1)
-    user.relation('addresses').attach(address2)
+    user.relation("addresses").attach(address1)
+    user.relation("addresses").attach(address2)
 
     expect(user.addresses.length).toBe(2)
 
-    expect(user.addresses[0].street).toBe('Street1')
-    expect(user.addresses[1].street).toBe('Street2')
+    expect(user.addresses[0].street).toBe("Street1")
+    expect(user.addresses[1].street).toBe("Street2")
 
-    expect(address1.users[0].name).toBe('User1')
-    expect(address2.users[0].name).toBe('User1')
+    expect(address1.users[0].name).toBe("User1")
+    expect(address2.users[0].name).toBe("User1")
 })
 
-test('it allows to attach items on belongs to many relation with extra data', () => {
+test("it allows to attach items on belongs to many relation with extra data", () => {
     Resolver.db().driver.clear()
 
-    let user = User.create({name: 'User1'}),
-        address = Address.create({ street: 'Street1' })
+    let user = User.create({ name: "User1" }),
+        address = Address.create({ street: "Street1" })
 
-    const pivot = user.relation('addresses').attach(address, {
-        foo: 'bar'
+    const pivot = user.relation("addresses").attach(address, {
+        foo: "bar",
     })
 
     expect(user.addresses.length).toBe(1)
 
-    expect(pivot.foo).toBe('bar')
+    expect(pivot.foo).toBe("bar")
 
-    expect(user.addresses[0].street).toBe('Street1')
+    expect(user.addresses[0].street).toBe("Street1")
 })
 
-test('it allows to attach items once on belongs to many relation', () => {
+test("it allows to attach items once on belongs to many relation", () => {
     Resolver.db().driver.clear()
 
-    let user = User.create({name: 'User1'}),
-        address = Address.create({ street: 'Street1' })
+    let user = User.create({ name: "User1" }),
+        address = Address.create({ street: "Street1" })
 
-    user.relation('addresses').attachUnique(address)
-    user.relation('addresses').attachUnique(address)
-    user.relation('addresses').attachUnique(address)
+    user.relation("addresses").attachUnique(address)
+    user.relation("addresses").attachUnique(address)
+    user.relation("addresses").attachUnique(address)
 
     expect(user.addresses.length).toBe(1)
 
-    user.relation('addresses').attach(address)
-    user.relation('addresses').attach(address)
+    user.relation("addresses").attach(address)
+    user.relation("addresses").attach(address)
 
     expect(user.addresses.length).toBe(3)
 
-    expect(user.addresses[0].street).toBe('Street1')
-    expect(user.addresses[1].street).toBe('Street1')
-    expect(user.addresses[2].street).toBe('Street1')
+    expect(user.addresses[0].street).toBe("Street1")
+    expect(user.addresses[1].street).toBe("Street1")
+    expect(user.addresses[2].street).toBe("Street1")
 })
 
-test('it allows to detach items on belongs to many relation', () => {
+test("it allows to detach items on belongs to many relation", () => {
     Resolver.db().driver.clear()
 
-    let user = User.create({name: 'User1'})
+    let user = User.create({ name: "User1" })
 
-    let address1 = Address.create({ street: 'Street1' }),
-        address2 = Address.create({ street: 'Street2' })
+    let address1 = Address.create({ street: "Street1" }),
+        address2 = Address.create({ street: "Street2" })
 
-    user.relation('addresses').attach(address1)
-    user.relation('addresses').attach(address2)
+    user.relation("addresses").attach(address1)
+    user.relation("addresses").attach(address2)
 
     expect(user.addresses.length).toBe(2)
 
-    user.relation('addresses').detach(address1)
+    user.relation("addresses").detach(address1)
 
     expect(user.addresses.length).toBe(1)
 
-    expect(user.addresses[0].street).toBe('Street2')
+    expect(user.addresses[0].street).toBe("Street2")
 
     expect(address1.users.length).toBe(0)
 
-    expect(address2.users[0].name).toBe('User1')
+    expect(address2.users[0].name).toBe("User1")
 })
 
-test('it allows to detach all ocurrences on belongs to many relation', () => {
+test("it allows to detach all ocurrences on belongs to many relation", () => {
     Resolver.db().driver.clear()
 
-    let user = User.create({name: 'User1'})
+    let user = User.create({ name: "User1" })
 
-    let address = Address.create({ street: 'Street1' })
+    let address = Address.create({ street: "Street1" })
 
-    user.relation('addresses').attach(address)
-    user.relation('addresses').attach(address)
-    user.relation('addresses').attach(address)
-    user.relation('addresses').attach(address)
+    user.relation("addresses").attach(address)
+    user.relation("addresses").attach(address)
+    user.relation("addresses").attach(address)
+    user.relation("addresses").attach(address)
 
     expect(user.addresses.length).toBe(4)
 
-    user.relation('addresses').detach(address)
+    user.relation("addresses").detach(address)
 
     expect(user.addresses.length).toBe(3)
 
-    user.relation('addresses').detachAllOcurrences(address)
+    user.relation("addresses").detachAllOcurrences(address)
 
     expect(user.addresses.length).toBe(0)
 })
 
-test('it allows to detach all items on belongs to many relation', () => {
+test("it allows to detach all items on belongs to many relation", () => {
     Resolver.db().driver.clear()
 
-    let user = User.create({name: 'User1'})
+    let user = User.create({ name: "User1" })
 
-    let address1 = Address.create({ street: 'Street1' }),
-        address2 = Address.create({ street: 'Street2' })
+    let address1 = Address.create({ street: "Street1" }),
+        address2 = Address.create({ street: "Street2" })
 
-    user.relation('addresses').attach(address1)
-    user.relation('addresses').attach(address2)
+    user.relation("addresses").attach(address1)
+    user.relation("addresses").attach(address2)
 
     expect(user.addresses.length).toBe(2)
 
-    user.relation('addresses').detachAll()
+    user.relation("addresses").detachAll()
 
     expect(user.addresses.length).toBe(0)
 
@@ -882,19 +883,19 @@ test('it allows to detach all items on belongs to many relation', () => {
     expect(address2.users.length).toBe(0)
 })
 
-test('it allows to cascade delete pivot items on belongs to many relation', () => {
+test("it allows to cascade delete pivot items on belongs to many relation", () => {
     Resolver.db().driver.clear()
 
-    let user = User.create({name: 'User1'}),
-        user2 = User.create({name: 'User2'})
+    let user = User.create({ name: "User1" }),
+        user2 = User.create({ name: "User2" })
 
-    let address1 = Address.create({ street: 'Street1' }),
-        address2 = Address.create({ street: 'Street2' })
+    let address1 = Address.create({ street: "Street1" }),
+        address2 = Address.create({ street: "Street2" })
 
-    user.relation('addresses').attach(address1)
-    user.relation('addresses').attach(address2)
+    user.relation("addresses").attach(address1)
+    user.relation("addresses").attach(address2)
 
-    user2.relation('addresses').attach(address1)
+    user2.relation("addresses").attach(address1)
 
     expect(AddressUser.get().length).toBe(3)
 
@@ -903,12 +904,13 @@ test('it allows to cascade delete pivot items on belongs to many relation', () =
     expect(AddressUser.get().length).toBe(1)
 })
 
-test('it throws an exception when trying to attach an unsaved model', () => {
+test("it throws an exception when trying to attach an unsaved model", () => {
     Resolver.db().driver.clear()
 
-    let user = User.create({name: 'User1'}),
-        address = new Address
+    let user = User.create({ name: "User1" }),
+        address = new Address()
 
-        expect(() => user.relation('addresses').attach(address))
-        .toThrow('Cannot attach Address to User because Address is not saved yet.')
+    expect(() => user.relation("addresses").attach(address)).toThrow(
+        "Cannot attach Address to User because Address is not saved yet.",
+    )
 })

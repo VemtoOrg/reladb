@@ -1,11 +1,11 @@
-import moment from 'moment'
-import Resolver from './Resolver.js'
-import packageSettings from '../package.json'
+import moment from "moment"
+import Resolver from "./Resolver.js"
+import packageSettings from "../package.json"
 
 export default class Query {
-
     constructor(model) {
-        if(!Resolver.db()) throw new Error('The database is undefined. Please define create a database and add to Resolver')
+        if (!Resolver.db())
+            throw new Error("The database is undefined. Please define create a database and add to Resolver")
 
         this.model = model
         this.filteredIndex = null
@@ -17,32 +17,32 @@ export default class Query {
     }
 
     create(data = {}) {
-        if(Resolver.db().events.creating) Resolver.db().events.creating()
+        if (Resolver.db().events.creating) Resolver.db().events.creating()
 
         let tableData = this.getTableData(),
             id = ++tableData.lastPrimaryKey,
             item = null
 
-        if(data[this.model.primaryKey()]) {
+        if (data[this.model.primaryKey()]) {
             delete data[this.model.primaryKey()]
         }
 
         this.blockFieldsReplacingRelationships(data)
 
         data[this.model.primaryKey()] = id
-        
+
         this.saveItem(id, data)
 
         tableData.count++
         tableData.index[data.id] = this.indexStructure()
-        
+
         this.saveTableData(tableData)
 
         item = new this.model(data)
-        
+
         this.addIndexesByItem(item)
 
-        if(Resolver.db().events.creating) Resolver.db().events.created()
+        if (Resolver.db().events.creating) Resolver.db().events.created()
 
         return item
     }
@@ -51,19 +51,19 @@ export default class Query {
         let data = [],
             filteredIndex = this.getFilteredIndex()
 
-        this.log('Getting data from: ' + this.model.table())
-        this.log('Current filtered index for query: ', filteredIndex)
+        this.log("Getting data from: " + this.model.table())
+        this.log("Current filtered index for query: ", filteredIndex)
 
-        filteredIndex.forEach(id => {
+        filteredIndex.forEach((id) => {
             let item = null
-            if(item = this.getItem(id)) {
+            if ((item = this.getItem(id))) {
                 data.push(new this.model(item))
             }
         })
-        
+
         this.clearFilteredIndex()
 
-        this.log('Retrieved data:', data)
+        this.log("Retrieved data:", data)
 
         return this.applyFilters(data)
     }
@@ -77,15 +77,15 @@ export default class Query {
     }
 
     find(id = null) {
-        if(!id) throw new Error('Please specify an identifier to find a row')
+        if (!id) throw new Error("Please specify an identifier to find a row")
 
         this.log(`Getting item ${id} from ${this.model.table()}`)
 
         try {
             let item = this.getItem(id)
-    
+
             this.checkItemData(item, id)
-    
+
             return item
         } catch (error) {
             this.log(`Item ${id} not found`)
@@ -96,7 +96,7 @@ export default class Query {
     findOrFail(id = null) {
         let data = null
 
-        if(data = this.find(id)) {
+        if ((data = this.find(id))) {
             return data
         }
 
@@ -104,7 +104,7 @@ export default class Query {
     }
 
     update(id, data = {}) {
-        if(Resolver.db().events.updating) Resolver.db().events.updating()
+        if (Resolver.db().events.updating) Resolver.db().events.updating()
 
         let oldItem = this.findOrFail(id)
         this.removeIndexesByItem(oldItem)
@@ -118,7 +118,7 @@ export default class Query {
 
         oldItem = null
 
-        if(Resolver.db().events.updated) Resolver.db().events.updated()
+        if (Resolver.db().events.updated) Resolver.db().events.updated()
 
         Resolver.db().executeOnUpdateCallbackForTable(this.tableKey(), item)
 
@@ -126,13 +126,13 @@ export default class Query {
     }
 
     delete(id) {
-        if(this.isAlreadyDeleting(id) || this.isAlreadyDeleted(id)) return
+        if (this.isAlreadyDeleting(id) || this.isAlreadyDeleted(id)) return
 
-        if(Resolver.db().events.deleting) Resolver.db().events.deleting()
+        if (Resolver.db().events.deleting) Resolver.db().events.deleting()
 
         let item = this.getItem(id)
-        
-        if(!item) return
+
+        if (!item) return
 
         this.checkForeignKeyConstraints(item)
 
@@ -140,7 +140,7 @@ export default class Query {
             this.addToDeletingBuffer(id)
 
             this.deleteChildrenByCascadeDelete(item)
-            
+
             this.removeIndexesByItem(item)
             this.removeItem(id)
 
@@ -149,7 +149,7 @@ export default class Query {
             delete tableData.index[id]
             this.saveTableData(tableData)
 
-            if(Resolver.db().events.deleted) Resolver.db().events.deleted()
+            if (Resolver.db().events.deleted) Resolver.db().events.deleted()
 
             this.removeFromDeletingBuffer(id)
 
@@ -166,9 +166,9 @@ export default class Query {
     }
 
     isAlreadyDeleted(id) {
-        return !! !this.getItem(id)
+        return !!!this.getItem(id)
     }
-    
+
     addToDeletingBuffer(id) {
         return Resolver.db().addToDeletingBuffer(this.tableKey(), id)
     }
@@ -178,13 +178,15 @@ export default class Query {
     }
 
     blockFieldsReplacingRelationships(data) {
-        let relationships = (new this.model).relationships()
+        let relationships = new this.model().relationships()
 
         data = Object.assign({}, data)
 
-        Object.keys(relationships).forEach(relationshipName => {
-            if(typeof data[relationshipName] !== 'undefined') {
-                throw new Error(`It is not possible to set the field ${relationshipName} because there is already a relationship with the same name`)
+        Object.keys(relationships).forEach((relationshipName) => {
+            if (typeof data[relationshipName] !== "undefined") {
+                throw new Error(
+                    `It is not possible to set the field ${relationshipName} because there is already a relationship with the same name`,
+                )
             }
         })
     }
@@ -195,9 +197,9 @@ export default class Query {
     }
 
     applyFilters(data) {
-        let orderFilters = this.filters.filter(filter => filter.type == 'order')
+        let orderFilters = this.filters.filter((filter) => filter.type == "order")
 
-        orderFilters.forEach(filter => {
+        orderFilters.forEach((filter) => {
             data = data.sort(this.compare(filter.field, filter.direction))
         })
 
@@ -213,7 +215,7 @@ export default class Query {
     getFilteredIndex() {
         let tableData = this.getTableData()
 
-        if(!this.filteredIndex) {
+        if (!this.filteredIndex) {
             return Object.keys(tableData.index)
         }
 
@@ -229,7 +231,7 @@ export default class Query {
     getItem(id) {
         let itemData = this.getItemData(id)
 
-        if(!itemData) return null
+        if (!itemData) return null
 
         return new this.model(itemData)
     }
@@ -238,7 +240,7 @@ export default class Query {
         let itemKey = this.tableItemKey(id),
             itemData = this.dbDriver().get(itemKey)
 
-        if(!itemData) return null
+        if (!itemData) return null
 
         return itemData
     }
@@ -246,11 +248,10 @@ export default class Query {
     saveItem(id, data) {
         let itemKey = this.tableItemKey(id)
 
-        if(this.model.timestamps()) {
-            if(!data.createdAt)
-                data.createdAt = moment().format('YYYY-MM-DD HH:mm:ss')
-            
-            data.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss')
+        if (this.model.timestamps()) {
+            if (!data.createdAt) data.createdAt = moment().format("YYYY-MM-DD HH:mm:ss")
+
+            data.updatedAt = moment().format("YYYY-MM-DD HH:mm:ss")
         }
 
         this.dbDriver().set(itemKey, data)
@@ -263,7 +264,7 @@ export default class Query {
     }
 
     checkItemData(item, id) {
-        if(!item) {
+        if (!item) {
             throw new Error(`Item with identifier ${id} not found on table ${this.model.table()}`)
         }
 
@@ -274,7 +275,7 @@ export default class Query {
         let tableKey = this.tableKey(),
             tableData = this.dbDriver().get(tableKey)
 
-        if(!tableData) return this.tableStructure()
+        if (!tableData) return this.tableStructure()
 
         return tableData
     }
@@ -292,33 +293,33 @@ export default class Query {
     checkForeignKeyConstraints(item) {
         // It checks has one relations too, as HasOne extends HasMany
         let hasManyItemsCount = item.hasManyRelationships().reduce((acc, hasManyRelationship) => {
-            if(hasManyRelationship.usesCascadeDelete) return acc
-            return acc + hasManyRelationship.getAllItems(item).length   
+            if (hasManyRelationship.usesCascadeDelete) return acc
+            return acc + hasManyRelationship.getAllItems(item).length
         }, 0)
 
-        if(hasManyItemsCount) throw new Error('Cannot delete a parent item: a foreign key constraint fails')
+        if (hasManyItemsCount) throw new Error("Cannot delete a parent item: a foreign key constraint fails")
     }
 
     deleteChildrenByCascadeDelete(item) {
         // It deletes has one relations too, as HasOne extends HasMany
-        item.hasManyRelationships().forEach(hasManyRelationship => {
-            if(hasManyRelationship.usesCascadeDelete) {
+        item.hasManyRelationships().forEach((hasManyRelationship) => {
+            if (hasManyRelationship.usesCascadeDelete) {
                 let children = hasManyRelationship.getAllItems()
-                children.forEach(child => child.delete())
+                children.forEach((child) => child.delete())
             }
         })
 
-        item.morphManyRelationships().forEach(morphManyRelationship => {
-            if(morphManyRelationship.usesCascadeDelete) {
+        item.morphManyRelationships().forEach((morphManyRelationship) => {
+            if (morphManyRelationship.usesCascadeDelete) {
                 let children = morphManyRelationship.getAllItems()
-                children.forEach(child => child.delete())
+                children.forEach((child) => child.delete())
             }
         })
 
-        item.belongsToManyRelationships().forEach(belongsToManyRelationship => {
-            if(belongsToManyRelationship.usesCascadeDetach) {
+        item.belongsToManyRelationships().forEach((belongsToManyRelationship) => {
+            if (belongsToManyRelationship.usesCascadeDetach) {
                 let children = belongsToManyRelationship.getPivotItems()
-                children.forEach(child => child.delete())
+                children.forEach((child) => child.delete())
             }
         })
 
@@ -326,71 +327,89 @@ export default class Query {
     }
 
     addIndexesByItem(item) {
-        item.belongsToRelationships().forEach(
-            belongsToRelationship => this.addItemToParentHasManyIndex(belongsToRelationship, item)
+        item.belongsToRelationships().forEach((belongsToRelationship) =>
+            this.addItemToParentHasManyIndex(belongsToRelationship, item),
         )
     }
 
     removeIndexesByItem(item) {
-        item.belongsToRelationships().forEach(
-            belongsToRelationship => this.removeItemFromParentHasManyIndex(belongsToRelationship, item)
+        item.belongsToRelationships().forEach((belongsToRelationship) =>
+            this.removeItemFromParentHasManyIndex(belongsToRelationship, item),
         )
     }
 
     addItemToParentHasManyIndex(relationship, item) {
-        if(!item[relationship.foreignKey]) return
-        
-        this.log('%c Adding to parent has many: ' + relationship.signature(), 'color: orange')
-        
-        this.manipulateHasManyIndex(hasManyIndex => {
-            
-            if(hasManyIndex.includes(item.id)) {
+        if (!item[relationship.foreignKey]) return
+
+        this.log("%c Adding to parent has many: " + relationship.signature(), "color: orange")
+
+        this.manipulateHasManyIndex(
+            (hasManyIndex) => {
+                if (hasManyIndex.includes(item.id)) {
+                    return hasManyIndex
+                }
+
+                if (relationship.allowsOnlyOne && hasManyIndex.length > 0) {
+                    throw new Error(
+                        `Has One relation doesn't allow more than one relation at same time | ${relationship.signature()}`,
+                    )
+                }
+
+                hasManyIndex.push(item.id)
+
                 return hasManyIndex
-            }
-
-            if(relationship.allowsOnlyOne && hasManyIndex.length > 0) {
-                throw new Error(`Has One relation doesn't allow more than one relation at same time | ${relationship.signature()}`)
-            }
-
-            hasManyIndex.push(item.id)
-
-            return hasManyIndex
-            
-        }, relationship, item)
+            },
+            relationship,
+            item,
+        )
     }
 
     removeItemFromParentHasManyIndex(relationship, item) {
-        if(!item[relationship.foreignKey]) return
-        
-        this.log('Removing from parent has many: ' + relationship.signature())
-        
-        this.manipulateHasManyIndex(hasManyIndex => {
-            hasManyIndex.splice(hasManyIndex.indexOf(item.id), 1)
-            return hasManyIndex
-        }, relationship, item)
+        if (!item[relationship.foreignKey]) return
+
+        this.log("Removing from parent has many: " + relationship.signature())
+
+        this.manipulateHasManyIndex(
+            (hasManyIndex) => {
+                hasManyIndex.splice(hasManyIndex.indexOf(item.id), 1)
+                return hasManyIndex
+            },
+            relationship,
+            item,
+        )
     }
 
     manipulateHasManyIndex(manipulationCallback, relationship, item) {
         let parent = relationship.getParentFromItem(item)
-        
-        if(!parent) return
+
+        if (!parent) return
 
         let parentQuery = parent.constructor.getQuery(),
             parentIndex = parentQuery.getItemIndex(parent)
 
-        if(!parentIndex) return
+        if (!parentIndex) return
 
         let indexKey = `${item.getTable()}.${relationship.foreignKey}`,
             hasManyIndex = parentIndex.hasMany[indexKey] || []
 
-        this.log(`%c Before manipulating has many index: ${indexKey} parent: ${parent.id} item: ${item.id}`, 'color: red', hasManyIndex)
+        this.log(
+            `%c Before manipulating has many index: ${indexKey} parent: ${parent.id} item: ${item.id}`,
+            "color: red",
+            hasManyIndex,
+        )
 
         let indexData = manipulationCallback(hasManyIndex)
         indexData = [...new Set(indexData)]
-        
-        parentIndex.hasMany[indexKey] = indexData.sort(function(a, b){return a - b})
 
-        this.log(`%c After manipulating has many index: ${indexKey} parent: ${parent.id} item: ${item.id}`, 'color: blue', hasManyIndex)
+        parentIndex.hasMany[indexKey] = indexData.sort(function (a, b) {
+            return a - b
+        })
+
+        this.log(
+            `%c After manipulating has many index: ${indexKey} parent: ${parent.id} item: ${item.id}`,
+            "color: blue",
+            hasManyIndex,
+        )
 
         parentQuery.updateItemIndex(parent, parentIndex)
     }
@@ -403,18 +422,18 @@ export default class Query {
     }
 
     getItemIndex(item) {
-        if(!item.id) return null
+        if (!item.id) return null
 
         let tableData = this.getTableData()
-        
+
         return tableData.index[item.id] || null
     }
 
     updateItemIndex(item, newIndexData) {
-        if(!item.id) return null
+        if (!item.id) return null
 
         let tableData = this.getTableData()
-        
+
         tableData.index[item.id] = newIndexData
 
         return this.saveTableData(tableData)
@@ -454,45 +473,44 @@ export default class Query {
         return Resolver.db().driver.setTable(this.model.table())
     }
 
-    compare(field, direction = 'asc') {
-        return function(a, b) {
-            if(typeof a[field] === 'undefined' || typeof b[field] === 'undefined') return 0
+    compare(field, direction = "asc") {
+        return function (a, b) {
+            if (typeof a[field] === "undefined" || typeof b[field] === "undefined") return 0
 
-            if(a[field] === null || b[field] === null) return 0
+            if (a[field] === null || b[field] === null) return 0
 
-            const itemA = typeof a[field] === 'number' ? a[field] : a[field].toString().toUpperCase()
-            const itemB = typeof b[field] === 'number' ? b[field] : b[field].toString().toUpperCase()
-          
+            const itemA = typeof a[field] === "number" ? a[field] : a[field].toString().toUpperCase()
+            const itemB = typeof b[field] === "number" ? b[field] : b[field].toString().toUpperCase()
+
             let comparison = 0
-            
+
             if (itemA > itemB) {
-              comparison = 1
+                comparison = 1
             } else if (itemA < itemB) {
-              comparison = -1
+                comparison = -1
             }
-    
-            return direction == 'asc' ? comparison : comparison * -1
+
+            return direction == "asc" ? comparison : comparison * -1
         }
     }
 
     log() {
-        if(Resolver.db().mode === 'development') {
-            if(!this.lastLogTime) this.lastLogTime = moment()
-            
+        if (Resolver.db().mode === "development") {
+            if (!this.lastLogTime) this.lastLogTime = moment()
+
             let difference = moment().diff(this.lastLogTime)
 
             console.log(...arguments)
 
-            if(difference > 10) {
-                console.log(`%cExecution time: ${difference} ms`, 'color: #e74c3c; font-style: italic;')
-            } else if(difference > 5) {
-                console.log(`%cExecution time: ${difference} ms`, 'color: #f39c12; font-style: italic;')
+            if (difference > 10) {
+                console.log(`%cExecution time: ${difference} ms`, "color: #e74c3c; font-style: italic;")
+            } else if (difference > 5) {
+                console.log(`%cExecution time: ${difference} ms`, "color: #f39c12; font-style: italic;")
             } else {
-                console.log(`%cExecution time: ${difference} ms`, 'color: #3498db; font-style: italic;')
+                console.log(`%cExecution time: ${difference} ms`, "color: #3498db; font-style: italic;")
             }
 
             this.lastLogTime = moment()
         }
     }
-
 }

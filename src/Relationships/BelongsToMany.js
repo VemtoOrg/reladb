@@ -1,9 +1,8 @@
-import Relationship from './Relationship.js'
+import Relationship from "./Relationship.js"
 
 export default class BelongsToMany extends Relationship {
-    
     relationshipType() {
-        return 'BelongsToMany'
+        return "BelongsToMany"
     }
 
     setPivotModel(pivotModel) {
@@ -13,7 +12,7 @@ export default class BelongsToMany extends Relationship {
     }
 
     setForeignPivotKey(foreignPivotKey) {
-        if(!foreignPivotKey) {
+        if (!foreignPivotKey) {
             foreignPivotKey = `${this.localModel.defaultKeyIdentifier()}Id`
         }
 
@@ -23,7 +22,7 @@ export default class BelongsToMany extends Relationship {
     }
 
     setRelatedPivotKey(relatedPivotKey) {
-        if(!relatedPivotKey) {
+        if (!relatedPivotKey) {
             relatedPivotKey = `${this.model.defaultKeyIdentifier()}Id`
         }
 
@@ -38,13 +37,15 @@ export default class BelongsToMany extends Relationship {
         return this
     }
 
-    orderBy(field, direction = 'asc') {
-        this.setFilters([{
-            field: field,
-            type: 'order',
-            direction: direction
-        }])
-        
+    orderBy(field, direction = "asc") {
+        this.setFilters([
+            {
+                field: field,
+                type: "order",
+                direction: direction,
+            },
+        ])
+
         return this
     }
 
@@ -54,11 +55,12 @@ export default class BelongsToMany extends Relationship {
 
     execute() {
         const pivotItems = this.getPivotItems()
-        
-        let relatedItems = this.getQuery()
-            .setFilters(this.filters)
-            .setFilteredIndex(pivotItems.map(pivotItem => pivotItem[this.relatedPivotKey]))
-            .get() || []
+
+        let relatedItems =
+            this.getQuery()
+                .setFilters(this.filters)
+                .setFilteredIndex(pivotItems.map((pivotItem) => pivotItem[this.relatedPivotKey]))
+                .get() || []
 
         return relatedItems
     }
@@ -68,14 +70,12 @@ export default class BelongsToMany extends Relationship {
 
         let itemIndex = item.constructor.getQuery().getItemIndex(item)
 
-        if(!itemIndex) return []
+        if (!itemIndex) return []
 
         let indexKey = `${this.pivotModel.table()}.${this.foreignPivotKey}`,
             hasManyIndex = itemIndex.hasMany[indexKey] || []
 
-        return this.pivotModel.getQuery()
-            .setFilteredIndex(hasManyIndex)
-            .get() || []
+        return this.pivotModel.getQuery().setFilteredIndex(hasManyIndex).get() || []
     }
 
     signature() {
@@ -83,23 +83,29 @@ export default class BelongsToMany extends Relationship {
     }
 
     attachUnique(relatedItem, extraData = null) {
-        if(this.has(relatedItem)) return false
+        if (this.has(relatedItem)) return false
 
         return this.attach(relatedItem, extraData)
     }
 
     attach(relatedItem, extraData = null) {
-        const pivotItem = new (this.pivotModel)
+        const pivotItem = new this.pivotModel()
 
         pivotItem[this.foreignPivotKey] = this.getItem()[this.localModel.primaryKey()]
         pivotItem[this.relatedPivotKey] = relatedItem[this.model.primaryKey()]
 
-        if(!pivotItem[this.foreignPivotKey]) throw new Error(`Cannot attach ${this.model.identifier()} to ${this.localModel.identifier()} because ${this.localModel.identifier()} is not saved yet.`)
+        if (!pivotItem[this.foreignPivotKey])
+            throw new Error(
+                `Cannot attach ${this.model.identifier()} to ${this.localModel.identifier()} because ${this.localModel.identifier()} is not saved yet.`,
+            )
 
-        if(!pivotItem[this.relatedPivotKey]) throw new Error(`Cannot attach ${this.model.identifier()} to ${this.localModel.identifier()} because ${this.model.identifier()} is not saved yet.`)
+        if (!pivotItem[this.relatedPivotKey])
+            throw new Error(
+                `Cannot attach ${this.model.identifier()} to ${this.localModel.identifier()} because ${this.model.identifier()} is not saved yet.`,
+            )
 
-        if(extraData) {
-            Object.keys(extraData).forEach(key => {
+        if (extraData) {
+            Object.keys(extraData).forEach((key) => {
                 pivotItem[key] = extraData[key]
             })
         }
@@ -112,24 +118,25 @@ export default class BelongsToMany extends Relationship {
     detachAllOcurrences(relatedItem) {
         const pivotItems = this.getPivotItems()
 
-        if(!pivotItems.length) return false
+        if (!pivotItems.length) return false
 
-        return pivotItems.filter(pivotItem => pivotItem[this.relatedPivotKey] == relatedItem[this.model.primaryKey()])
-            .map(pivotItem => pivotItem.delete())
+        return pivotItems
+            .filter((pivotItem) => pivotItem[this.relatedPivotKey] == relatedItem[this.model.primaryKey()])
+            .map((pivotItem) => pivotItem.delete())
     }
 
     detachAll() {
         const pivotItems = this.getPivotItems()
 
-        if(!pivotItems.length) return false
+        if (!pivotItems.length) return false
 
-        return pivotItems.map(pivotItem => pivotItem.delete())
+        return pivotItems.map((pivotItem) => pivotItem.delete())
     }
 
     detach(relatedItem) {
         const pivotItem = this.getPivotItem(relatedItem)
 
-        if(!pivotItem) return false
+        if (!pivotItem) return false
 
         return pivotItem.delete()
     }
@@ -141,7 +148,6 @@ export default class BelongsToMany extends Relationship {
     getPivotItem(relatedItem) {
         const pivotItems = this.getPivotItems()
 
-        return pivotItems.find(pivotItem => pivotItem[this.relatedPivotKey] == relatedItem[this.model.primaryKey()])
+        return pivotItems.find((pivotItem) => pivotItem[this.relatedPivotKey] == relatedItem[this.model.primaryKey()])
     }
-
 }

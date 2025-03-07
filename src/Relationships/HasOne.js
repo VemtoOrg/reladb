@@ -1,9 +1,8 @@
-import HasMany from './HasMany.js'
+import HasMany from "./HasMany.js"
 
 export default class HasOne extends HasMany {
-
     relationshipType() {
-        return 'HasOne'
+        return "HasOne"
     }
 
     getAllItems() {
@@ -17,5 +16,4 @@ export default class HasOne extends HasMany {
     signature() {
         return `${this.localModel.identifier()}->HasMany(${this.model.identifier()}):${this.foreignKey},${this.localKey}`
     }
-
 }

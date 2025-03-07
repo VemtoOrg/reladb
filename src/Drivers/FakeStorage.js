@@ -1,4 +1,4 @@
-import Driver from './Driver.js'
+import Driver from "./Driver.js"
 
 class Store {
     constructor() {
@@ -25,7 +25,6 @@ class Store {
 const fakeStorage = new Store()
 
 class FakeStorage extends Driver {
-
     getAllTableNames() {
         let tablesKey = this.getTablesKey(),
             storedTablesNames = fakeStorage.getItem(tablesKey)
@@ -68,20 +67,19 @@ class FakeStorage extends Driver {
     }
 
     getBaseKey() {
-        return 'reladb_database'
+        return "reladb_database"
     }
 
     updateTablesNames() {
         let tablesKey = this.getTablesKey(),
             tablesNames = this.getAllTableNames()
 
-        if(!tablesNames.some(table => table === this.table)) {
+        if (!tablesNames.some((table) => table === this.table)) {
             tablesNames.push(this.table)
         }
 
         return fakeStorage.setItem(tablesKey, tablesNames)
     }
-
 }
 
-export default new FakeStorage
+export default new FakeStorage()

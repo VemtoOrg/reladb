@@ -1,7 +1,6 @@
-import Driver from './Driver.js'
+import Driver from "./Driver.js"
 
 class LocalStorage extends Driver {
-
     getAllTableNames() {
         let tablesKey = this.getTablesKey(),
             storedTablesNames = window.localStorage.getItem(tablesKey)
@@ -44,20 +43,19 @@ class LocalStorage extends Driver {
     }
 
     getBaseKey() {
-        return 'reladb_database'
+        return "reladb_database"
     }
 
     updateTablesNames() {
         let tablesKey = this.getTablesKey(),
             tablesNames = this.getAllTableNames()
 
-        if(!tablesNames.some(table => table === this.table)) {
+        if (!tablesNames.some((table) => table === this.table)) {
             tablesNames.push(this.table)
         }
 
         return window.localStorage.setItem(tablesKey, JSON.stringify(tablesNames))
     }
-
 }
 
-export default new LocalStorage
+export default new LocalStorage()

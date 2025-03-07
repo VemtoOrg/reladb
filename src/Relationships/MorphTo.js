@@ -1,10 +1,9 @@
-import Resolver from '../Resolver.js'
-import Relationship from './Relationship.js'
+import Resolver from "../Resolver.js"
+import Relationship from "./Relationship.js"
 
 export default class MorphTo extends Relationship {
-    
     relationshipType() {
-        return 'MorphTo'
+        return "MorphTo"
     }
 
     setName(name) {
@@ -14,7 +13,7 @@ export default class MorphTo extends Relationship {
     }
 
     setMorphKey(morphKey) {
-        if(!morphKey) {
+        if (!morphKey) {
             morphKey = `${this.name}Id`
         }
 
@@ -24,7 +23,7 @@ export default class MorphTo extends Relationship {
     }
 
     setMorphType(morphType) {
-        if(!morphType) {
+        if (!morphType) {
             morphType = `${this.name}Type`
         }
 
@@ -35,8 +34,8 @@ export default class MorphTo extends Relationship {
 
     getParentFromItem() {
         const item = this.getItem()
-        
-        if(!item[this.morphKey] || !item[this.morphType]) return null
+
+        if (!item[this.morphKey] || !item[this.morphType]) return null
 
         const morphType = item[this.morphType],
             model = Resolver.db().getModel(morphType)
@@ -45,11 +44,10 @@ export default class MorphTo extends Relationship {
     }
 
     execute() {
-       return this.getParentFromItem() 
+        return this.getParentFromItem()
     }
 
     signature() {
         return `${this.localModel.identifier()}->MorphTo(${this.name}):${this.morphKey},${this.morphType}`
     }
-
 }

@@ -1,21 +1,19 @@
 import Model from "./Model.js"
 
 export default class ImporterModel extends Model {
-
     static identifier() {
-        return 'ImporterModel'
+        return "ImporterModel"
     }
 
     // static creating(data) {
     //     console.log('creating item', this.table(),  data)
-        
+
     //     return data
     // }
 
     // static updating(data) {
     //     console.log('updating item', this.table(),  data)
-        
+
     //     return data
     // }
-
 }

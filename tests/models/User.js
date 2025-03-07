@@ -7,24 +7,23 @@ import Model from "../../src/Model.js"
 import AddressUser from "./AddressUser.js"
 
 export default class User extends Model {
-
     relationships() {
         return {
             photos: () => this.hasMany(Photo),
-            posts: () => this.hasMany(Post, 'ownerId', 'id'),
+            posts: () => this.hasMany(Post, "ownerId", "id"),
             document: () => this.hasOne(Document).cascadeDelete(),
-            phones: () => this.hasMany(Phone, 'ownerId', 'id').cascadeDelete(),
+            phones: () => this.hasMany(Phone, "ownerId", "id").cascadeDelete(),
             addresses: () => this.belongsToMany(Address, AddressUser).cascadeDetach(),
         }
     }
 
     static creating(data) {
-        data.email = 'my@email.com'
+        data.email = "my@email.com"
         return data
     }
 
     static created(user) {
-        Phone.create({phone: '99999-9999', ownerId: user.id})
+        Phone.create({ phone: "99999-9999", ownerId: user.id })
     }
 
     static beforeUpdate(data) {
@@ -33,21 +32,20 @@ export default class User extends Model {
     }
 
     static updating(data, oldData) {
-        if(data.role != oldData.role) {
-            data.role = data.role + ' Changed'
+        if (data.role != oldData.role) {
+            data.role = data.role + " Changed"
         }
 
-        data.email = 'my_edited@email.com'
-        
+        data.email = "my_edited@email.com"
+
         return data
     }
 
     static updated(user) {
-        Phone.create({phone: '77777-7777', ownerId: user.id})
+        Phone.create({ phone: "77777-7777", ownerId: user.id })
     }
 
     testMethod() {
-        return 'test'
+        return "test"
     }
-
 }

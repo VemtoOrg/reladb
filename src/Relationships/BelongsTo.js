@@ -1,9 +1,8 @@
-import Relationship from './Relationship.js'
+import Relationship from "./Relationship.js"
 
 export default class BelongsTo extends Relationship {
-    
     relationshipType() {
-        return 'BelongsTo'
+        return "BelongsTo"
     }
 
     atMostOne() {
@@ -12,7 +11,7 @@ export default class BelongsTo extends Relationship {
     }
 
     setForeignKey(foreignKey) {
-        if(!foreignKey) {
+        if (!foreignKey) {
             foreignKey = `${this.model.defaultKeyIdentifier().toLowerCase()}Id`
         }
 
@@ -22,7 +21,7 @@ export default class BelongsTo extends Relationship {
     }
 
     setOwnerKey(ownerKey) {
-        if(!ownerKey) {
+        if (!ownerKey) {
             ownerKey = this.model.primaryKey()
         }
 
@@ -34,18 +33,18 @@ export default class BelongsTo extends Relationship {
     getParentFromItem() {
         const item = this.getItem()
 
-        if(!item[this.foreignKey]) return null
+        if (!item[this.foreignKey]) return null
 
         return this.getQuery().find(item[this.foreignKey])
     }
 
     execute() {
-       return this.getParentFromItem() 
+        return this.getParentFromItem()
     }
 
     signature() {
-        let type = this.allowsOnlyOne ? 'BelongsTo_One' : 'BelongsTo'
-        
+        let type = this.allowsOnlyOne ? "BelongsTo_One" : "BelongsTo"
+
         return `${this.localModel.identifier()}->${type}(${this.model.identifier()}):${this.foreignKey},${this.ownerKey}`
     }
 
@@ -54,29 +53,30 @@ export default class BelongsTo extends Relationship {
      * @returns {Relationship}
      */
     inverse() {
-        let modelInstance = new (this.model),
+        let modelInstance = new this.model(),
             relationships = modelInstance.relationships()
 
-        let inverseRelationshipName = Object.keys(relationships).find(relationshipName => {
+        let inverseRelationshipName = Object.keys(relationships).find((relationshipName) => {
             let relationship = relationships[relationshipName]
 
-            if(!relationship) return null
+            if (!relationship) return null
 
             let relationshipInstance = relationship()
 
-            return relationshipInstance.type === 'HasMany'
-                && relationshipInstance.foreignKey === this.foreignKey
-                && relationshipInstance.localModel.identifier() == this.model.identifier()
-                && relationshipInstance.model.identifier() == this.localModel.identifier()
+            return (
+                relationshipInstance.type === "HasMany" &&
+                relationshipInstance.foreignKey === this.foreignKey &&
+                relationshipInstance.localModel.identifier() == this.model.identifier() &&
+                relationshipInstance.model.identifier() == this.localModel.identifier()
+            )
         })
 
-        if(!inverseRelationshipName) return null
-        if(!relationships[inverseRelationshipName]) return null
+        if (!inverseRelationshipName) return null
+        if (!relationships[inverseRelationshipName]) return null
 
         let relationship = relationships[inverseRelationshipName]()
         relationship.setNameOnModel(inverseRelationshipName)
 
         return relationship
     }
-
 }

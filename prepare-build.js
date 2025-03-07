@@ -1,11 +1,10 @@
-const fs = require('fs')
+const fs = require("fs")
 
 function deleteFolderRecursive(path) {
-    if( fs.existsSync(path) ) {
-        
-        fs.readdirSync(path).forEach(function(file){
+    if (fs.existsSync(path)) {
+        fs.readdirSync(path).forEach(function (file) {
             var curPath = path + "/" + file
-            if(fs.lstatSync(curPath).isDirectory()) {
+            if (fs.lstatSync(curPath).isDirectory()) {
                 deleteFolderRecursive(curPath)
             } else {
                 fs.unlinkSync(curPath)
@@ -17,4 +16,4 @@ function deleteFolderRecursive(path) {
 }
 
 // delete /dist
-deleteFolderRecursive('./dist')
+deleteFolderRecursive("./dist")

@@ -1,11 +1,10 @@
 import Query from "../Query.js"
 
 export default class Relationship {
-
     constructor(model, localModel) {
         this.model = model
         this.localModel = localModel
-        
+
         this.item = null
 
         this.filters = []
@@ -14,7 +13,7 @@ export default class Relationship {
     }
 
     relationshipType() {
-        return 'BasicRelationship'
+        return "BasicRelationship"
     }
 
     getQuery() {
@@ -52,5 +51,4 @@ export default class Relationship {
     getNameOnModel() {
         return this.__nameOnModel
     }
-
 }

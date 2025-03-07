@@ -1,7 +1,6 @@
-import Driver from './Driver.js'
+import Driver from "./Driver.js"
 
 class RAMStorage extends Driver {
-
     constructor() {
         super()
 
@@ -11,7 +10,7 @@ class RAMStorage extends Driver {
     storeBaseData() {
         return {
             tables: {},
-            tablesNames: []
+            tablesNames: [],
         }
     }
 
@@ -21,10 +20,10 @@ class RAMStorage extends Driver {
 
     setFromDriver(key, data) {
         key = this.getRealKey(key)
-        
+
         this.updateTablesNames()
 
-        if(!this.store.tables[this.table]) {
+        if (!this.store.tables[this.table]) {
             this.store.tables[this.table] = {}
         }
 
@@ -38,7 +37,7 @@ class RAMStorage extends Driver {
 
         let tableData = this.store.tables[this.table]
 
-        if(!tableData) return null
+        if (!tableData) return null
 
         return tableData[key] ? tableData[key] : null
     }
@@ -46,7 +45,7 @@ class RAMStorage extends Driver {
     removeFromDriver(key) {
         key = this.getRealKey(key)
 
-        if(!this.store.tables[this.table]) return
+        if (!this.store.tables[this.table]) return
 
         delete this.store.tables[this.table][key]
 
@@ -54,7 +53,7 @@ class RAMStorage extends Driver {
     }
 
     getRealKey(key) {
-        if(key === this.table) return '__tableData'
+        if (key === this.table) return "__tableData"
 
         return key
     }
@@ -68,11 +67,11 @@ class RAMStorage extends Driver {
     updateTablesNames() {
         let tablesNames = this.store.tablesNames
 
-        if(!tablesNames.some(table => table === this.table)) {
+        if (!tablesNames.some((table) => table === this.table)) {
             tablesNames.push(this.table)
         }
 
-        return this.store.tablesNames = tablesNames
+        return (this.store.tablesNames = tablesNames)
     }
 
     allowsDataFeeding() {
@@ -87,7 +86,6 @@ class RAMStorage extends Driver {
     getDatabaseData() {
         return JSON.parse(JSON.stringify(this.store))
     }
-
 }
 
-export default new RAMStorage
+export default new RAMStorage()

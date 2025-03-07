@@ -1,5 +1,4 @@
 export default class Cache {
-
     constructor(database) {
         this.database = database
 
@@ -9,7 +8,7 @@ export default class Cache {
     }
 
     from(item) {
-        if(this.isCachingItem(item)) return
+        if (this.isCachingItem(item)) return
 
         this.cacheTablesInformation()
 
@@ -17,21 +16,20 @@ export default class Cache {
 
         this.addItemToTableCache(item)
         this.cacheItemRelationships(item)
-
     }
 
     cacheTablesInformation() {
         let tables = this.database.driver.getAllTableNames()
-        tables.forEach(table => this.addTableDataToCache(table))
+        tables.forEach((table) => this.addTableDataToCache(table))
     }
 
     addTableDataToCache(table) {
         this.setupCacheTable(table)
 
-        if(this.tables[table][table]) return
+        if (this.tables[table][table]) return
 
         let tableData = this.database.driver.setTable(table).get(table)
-        
+
         this.tables[table][table] = tableData
     }
 
@@ -41,26 +39,26 @@ export default class Cache {
 
         let itemPrimary = item[item.constructor.primaryKey()]
 
-        if(this.tables[table][`item_${itemPrimary}`]) return
+        if (this.tables[table][`item_${itemPrimary}`]) return
 
         this.tables[table][`item_${itemPrimary}`] = item
     }
 
     cacheItemRelationships(item) {
         item.hasManyRelationships().forEach((relationship) => {
-            if(this.isCachingRelationship(item, relationship)) return
+            if (this.isCachingRelationship(item, relationship)) return
 
             this.cachedRelationships.push(relationship.getItemModelIdentifier())
-            
+
             this.setupCacheTable(relationship.model.table())
 
             let relationshipItems = relationship.execute()
-            
-            if(!relationshipItems) return
+
+            if (!relationshipItems) return
 
             relationshipItems = Array.isArray(relationshipItems) ? relationshipItems : [relationshipItems]
 
-            relationshipItems.forEach(relatedItem => {
+            relationshipItems.forEach((relatedItem) => {
                 this.addItemToTableCache(relatedItem)
                 this.cacheItemRelationships(relatedItem)
             })
@@ -68,7 +66,7 @@ export default class Cache {
     }
 
     setupCacheTable(table) {
-        if(!this.tables[table]) {
+        if (!this.tables[table]) {
             this.tables[table] = {}
         }
     }
@@ -80,15 +78,10 @@ export default class Cache {
     }
 
     isCachingItem(item) {
-        return this.cachedItems.some(
-            cached => cached === item.getItemIdentifier()
-        )
+        return this.cachedItems.some((cached) => cached === item.getItemIdentifier())
     }
 
     isCachingRelationship(item, relationship) {
-        return this.cachedRelationships.some(
-            cached => cached === relationship.getItemModelIdentifier()
-        )
+        return this.cachedRelationships.some((cached) => cached === relationship.getItemModelIdentifier())
     }
-
 }

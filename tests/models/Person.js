@@ -2,7 +2,6 @@ import Photo from "./Photo.js"
 import Model from "../../src/Model.js"
 
 export default class Person extends Model {
-
     relationships() {
         return {
             photos: () => this.hasMany(Photo),
@@ -10,11 +9,10 @@ export default class Person extends Model {
     }
 
     static deleting(user) {
-        user.photos.forEach(photo => photo.delete())
+        user.photos.forEach((photo) => photo.delete())
     }
 
     static deleted(id) {
         throw new Error(`Person ${id} was deleted`)
     }
-
 }

@@ -1,14 +1,13 @@
-import Cache from './Cache.js'
-import Command from './Command.js'
-import { v4 as uuidv4 } from 'uuid'
-import Exporter from './Exporter.js'
-import Importer from './Importer.js'
+import Cache from "./Cache.js"
+import Command from "./Command.js"
+import { v4 as uuidv4 } from "uuid"
+import Exporter from "./Exporter.js"
+import Importer from "./Importer.js"
 
 /** @typedef {import('./Drivers/Driver')} Driver */
 
 export default class Database {
     constructor() {
-        
         /** @type Driver */
         this.driver = null
 
@@ -30,7 +29,7 @@ export default class Database {
         this.exporter = new Exporter(this)
 
         this.settings = {
-            addCommandToQueueOnDispatch: true
+            addCommandToQueueOnDispatch: true,
         }
 
         this.__saveDataToStorage = true
@@ -44,7 +43,7 @@ export default class Database {
         this.__customEventsListeners.push({
             id: listenerId,
             name: name,
-            listener: listener
+            listener: listener,
         })
 
         return listenerId
@@ -55,20 +54,20 @@ export default class Database {
     }
 
     removeCustomEventListenerById(id) {
-        this.__customEventsListeners = this.__customEventsListeners.filter(event => event.id !== id)
+        this.__customEventsListeners = this.__customEventsListeners.filter((event) => event.id !== id)
     }
 
     removeCustomEventListenersContaining(name) {
-        this.__customEventsListeners = this.__customEventsListeners.filter(event => !event.name.includes(name))
+        this.__customEventsListeners = this.__customEventsListeners.filter((event) => !event.name.includes(name))
     }
 
     removeCustomEventListenersByName(name) {
-        this.__customEventsListeners = this.__customEventsListeners.filter(event => event.name !== name)
+        this.__customEventsListeners = this.__customEventsListeners.filter((event) => event.name !== name)
     }
 
     executeCustomEventListener(name, ...data) {
-        this.__customEventsListeners.forEach(event => {
-            if(event.name === name) {
+        this.__customEventsListeners.forEach((event) => {
+            if (event.name === name) {
                 event.listener(...data)
             }
         })
@@ -79,7 +78,7 @@ export default class Database {
     }
 
     executeDataChangedEventListener() {
-        if(!this.__databaseDataChangedEventListener) return
+        if (!this.__databaseDataChangedEventListener) return
 
         this.__databaseDataChangedEventListener()
     }
@@ -97,25 +96,25 @@ export default class Database {
     }
 
     isAlreadyDeleting(table, id) {
-        if(!this.deletingBuffer[table]) return false
-        return !! this.deletingBuffer[table][id]
+        if (!this.deletingBuffer[table]) return false
+        return !!this.deletingBuffer[table][id]
     }
 
     addToDeletingBuffer(table, id) {
-        if(!this.deletingBuffer[table]) {
+        if (!this.deletingBuffer[table]) {
             this.deletingBuffer[table] = {}
         }
 
         this.deletingBuffer[table][id] = true
-        
-        if(this.deletingBufferListener) this.deletingBufferListener(this.cloneProperty('deletingBuffer'))
+
+        if (this.deletingBufferListener) this.deletingBufferListener(this.cloneProperty("deletingBuffer"))
     }
 
     removeFromDeletingBuffer(table, id) {
-        if(!this.deletingBuffer[table]) return
+        if (!this.deletingBuffer[table]) return
         delete this.deletingBuffer[table][id]
-        
-        if(this.deletingBufferListener) this.deletingBufferListener(this.cloneProperty('deletingBuffer'))
+
+        if (this.deletingBufferListener) this.deletingBufferListener(this.cloneProperty("deletingBuffer"))
     }
 
     registerDeletingBufferListener(listenerFunction) {
@@ -143,12 +142,12 @@ export default class Database {
 
     dispatchCommand(cmd, data = null) {
         let command = new Command(cmd, data)
-        
-        if(this.settings.addCommandToQueueOnDispatch) {
+
+        if (this.settings.addCommandToQueueOnDispatch) {
             this.addCommand(command)
         }
-        
-        if(this.onDispatchCommand) {
+
+        if (this.onDispatchCommand) {
             this.onDispatchCommand(command)
         }
 
@@ -156,7 +155,7 @@ export default class Database {
     }
 
     isExecutingCommands() {
-        return !! this.executingCommandId
+        return !!this.executingCommandId
     }
 
     canExecuteCommands() {
@@ -180,12 +179,12 @@ export default class Database {
 
         let similarCommands = this.getSimilarCommands(command)
 
-        if(similarCommands.length) {
+        if (similarCommands.length) {
             let latestSimilarCommand = similarCommands[similarCommands.length - 1]
             latestSimilarCommand.updateDataFromCommand(command)
 
-            similarCommands.forEach(command => {
-                if(command.id !== latestSimilarCommand.id) {
+            similarCommands.forEach((command) => {
+                if (command.id !== latestSimilarCommand.id) {
                     this.removeCommand(command)
                 }
             })
@@ -193,7 +192,7 @@ export default class Database {
             this.commands.push(command)
         }
 
-        if(this.onAddCommand) {
+        if (this.onAddCommand) {
             this.onAddCommand(command)
         }
 
@@ -201,26 +200,23 @@ export default class Database {
     }
 
     getSimilarCommands(baseCommand) {
-        return this.commands.filter(command => {
-            return command.command === baseCommand.command
-                && this.executingCommandId !== command.id
+        return this.commands.filter((command) => {
+            return command.command === baseCommand.command && this.executingCommandId !== command.id
         })
     }
 
     removeCommand(command) {
         this.markAsNotExecuting()
 
-        this.commands = this.commands.filter(
-            otherCommand => otherCommand.id !== command.id
-        )
+        this.commands = this.commands.filter((otherCommand) => otherCommand.id !== command.id)
 
-        if(this.onRemoveCommand) {
+        if (this.onRemoveCommand) {
             this.onRemoveCommand(command)
         }
     }
 
     executeNextCommand() {
-        if(this.canExecuteCommands()) {
+        if (this.canExecuteCommands()) {
             this.commands[0].execute()
         }
     }
@@ -230,11 +226,11 @@ export default class Database {
     }
 
     executeOnUpdateCallbackForTable(table, data) {
-        if(this.tableCallbacks[table]) {
+        if (this.tableCallbacks[table]) {
             this.tableCallbacks[table](data)
         }
     }
-    
+
     registerModel(model, identifier, customTableName = null) {
         const modelRegister = {
             model: model,
@@ -243,7 +239,7 @@ export default class Database {
 
         model.setIdentifier(identifier)
 
-        if(customTableName) {
+        if (customTableName) {
             model.setCustomTableName(customTableName)
         }
 

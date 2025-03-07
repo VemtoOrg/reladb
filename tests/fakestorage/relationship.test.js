@@ -1,19 +1,19 @@
-import Database from '../../src/Database.js'
-import Resolver from '../../src/Resolver.js'
-import FakeStorage from '../../src/Drivers/FakeStorage.js'
+import Database from "../../src/Database.js"
+import Resolver from "../../src/Resolver.js"
+import FakeStorage from "../../src/Drivers/FakeStorage.js"
 
-let database = new Database
+let database = new Database()
 database.setDriver(FakeStorage)
 
 Resolver.setDatabase(database)
 
-import '../imports/models-registry.js'
+import "../imports/models-registry.js"
 
-import '../relationship-tests'
+import "../relationship-tests"
 
 afterEach(() => {
     database.setDriver(FakeStorage)
     Resolver.db().stopCaching()
-    Resolver.db().driver.clear() 
+    Resolver.db().driver.clear()
 })
 afterAll(() => Resolver.db().driver.clear())

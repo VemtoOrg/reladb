@@ -1,7 +1,6 @@
-import Cache from './Cache.js'
+import Cache from "./Cache.js"
 
 export default class Exporter {
-
     constructor(database) {
         this.database = database
 
@@ -10,7 +9,7 @@ export default class Exporter {
 
     from(item) {
         this.clear()
-        
+
         this.cache.from(item)
 
         return this
@@ -27,13 +26,10 @@ export default class Exporter {
     }
 
     toJson() {
-        return JSON.stringify(
-            this.getData()
-        )
+        return JSON.stringify(this.getData())
     }
 
     clear() {
         this.cache.clear()
     }
-
 }

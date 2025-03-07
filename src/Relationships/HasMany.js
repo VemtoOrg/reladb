@@ -1,13 +1,12 @@
-import Relationship from './Relationship.js'
+import Relationship from "./Relationship.js"
 
 export default class HasMany extends Relationship {
-    
     relationshipType() {
-        return 'HasMany'
+        return "HasMany"
     }
 
     setForeignKey(foreignKey) {
-        if(!foreignKey) {
+        if (!foreignKey) {
             foreignKey = `${this.localModel.defaultKeyIdentifier().toLowerCase()}Id`
         }
 
@@ -17,7 +16,7 @@ export default class HasMany extends Relationship {
     }
 
     setLocalKey(localKey) {
-        if(!localKey) {
+        if (!localKey) {
             localKey = this.model.primaryKey()
         }
 
@@ -32,13 +31,15 @@ export default class HasMany extends Relationship {
         return this
     }
 
-    orderBy(field, direction = 'asc') {
-        this.setFilters([{
-            field: field,
-            type: 'order',
-            direction: direction
-        }])
-        
+    orderBy(field, direction = "asc") {
+        this.setFilters([
+            {
+                field: field,
+                type: "order",
+                direction: direction,
+            },
+        ])
+
         return this
     }
 
@@ -48,22 +49,18 @@ export default class HasMany extends Relationship {
 
     execute() {
         const item = this.getItem()
-        
+
         let itemIndex = item.constructor.getQuery().getItemIndex(item)
 
-        if(!itemIndex) return []
+        if (!itemIndex) return []
 
         let indexKey = `${this.model.table()}.${this.foreignKey}`,
             hasManyIndex = itemIndex.hasMany[indexKey] || []
-        
-        return this.getQuery()
-            .setFilters(this.filters)
-            .setFilteredIndex(hasManyIndex)
-            .get() || []
+
+        return this.getQuery().setFilters(this.filters).setFilteredIndex(hasManyIndex).get() || []
     }
 
     signature() {
         return `${this.localModel.identifier()}->HasMany(${this.model.identifier()}):${this.foreignKey},${this.localKey}`
     }
-
 }

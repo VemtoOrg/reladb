@@ -21,14 +21,14 @@ npm install @tiago_silva_pereira/reladb
 ### Defining Models
 
 ```javascript
-import { Model } from '@tiago_silva_pereira/reladb';
+import { Model } from "@tiago_silva_pereira/reladb"
 
 export default class User extends Model {
     relationships() {
         return {
-            posts: () => this.hasMany(Post, 'ownerId', 'id'),
+            posts: () => this.hasMany(Post, "ownerId", "id"),
             document: () => this.hasOne(Document).cascadeDelete(),
-            phones: () => this.hasMany(Phone, 'ownerId', 'id').cascadeDelete(),
+            phones: () => this.hasMany(Phone, "ownerId", "id").cascadeDelete(),
             addresses: () => this.belongsToMany(Address, AddressUser).cascadeDetach(),
         }
     }
@@ -40,20 +40,20 @@ export default class User extends Model {
 Models must be registered with RelaDB to be properly recognized by the system:
 
 ```javascript
-import Resolver from '@tiago_silva_pereira/reladb/src/Resolver.js'
-import User from './models/User.js'
-import Post from './models/Post.js'
-import Document from './models/Document.js'
+import Resolver from "@tiago_silva_pereira/reladb/src/Resolver.js"
+import User from "./models/User.js"
+import Post from "./models/Post.js"
+import Document from "./models/Document.js"
 
 // Register models when the database is ready
 Resolver.onDatabaseReady(() => {
     // Register a model with its class name
-    Resolver.db().registerModel(User, 'User')
-    
+    Resolver.db().registerModel(User, "User")
+
     // Register a model with custom table name
-    Resolver.db().registerModel(Post, 'Post', 'blog_posts')
-    
-    Resolver.db().registerModel(Document, 'Document')
+    Resolver.db().registerModel(Post, "Post", "blog_posts")
+
+    Resolver.db().registerModel(Document, "Document")
     // Register other models...
 })
 ```
@@ -63,14 +63,14 @@ Resolver.onDatabaseReady(() => {
 RelaDB is designed to be storage-agnostic. You can choose between different storage drivers or create your own:
 
 ```javascript
-import Resolver from '@tiago_silva_pereira/reladb/src/Resolver.js'
-import RAMStorage from '@tiago_silva_pereira/reladb/src/Drivers/RAMStorage.js'
+import Resolver from "@tiago_silva_pereira/reladb/src/Resolver.js"
+import RAMStorage from "@tiago_silva_pereira/reladb/src/Drivers/RAMStorage.js"
 // import LocalStorage from '@tiago_silva_pereira/reladb/src/Drivers/LocalStorage.js'
 // import IndexedDBStorage from '@tiago_silva_pereira/reladb/src/Drivers/IndexedDBStorage.js'
 
 // Configure the database with the RAM storage driver
 Resolver.setDB({
-    driver: RAMStorage
+    driver: RAMStorage,
 })
 
 // For persistent storage in a browser environment:
@@ -80,7 +80,7 @@ Resolver.setDB({
 // Custom configuration example:
 // Resolver.setDB({
 //     driver: CustomStorage,
-//     config: { 
+//     config: {
 //         url: 'https://api.example.com/data',
 //         apiKey: 'your-api-key'
 //     }
@@ -92,20 +92,30 @@ Resolver.setDB({
 You can create your own storage driver by extending the base Driver class:
 
 ```javascript
-import Driver from '@tiago_silva_pereira/reladb/src/Drivers/Driver.js'
+import Driver from "@tiago_silva_pereira/reladb/src/Drivers/Driver.js"
 
 class CustomStorage extends Driver {
     constructor(config = {}) {
         super()
         this.config = config
     }
-    
+
     // Implement required driver methods
-    setFromDriver(key, data) { /* Implementation */ }
-    getFromDriver(key) { /* Implementation */ }
-    removeFromDriver(key) { /* Implementation */ }
-    clearFromDriver() { /* Implementation */ }
-    getAllTableNames() { /* Implementation */ }
+    setFromDriver(key, data) {
+        /* Implementation */
+    }
+    getFromDriver(key) {
+        /* Implementation */
+    }
+    removeFromDriver(key) {
+        /* Implementation */
+    }
+    clearFromDriver() {
+        /* Implementation */
+    }
+    getAllTableNames() {
+        /* Implementation */
+    }
 }
 
 export default new CustomStorage()
@@ -114,22 +124,22 @@ export default new CustomStorage()
 ### Creating and Retrieving Data
 
 ```javascript
-import User from './models/User';
+import User from "./models/User"
 
 // Create a new user
-const user = User.create({ name: 'John Doe', email: 'john@example.com' });
+const user = User.create({ name: "John Doe", email: "john@example.com" })
 
 // Find a user by ID
-const foundUser = User.find(1);
+const foundUser = User.find(1)
 
 // Get all users
-const allUsers = User.get();
+const allUsers = User.get()
 
 // Find with error handling
 try {
-    const user = User.findOrFail(1);
+    const user = User.findOrFail(1)
 } catch (error) {
-    console.error('User not found');
+    console.error("User not found")
 }
 ```
 
@@ -137,27 +147,27 @@ try {
 
 ```javascript
 // Update by method
-user.update({ name: 'Jane Doe' });
+user.update({ name: "Jane Doe" })
 
 // Update by direct property assignment and save
-user.name = 'Jane Doe';
-user.save();
+user.name = "Jane Doe"
+user.save()
 ```
 
 ### Deleting Data
 
 ```javascript
-user.delete();
+user.delete()
 ```
 
 ### Querying Data
 
 ```javascript
 // Get ordered data
-const orderedUsers = User.orderBy('name').get();
+const orderedUsers = User.orderBy("name").get()
 
 // Count records
-const userCount = User.count();
+const userCount = User.count()
 ```
 
 ## Working with Relationships
@@ -289,28 +299,28 @@ static deleted(modelId) {
 
 ```javascript
 // Listen for relationship events
-user.addListener('posts:created', (post) => {
-    console.log('New post created:', post.title);
-});
+user.addListener("posts:created", (post) => {
+    console.log("New post created:", post.title)
+})
 
-user.addListener('posts:updated', (post) => {
-    console.log('Post updated:', post.title);
-});
+user.addListener("posts:updated", (post) => {
+    console.log("Post updated:", post.title)
+})
 
-user.addListener('posts:deleted', (postId) => {
-    console.log('Post deleted:', postId);
-});
+user.addListener("posts:deleted", (postId) => {
+    console.log("Post deleted:", postId)
+})
 
 // Listen for generic events
-user.addListener('updated', () => {
-    console.log('User was updated');
-});
+user.addListener("updated", () => {
+    console.log("User was updated")
+})
 
 // Remove listeners
-const listenerId = user.addListener('updated', callback);
-user.removeListener(listenerId);
-user.removeListenersByName('posts:created');
-user.clearListeners();
+const listenerId = user.addListener("updated", callback)
+user.removeListener(listenerId)
+user.removeListenersByName("posts:created")
+user.clearListeners()
 ```
 
 ## Advanced Features
@@ -319,10 +329,10 @@ user.clearListeners();
 
 ```javascript
 // Disable automatic relation fetching
-model.disableAutomaticRelations();
+model.disableAutomaticRelations()
 
 // Enable automatic relation fetching
-model.enableAutomaticRelations();
+model.enableAutomaticRelations()
 ```
 
 ### Handling Unsaved Data
@@ -330,7 +340,7 @@ model.enableAutomaticRelations();
 ```javascript
 if (model.hasUnsavedData()) {
     // Model has changes that haven't been saved
-    model.save();
+    model.save()
 }
 ```
 
@@ -338,10 +348,10 @@ if (model.hasUnsavedData()) {
 
 ```javascript
 // Refresh model data from database
-model.refresh();
+model.refresh()
 
 // Get a fresh instance
-const freshModel = model.fresh();
+const freshModel = model.fresh()
 ```
 
 ## License

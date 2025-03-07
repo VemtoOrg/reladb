@@ -1,93 +1,93 @@
 {
-  "name": "@tiago_silva_pereira/reladb",
-  "version": "2.0.9",
-  "description": "A hybrid relational/object database layer agnostic to the storage engine.",
-  "main": "dist/cjs/main.js",
-  "module": "dist/esm/main.js",
-  "exports": {
-    ".": {
-      "import": "./dist/esm/main.js",
-      "require": "./dist/cjs/main.js"
+    "name": "@tiago_silva_pereira/reladb",
+    "version": "2.0.9",
+    "description": "A hybrid relational/object database layer agnostic to the storage engine.",
+    "main": "dist/cjs/main.js",
+    "module": "dist/esm/main.js",
+    "exports": {
+        ".": {
+            "import": "./dist/esm/main.js",
+            "require": "./dist/cjs/main.js"
+        }
+    },
+    "typings": "./typings/main.d.ts",
+    "scripts": {
+        "test": "jest --runInBand",
+        "test:basic": "jest --runInBand --selectProjects behavior unit default",
+        "test:default": "jest --runInBand --selectProjects default",
+        "test:behavior": "jest --runInBand --selectProjects behavior",
+        "test:ram": "jest --runInBand --selectProjects ram",
+        "perf": "node --experimental-json-modules --no-warnings ./performance/test.mjs",
+        "test:manual": "node --experimental-json-modules --no-warnings ./tests/manual/manual.mjs",
+        "build": "node prepare-build.js && tsc -p tsconfig-cjs.json && tsc -p tsconfig-esm.json && node fixup.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/TiagoSilvaPereira/reladb.git"
+    },
+    "keywords": [
+        "database",
+        "relational",
+        "localstorage",
+        "browser",
+        "db",
+        "sync"
+    ],
+    "author": "Tiago Silva Pereira Rodrigues",
+    "license": "SEE LICENSE IN LICENSE.md",
+    "bugs": {
+        "url": "https://github.com/TiagoSilvaPereira/reladb/issues"
+    },
+    "homepage": "https://github.com/TiagoSilvaPereira/reladb#readme",
+    "devDependencies": {
+        "@babel/plugin-transform-modules-commonjs": "^7.10.4",
+        "jest": "^26.4.2",
+        "prettier": "3.5.3",
+        "tsc": "^2.0.4",
+        "typescript": "^4.8.4"
+    },
+    "dependencies": {
+        "change-case": "^4.1.2",
+        "moment": "^2.29.0",
+        "pluralize": "^8.0.0",
+        "uuid": "^8.3.1"
+    },
+    "jest": {
+        "bail": true,
+        "projects": [
+            {
+                "displayName": "behavior",
+                "testMatch": [
+                    "<rootDir>/tests/behavior/*.test.js"
+                ]
+            },
+            {
+                "displayName": "unit",
+                "testMatch": [
+                    "<rootDir>/tests/unit/*.test.js"
+                ]
+            },
+            {
+                "displayName": "default",
+                "testMatch": [
+                    "<rootDir>/tests/localstorage/*.test.js"
+                ]
+            },
+            {
+                "displayName": "fake",
+                "testMatch": [
+                    "<rootDir>/tests/fakestorage/*.test.js"
+                ]
+            },
+            {
+                "displayName": "ram",
+                "testMatch": [
+                    "<rootDir>/tests/ramstorage/*.test.js"
+                ]
+            }
+        ]
+    },
+    "directories": {
+        "test": "tests"
     }
-  },
-  "typings": "./typings/main.d.ts",
-  "scripts": {
-    "test": "jest --runInBand",
-    "test:basic": "jest --runInBand --selectProjects behavior unit default",
-    "test:default": "jest --runInBand --selectProjects default",
-    "test:behavior": "jest --runInBand --selectProjects behavior",
-    "test:ram": "jest --runInBand --selectProjects ram",
-    "perf": "node --experimental-json-modules --no-warnings ./performance/test.mjs",
-    "test:manual": "node --experimental-json-modules --no-warnings ./tests/manual/manual.mjs",
-    "build": "node prepare-build.js && tsc -p tsconfig-cjs.json && tsc -p tsconfig-esm.json && node fixup.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/TiagoSilvaPereira/reladb.git"
-  },
-  "keywords": [
-    "database",
-    "relational",
-    "localstorage",
-    "browser",
-    "db",
-    "sync"
-  ],
-  "author": "Tiago Silva Pereira Rodrigues",
-  "license": "SEE LICENSE IN LICENSE.md",
-  "bugs": {
-    "url": "https://github.com/TiagoSilvaPereira/reladb/issues"
-  },
-  "homepage": "https://github.com/TiagoSilvaPereira/reladb#readme",
-  "devDependencies": {
-    "@babel/plugin-transform-modules-commonjs": "^7.10.4",
-    "jest": "^26.4.2",
-    "prettier": "3.5.3",
-    "tsc": "^2.0.4",
-    "typescript": "^4.8.4"
-  },
-  "dependencies": {
-    "change-case": "^4.1.2",
-    "moment": "^2.29.0",
-    "pluralize": "^8.0.0",
-    "uuid": "^8.3.1"
-  },
-  "jest": {
-    "bail": true,
-    "projects": [
-      {
-        "displayName": "behavior",
-        "testMatch": [
-          "<rootDir>/tests/behavior/*.test.js"
-        ]
-      },
-      {
-        "displayName": "unit",
-        "testMatch": [
-          "<rootDir>/tests/unit/*.test.js"
-        ]
-      },
-      {
-        "displayName": "default",
-        "testMatch": [
-          "<rootDir>/tests/localstorage/*.test.js"
-        ]
-      },
-      {
-        "displayName": "fake",
-        "testMatch": [
-          "<rootDir>/tests/fakestorage/*.test.js"
-        ]
-      },
-      {
-        "displayName": "ram",
-        "testMatch": [
-          "<rootDir>/tests/ramstorage/*.test.js"
-        ]
-      }
-    ]
-  },
-  "directories": {
-    "test": "tests"
-  }
 }

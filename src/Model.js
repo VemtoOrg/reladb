@@ -1,22 +1,19 @@
-import Query from './Query.js'
-import pluralize from 'pluralize'
-import Resolver from './Resolver.js'
-import HasOne from './Relationships/HasOne.js'
-import HasMany from './Relationships/HasMany.js'
-import MorphTo from './Relationships/MorphTo.js'
-import { camelCase, snakeCase } from 'change-case'
-import MorphMany from './Relationships/MorphMany.js'
-import BelongsTo from './Relationships/BelongsTo.js'
-import BelongsToMany from './Relationships/BelongsToMany.js'
-
+import Query from "./Query.js"
+import pluralize from "pluralize"
+import Resolver from "./Resolver.js"
+import HasOne from "./Relationships/HasOne.js"
+import HasMany from "./Relationships/HasMany.js"
+import MorphTo from "./Relationships/MorphTo.js"
+import { camelCase, snakeCase } from "change-case"
+import MorphMany from "./Relationships/MorphMany.js"
+import BelongsTo from "./Relationships/BelongsTo.js"
+import BelongsToMany from "./Relationships/BelongsToMany.js"
 
 export default class Model {
-
     static __identifier = null
     static __customTable = null
 
     constructor(data = {}) {
-
         this.__isRelaDBModel = true
         this.__returnRelationsAutomatically = true
         this.__saveDataToStorage = true
@@ -33,15 +30,14 @@ export default class Model {
 
         return new Proxy(this, {
             set: this.__set,
-            get: this.__get
+            get: this.__get,
         })
-
     }
 
     checkIdentifier() {
         try {
             this.constructor.identifier()
-        } catch(e) {
+        } catch (e) {
             throw e
         }
 
@@ -49,8 +45,10 @@ export default class Model {
     }
 
     static identifier() {
-        if(!this.__identifier) {
-            throw new Error('Model identifier() method must return a string. Please register an identifier for this model')
+        if (!this.__identifier) {
+            throw new Error(
+                "Model identifier() method must return a string. Please register an identifier for this model",
+            )
         }
 
         return this.__identifier
@@ -70,12 +68,12 @@ export default class Model {
 
     __set(obj, name, value) {
         obj[name] = value
-        
+
         return true
     }
 
     __get(obj, name) {
-        if(obj.__returnRelationsAutomatically && obj.hasRelationshipNamed(name)) {
+        if (obj.__returnRelationsAutomatically && obj.hasRelationshipNamed(name)) {
             return obj.executeRelationship(name)
         }
 
@@ -101,7 +99,7 @@ export default class Model {
     refresh() {
         let freshData = this.fresh()
 
-        if(!freshData) return
+        if (!freshData) return
 
         freshData = JSON.parse(JSON.stringify(freshData))
         freshData = this.constructor.removeSpecialData(freshData)
@@ -113,21 +111,20 @@ export default class Model {
 
     fillFromData(data = {}, disablePrimaryKeyFill = false) {
         let keys = Object.keys(data)
-        
-        if(disablePrimaryKeyFill) {
-            keys = keys.filter(key => key != this.constructor.primaryKey())
+
+        if (disablePrimaryKeyFill) {
+            keys = keys.filter((key) => key != this.constructor.primaryKey())
         }
-            
-        keys.forEach(key => this[key] = data[key])
+
+        keys.forEach((key) => (this[key] = data[key]))
 
         return this
     }
 
     fresh() {
-        if(!this.isSaved()) return null
+        if (!this.isSaved()) return null
 
-        return new Query(this.constructor)
-            .findOrFail(this.id)
+        return new Query(this.constructor).findOrFail(this.id)
     }
 
     static count() {
@@ -137,23 +134,23 @@ export default class Model {
     static create(data = {}) {
         data = JSON.parse(JSON.stringify(data))
 
-        if(this.creating) data = this.creating(data)
-        
-        let item = new Query(this).create(data)
-        
-        if(this.created) this.created(item)
+        if (this.creating) data = this.creating(data)
 
-        this.fireGlobalEvents(item, 'created')
-        
+        let item = new Query(this).create(data)
+
+        if (this.created) this.created(item)
+
+        this.fireGlobalEvents(item, "created")
+
         return item
     }
 
     static fireGlobalEvents(item, eventSuffix) {
         // We don't fire the created event because we can't listen to it before the item is created
-        if(eventSuffix !== 'created') {
+        if (eventSuffix !== "created") {
             let eventName = `${item.getItemIdentifier()}:${eventSuffix}`
             Resolver.db().executeCustomEventListener(eventName, item)
-    
+
             let generalEventName = `${item.getItemIdentifier()}:changed`
             Resolver.db().executeCustomEventListener(generalEventName, item)
         }
@@ -164,18 +161,18 @@ export default class Model {
     static fireRelationshipsEvents(item, eventSuffix) {
         let belongsToRelationships = item.belongsToRelationships()
 
-        belongsToRelationships.forEach(relationship => {
+        belongsToRelationships.forEach((relationship) => {
             let inverseRelationship = relationship.inverse()
 
-            if(!inverseRelationship) return
+            if (!inverseRelationship) return
 
             let parentInstance = relationship.getParentFromItem(item)
 
-            if(!parentInstance) return
+            if (!parentInstance) return
 
             let eventName = `${parentInstance.getItemIdentifier()}:${inverseRelationship.getNameOnModel()}:${eventSuffix}`
-            
-            let returnedData = eventSuffix === 'deleted' ? item.getItemIdentifierData() : item
+
+            let returnedData = eventSuffix === "deleted" ? item.getItemIdentifierData() : item
             Resolver.db().executeCustomEventListener(eventName, returnedData)
 
             let generalEventName = `${parentInstance.getItemIdentifier()}:${inverseRelationship.getNameOnModel()}:changed`
@@ -184,13 +181,10 @@ export default class Model {
             const allRelationshipsEventName = `${parentInstance.getItemIdentifier()}:relationships:changed`
             Resolver.db().executeCustomEventListener(allRelationshipsEventName, returnedData)
         })
-
     }
 
     static get() {
-        return new Query(this)
-            .setFilters(this.getFilters())
-            .get()
+        return new Query(this).setFilters(this.getFilters()).get()
     }
 
     static latest() {
@@ -206,14 +200,14 @@ export default class Model {
     }
 
     fill(data) {
-        Object.keys(data).forEach(key => this[key] = data[key])
+        Object.keys(data).forEach((key) => (this[key] = data[key]))
         return this
     }
 
     save() {
-        if(!this.__saveDataToStorage || !Resolver.db().__saveDataToStorage) return
+        if (!this.__saveDataToStorage || !Resolver.db().__saveDataToStorage) return
 
-        if(!this.isSaved()) {
+        if (!this.isSaved()) {
             let createdItem = this.constructor.create(this.constructor.removeSpecialData(this))
             this.fillFromData(createdItem)
             return this
@@ -223,43 +217,42 @@ export default class Model {
     }
 
     update(data = {}) {
-        if(!this.__saveDataToStorage || !Resolver.db().__saveDataToStorage) return
+        if (!this.__saveDataToStorage || !Resolver.db().__saveDataToStorage) return
 
-        if(!this.id) {
-            throw new Error('It is not possible to update an object that is not currently saved on database')
+        if (!this.id) {
+            throw new Error("It is not possible to update an object that is not currently saved on database")
         }
 
         data = JSON.parse(JSON.stringify(data))
 
-        if(this.constructor.beforeUpdate) data = this.constructor.beforeUpdate(data, this.fresh())
+        if (this.constructor.beforeUpdate) data = this.constructor.beforeUpdate(data, this.fresh())
 
-        if(this.constructor.updating) data = this.constructor.updating(data, this.fresh())
+        if (this.constructor.updating) data = this.constructor.updating(data, this.fresh())
 
         this.fillFromData(data, true)
 
-        let wasUpdated = new Query(this.constructor)
-            .update(this.id, this.constructor.removeSpecialData(this))
+        let wasUpdated = new Query(this.constructor).update(this.id, this.constructor.removeSpecialData(this))
 
-        if(this.__onUpdateListener) this.__onUpdateListener(this)
-        if(this.constructor.updated) this.constructor.updated(this)
+        if (this.__onUpdateListener) this.__onUpdateListener(this)
+        if (this.constructor.updated) this.constructor.updated(this)
 
-        this.constructor.fireGlobalEvents(this, 'updated')
+        this.constructor.fireGlobalEvents(this, "updated")
 
         return wasUpdated
     }
 
     delete() {
-        if(!this.__saveDataToStorage || !Resolver.db().__saveDataToStorage) return
-        
-        if(!this.id) throw new Error('It is not possible to delete an object that is not currently saved on database')
+        if (!this.__saveDataToStorage || !Resolver.db().__saveDataToStorage) return
 
-        if(this.constructor.deleting) this.constructor.deleting(this)
+        if (!this.id) throw new Error("It is not possible to delete an object that is not currently saved on database")
+
+        if (this.constructor.deleting) this.constructor.deleting(this)
 
         new Query(this.constructor).delete(this.id)
 
-        if(this.constructor.deleted) this.constructor.deleted(this.id)
+        if (this.constructor.deleted) this.constructor.deleted(this.id)
 
-        this.constructor.fireGlobalEvents(this, 'deleted')
+        this.constructor.fireGlobalEvents(this, "deleted")
 
         this.clearData()
 
@@ -269,15 +262,15 @@ export default class Model {
     static removeSpecialData(data) {
         let filteredData = {},
             excludedKeys = [
-                '__isRelaDBModel',
-                '__onUpdateListener',
-                '__saveDataToStorage',
-                '__returnRelationsAutomatically',
-                '__customEventsEnabled',
+                "__isRelaDBModel",
+                "__onUpdateListener",
+                "__saveDataToStorage",
+                "__returnRelationsAutomatically",
+                "__customEventsEnabled",
             ]
 
-        Object.keys(data).forEach(key => {
-            if(!excludedKeys.includes(key)) {
+        Object.keys(data).forEach((key) => {
+            if (!excludedKeys.includes(key)) {
                 filteredData[key] = data[key]
             }
         })
@@ -290,7 +283,7 @@ export default class Model {
     }
 
     static primaryKey() {
-        return 'id'
+        return "id"
     }
 
     getTable() {
@@ -308,28 +301,25 @@ export default class Model {
     }
 
     getTableData() {
-        return new Query(this.constructor)
-            .getTableData()
+        return new Query(this.constructor).getTableData()
     }
 
     static table() {
-        if(this.__customTable) return this.__customTable
+        if (this.__customTable) return this.__customTable
 
         return this.defaultTable()
     }
 
     static defaultTable() {
-        return pluralize(
-            snakeCase(this.identifier())
-        ).toLowerCase()
+        return pluralize(snakeCase(this.identifier())).toLowerCase()
     }
 
     static timestamps() {
-        return true;
+        return true
     }
 
     clearData() {
-        Object.keys(this).forEach(key => {
+        Object.keys(this).forEach((key) => {
             delete this[key]
         })
     }
@@ -339,24 +329,15 @@ export default class Model {
     }
 
     hasOne(model, foreignKey = null, localKey = null) {
-        return new HasOne(model, this.constructor)
-            .setItem(this)
-            .setForeignKey(foreignKey)
-            .setLocalKey(localKey)
+        return new HasOne(model, this.constructor).setItem(this).setForeignKey(foreignKey).setLocalKey(localKey)
     }
 
     hasMany(model, foreignKey = null, localKey = null) {
-        return new HasMany(model, this.constructor)
-            .setItem(this)
-            .setForeignKey(foreignKey)
-            .setLocalKey(localKey)
+        return new HasMany(model, this.constructor).setItem(this).setForeignKey(foreignKey).setLocalKey(localKey)
     }
 
     belongsTo(model, foreignKey = null, ownerKey = null) {
-        return new BelongsTo(model, this.constructor)
-            .setItem(this)
-            .setForeignKey(foreignKey)
-            .setOwnerKey(ownerKey)
+        return new BelongsTo(model, this.constructor).setItem(this).setForeignKey(foreignKey).setOwnerKey(ownerKey)
     }
 
     belongsToMany(model, pivotModel = null, foreignPivotKey = null, relatedPivotKey = null) {
@@ -376,11 +357,7 @@ export default class Model {
     }
 
     morphTo(name, morphKey = null, morphType = null) {
-        return new MorphTo()
-            .setItem(this)
-            .setName(name)
-            .setMorphKey(morphKey)
-            .setMorphType(morphType)
+        return new MorphTo().setItem(this).setName(name).setMorphKey(morphKey).setMorphType(morphType)
     }
 
     hasRelationshipNamed(name) {
@@ -388,16 +365,27 @@ export default class Model {
          * So we need to return false if the name matches one of these properties
          */
         let reserved = [
-            'constructor', 'apply', 'bind', 'call', 'toString', 'hasOwnProperty', 'isPrototypeOf',
-            'propertyIsEnumerable', 'toLocaleString', 'valueOf', '__defineGetter__', '__defineSetter__',
-            '__lookupGetter__', '__lookupSetter__'
+            "constructor",
+            "apply",
+            "bind",
+            "call",
+            "toString",
+            "hasOwnProperty",
+            "isPrototypeOf",
+            "propertyIsEnumerable",
+            "toLocaleString",
+            "valueOf",
+            "__defineGetter__",
+            "__defineSetter__",
+            "__lookupGetter__",
+            "__lookupSetter__",
         ]
 
-        if(reserved.includes(name)) return false
+        if (reserved.includes(name)) return false
 
-        if(!this.getRelationshipFunction(name)) return false
+        if (!this.getRelationshipFunction(name)) return false
 
-        return typeof this.getRelationshipFunction(name) === 'function'
+        return typeof this.getRelationshipFunction(name) === "function"
     }
 
     executeRelationship(name) {
@@ -405,7 +393,7 @@ export default class Model {
     }
 
     hasBelongsToRelationships() {
-        return this.belongsToRelationships().length > 0   
+        return this.belongsToRelationships().length > 0
     }
 
     belongsToRelationships() {
@@ -438,18 +426,18 @@ export default class Model {
     morphToRelationships() {
         return this.getRelationshipsByInstanceType(MorphTo)
     }
-    
+
     getRelationshipsByInstanceType(instanceOfClass) {
         let relationships = []
 
-        Object.keys(this.relationships()).forEach(relationshipName => {
+        Object.keys(this.relationships()).forEach((relationshipName) => {
             let relationship = this.getRelationship(relationshipName)
-            if(relationship instanceof instanceOfClass) {
+            if (relationship instanceof instanceOfClass) {
                 relationship.__nameOnModel = relationshipName
                 relationships.push(relationship)
             }
         })
-        
+
         return relationships
     }
 
@@ -466,31 +454,31 @@ export default class Model {
     }
 
     isSaved() {
-        return !! this[this.constructor.primaryKey()]
+        return !!this[this.constructor.primaryKey()]
     }
 
     hasUnsavedData() {
         const freshInstance = this.fresh()
 
-        if(!freshInstance) return true
+        if (!freshInstance) return true
 
         return JSON.stringify(this) !== JSON.stringify(freshInstance)
     }
 
-    static orderBy(field, direction = 'asc') {
+    static orderBy(field, direction = "asc") {
         this.clearFilters()
 
         this.getFilters().push({
             field: field,
-            type: 'order',
-            direction: direction
+            type: "order",
+            direction: direction,
         })
-        
+
         return this
     }
 
     static initFilters() {
-        if(!Resolver.db().filters[this.table()]) {
+        if (!Resolver.db().filters[this.table()]) {
             Resolver.db().filters[this.table()] = []
         }
     }
@@ -511,14 +499,14 @@ export default class Model {
     }
 
     /**
-     * 
+     *
      * @param {*} name created, updated, deleted
-     * @param {*} listener 
-     * @returns 
+     * @param {*} listener
+     * @returns
      */
     addListener(name, listener) {
         let completeName = `${this.getItemIdentifier()}:${name}`
-        
+
         const listenerId = Resolver.db().addCustomEventListener(completeName, listener)
 
         return listenerId
@@ -535,7 +523,7 @@ export default class Model {
      */
     removeListenersByName(name) {
         let completeName = `${this.getItemIdentifier()}:${name}`
-        
+
         Resolver.db().removeCustomEventListenersByName(completeName)
 
         return this
@@ -543,7 +531,7 @@ export default class Model {
 
     clearListeners() {
         let completeName = `${this.getItemIdentifier()}:`
-        
+
         Resolver.db().removeCustomEventListenersContaining(completeName)
 
         return this

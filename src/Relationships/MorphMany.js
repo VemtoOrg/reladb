@@ -1,9 +1,8 @@
-import Relationship from './Relationship.js'
+import Relationship from "./Relationship.js"
 
 export default class MorphMany extends Relationship {
-    
     relationshipType() {
-        return 'MorphMany'
+        return "MorphMany"
     }
 
     setName(name) {
@@ -13,7 +12,7 @@ export default class MorphMany extends Relationship {
     }
 
     setMorphKey(morphKey) {
-        if(!morphKey) {
+        if (!morphKey) {
             morphKey = `${this.name}Id`
         }
 
@@ -23,7 +22,7 @@ export default class MorphMany extends Relationship {
     }
 
     setMorphType(morphType) {
-        if(!morphType) {
+        if (!morphType) {
             morphType = `${this.name}Type`
         }
 
@@ -38,13 +37,15 @@ export default class MorphMany extends Relationship {
         return this
     }
 
-    orderBy(field, direction = 'asc') {
-        this.setFilters([{
-            field: field,
-            type: 'order',
-            direction: direction
-        }])
-        
+    orderBy(field, direction = "asc") {
+        this.setFilters([
+            {
+                field: field,
+                type: "order",
+                direction: direction,
+            },
+        ])
+
         return this
     }
 
@@ -53,22 +54,19 @@ export default class MorphMany extends Relationship {
     }
 
     execute() {
-        const item = this.getItem(), 
+        const item = this.getItem(),
             itemModelIdentifier = item.constructor.identifier()
 
-        let morphItems = this.getQuery()
-            .setFilters(this.filters)
-            .get()
+        let morphItems = this.getQuery().setFilters(this.filters).get()
 
-        morphItems = morphItems.filter(morphItem => {
+        morphItems = morphItems.filter((morphItem) => {
             return morphItem[this.morphType] === itemModelIdentifier && morphItem[this.morphKey] === item.id
         })
-        
+
         return morphItems || []
     }
 
     signature() {
         return `${this.localModel.identifier()}->MorphMany(${this.model.identifier()}):${this.morphKey},${this.morphType}`
     }
-
 }
