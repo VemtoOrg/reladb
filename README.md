@@ -256,6 +256,50 @@ relationships() {
 }
 ```
 
+## Cascade Deletion
+
+RelaDB supports automatic cascade deletion for related data. This feature allows you to automatically delete child records when a parent record is deleted, maintaining referential integrity in your data.
+
+### How Cascade Deletion Works
+
+When you define a relationship with `cascadeDelete: true`, deleting a parent record will automatically delete all associated child records. This prevents orphaned records and ensures data consistency.
+
+#### Example: Basic Cascade Deletion
+
+```javascript
+import { Model } from "@tiago_silva_pereira/reladb"
+
+export default class User extends Model {
+    relationships() {
+        return {
+            posts: () => this.hasMany(Post, "ownerId", "id").cascadeDelete(),
+        }
+    }
+}
+
+const user = User.find(1)
+user.delete() // This will also delete all posts related to the user
+```
+
+#### Example: Cascade Deletion with Multiple Relationships
+
+```javascript
+import { Model } from "@tiago_silva_pereira/reladb"
+
+export default class User extends Model {
+    relationships() {
+        return {
+            posts: () => this.hasMany(Post, "ownerId", "id").cascadeDelete(),
+            document: () => this.hasOne(Document).cascadeDelete(),
+            phones: () => this.hasMany(Phone, "ownerId", "id").cascadeDelete(),
+        }
+    }
+}
+
+const user = User.find(1)
+user.delete() // This will delete the user and all related posts, document, and phones
+```
+
 ## Event Handling
 
 ### Model Lifecycle Events
